@@ -1,0 +1,31 @@
+=======================================================
+【Atrip 自由行旅遊助理】個人開工待辦與交件清單
+角色：前端開發組 - 前端工程師 A (核心畫布、拖曳與離線 PDF)
+負責工單：TRACK1-01, TRACK1-02, TRACK1-05, TRACK1-07, TRACK1-09
+=======================================================
+
+【一、我的排程與每日推進目標】
+- [ ] Day 1~2 (純邏輯先發)：完成 [TRACK1-01] LINE LIFF SDK 整合與 Supabase Token 交換會話建立
+- [ ] Day 3~5 (邏輯+套版)：完成 [TRACK1-02] 我的行程儀表板 (Dashboard) 與 Active 行程切換
+- [ ] Day 6~7 (邏輯+套版)：完成 [TRACK1-05] 動態行程時間軸卡片、拖曳重排 (Dnd) 與防抖自動儲存
+- [ ] Day 7~8 (邏輯+套版)：完成 [TRACK1-07] 智能行李打包清單 (Packing List) 互動分頁開發
+- [ ] Day 9~10 (邏輯+套版)：完成 [TRACK1-09] 離線 PDF 匯出 (瀏覽器列印樣板與 LINE Bot 檔案推送)
+
+【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 frontend_A.zip)】
+1. src/hooks/useLiffAuth.ts (或 src/lib/liff.ts) - LIFF 初始化與登入 Hook
+2. src/app/dashboard/page.tsx ＆ src/components/dashboard/ - 儀表板頁面與卡片
+3. src/stores/useItineraryStore.ts - Zustand 狀態樹與拖曳陣列重算邏輯
+4. src/app/canvas/[id]/page.tsx ＆ src/components/canvas/ - 時間軸卡片與交通膠囊
+5. src/components/packing/PackingListTab.tsx - 行李清單分頁與打勾狀態
+6. src/app/print/[id]/page.tsx ＆ src/styles/print.css - 專用 A4 列印樣式
+
+【三、開工前 4 大自檢問詢門檻 (紅線守則)】
+1. 階段 1 (Day 1~3) 嚴禁在程式碼中寫死客製 hex 色碼（如 #347FA3），先寫純邏輯與資料流！
+2. 階段 2 (Day 4 起) 是否已取得設計師 1 的 tailwind.config.js？只能使用 bg-brand-primary 等類名。
+3. 拖曳重排是否已加入 800ms 防抖更新，寫回時是否帶上樂觀鎖 version 檢核？
+4. 是否已研讀 03-JSON-Schema 與 mock_itinerary.json？
+
+【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
+「你好！我是 Atrip 專案的前端工程師 A，負責『TRACK1-05 時間軸 Dnd 拖曳與防抖自動儲存』。
+我們使用 Next.js 14、Tailwind CSS、Zustand 與 @hello-pangea/dnd。
+請嚴格遵守附帶的 03-JSON-Schema 與 mock_itinerary.json，幫我寫出無頭拖曳重排邏輯、800ms 防抖寫回與樂觀鎖版本控制代碼，嚴禁手寫死板色碼！」

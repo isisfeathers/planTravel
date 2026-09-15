@@ -1,0 +1,240 @@
+<mxfile host="app.diagrams.net" modified="2026-09-14T00:00:00.000Z" agent="Mozilla/5.0" version="21.6.8" type="device">
+  <diagram id="atrip-database-erd" name="Atrip 資料庫 ERD">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 頂部標題 -->
+        <mxCell id="title_erd" value="Atrip (你的 AI 自由行規劃夥伴) - 資料庫實體關係圖 (Database ERD)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontColor=#ffffff;fontStyle=1;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1540" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- 1. profiles 表 -->
+        <mxCell id="tbl_profiles" value="public.profiles (使用者資料表)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="320" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="p_1" value="+ id: UUID [PK, FK to auth.users]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_profiles">
+          <mxGeometry y="30" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_2" value="+ line_user_id: TEXT [UK, NOT NULL]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_profiles">
+          <mxGeometry y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_3" value="+ display_name: TEXT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_profiles">
+          <mxGeometry y="82" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_4" value="+ avatar_url: TEXT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_profiles">
+          <mxGeometry y="108" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_active" value="+ active_itinerary_id: UUID [FK to itineraries.id]" style="text;strokeColor=none;fillColor=#e1d5e7;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="tbl_profiles">
+          <mxGeometry y="134" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_5" value="+ created_at: TIMESTAMPTZ" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_profiles">
+          <mxGeometry y="160" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p_6" value="+ updated_at: TIMESTAMPTZ" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_profiles">
+          <mxGeometry y="186" width="320" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- 2. user_preferences 表 -->
+        <mxCell id="tbl_pref" value="public.user_preferences (使用者全域偏好表)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="320" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="pref_1" value="+ id: UUID [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pref">
+          <mxGeometry y="30" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pref_2" value="+ user_id: UUID [FK to profiles.id, UK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pref">
+          <mxGeometry y="56" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pref_3" value="+ preferences: JSONB [NOT NULL 預設標籤快照]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pref">
+          <mxGeometry y="82" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pref_4" value="+ created_at: TIMESTAMPTZ" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pref">
+          <mxGeometry y="108" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pref_5" value="+ updated_at: TIMESTAMPTZ" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pref">
+          <mxGeometry y="134" width="320" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- 3. itineraries 表 (主表) -->
+        <mxCell id="tbl_itineraries" value="public.itineraries (核心行程主表 - JSON-First)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="460" y="80" width="410" height="474" as="geometry" />
+        </mxCell>
+        <mxCell id="i_1" value="+ id: UUID [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="30" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_2" value="+ user_id: UUID [FK to profiles.id]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="56" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_fork" value="+ forked_from_id: UUID [FK to itineraries.id, 副本來源]" style="text;strokeColor=none;fillColor=#e1d5e7;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="82" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_3" value="+ share_token: UUID [UK, NOT NULL 專屬分享連結]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="108" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_4" value="+ title: TEXT [NOT NULL DEFAULT '我的自訂行程']" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="134" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_5" value="+ destination: TEXT [NOT NULL]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="160" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_6" value="+ status: TEXT ('draft', 'generating', 'completed', 'failed')" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="186" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_arch" value="+ is_archived: BOOLEAN [NOT NULL DEFAULT false 封存標記]" style="text;strokeColor=none;fillColor=#e1d5e7;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="212" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_7" value="+ version: INT [NOT NULL DEFAULT 1 樂觀鎖版本號]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="238" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_8" value="+ is_public: BOOLEAN [NOT NULL DEFAULT true 公開標記]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="264" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_9" value="+ preference_snapshot: JSONB [獨立偏好標籤快照]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="290" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_10" value="+ itinerary_data: JSONB [時間軸、景點、地圖、行李清單]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="316" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_11" value="+ flight_data: JSONB [正規化航班時刻與比價陣列]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="342" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_del" value="+ deleted_at: TIMESTAMPTZ [NULLABLE 軟刪除時間戳記]" style="text;strokeColor=none;fillColor=#f8cecc;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="368" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i_12" value="+ created_at / updated_at: TIMESTAMPTZ" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_itineraries">
+          <mxGeometry y="394" width="410" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- 4. prompt_templates 表 (動態提示詞表) -->
+        <mxCell id="tbl_pt" value="public.prompt_templates (動態提示詞範本表)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="960" y="80" width="360" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_1" value="+ id: UUID [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pt">
+          <mxGeometry y="30" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_2" value="+ category: prompt_category ['accommodation'|'interest'...]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pt">
+          <mxGeometry y="56" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_3" value="+ option_key: TEXT [UK, NOT NULL, 如 'sports']" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="tbl_pt">
+          <mxGeometry y="82" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_4" value="+ display_label: TEXT [如 '熱血運動賽事']" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pt">
+          <mxGeometry y="108" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_5" value="+ prompt_directive: TEXT [LLM 具體約束指令]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pt">
+          <mxGeometry y="134" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_6" value="+ is_default: BOOLEAN [預設套版標記]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pt">
+          <mxGeometry y="160" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_7" value="+ priority: INT [拼接優先序]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pt">
+          <mxGeometry y="186" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="pt_8" value="+ updated_at: TIMESTAMPTZ" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_pt">
+          <mxGeometry y="212" width="360" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- 5. itinerary_jobs 表 (非同步任務表) -->
+        <mxCell id="tbl_jobs" value="public.itinerary_jobs (非同步任務追蹤表)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffcc99;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="960" y="360" width="360" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="j_1" value="+ id: UUID [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_jobs">
+          <mxGeometry y="30" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="j_2" value="+ itinerary_id: UUID [FK to itineraries.id]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_jobs">
+          <mxGeometry y="56" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="j_3" value="+ user_id: UUID [FK to profiles.id]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_jobs">
+          <mxGeometry y="82" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="j_4" value="+ status: itinerary_job_status [queued|generating...]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_jobs">
+          <mxGeometry y="108" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="j_5" value="+ attempt: INT [NOT NULL DEFAULT 0 重試次數]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_jobs">
+          <mxGeometry y="134" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="j_6" value="+ idempotency_key: TEXT [UK 冪等性防重複鍵]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="tbl_jobs">
+          <mxGeometry y="160" width="360" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="j_7" value="+ error_code / error_message: TEXT" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_jobs">
+          <mxGeometry y="186" width="360" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- 6. itinerary_shares 表 (分享稽核表) -->
+        <mxCell id="tbl_shares" value="public.itinerary_shares (分享過期與記錄表)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="460" y="580" width="410" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="sh_1" value="+ id: UUID [PK]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_shares">
+          <mxGeometry y="30" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="sh_2" value="+ itinerary_id: UUID [FK to itineraries.id]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_shares">
+          <mxGeometry y="56" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="sh_3" value="+ created_by: UUID [FK to profiles.id]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_shares">
+          <mxGeometry y="82" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="sh_4" value="+ share_token_hash: TEXT [UK 權杖雜湊值]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_shares">
+          <mxGeometry y="108" width="410" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="sh_5" value="+ views_count: INT [瀏覽計數] | expires_at / revoked_at" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="tbl_shares">
+          <mxGeometry y="134" width="410" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- 關聯線 -->
+        <!-- profiles to itineraries (1:N) -->
+        <mxCell id="r_p_i" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERmany;startArrow=ERone;endFill=0;startFill=0;" edge="1" parent="1" source="p_1" target="i_2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r_p_i_lbl" value="1 對多 (擁有行程)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="r_p_i">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- profiles.active_itinerary_id to itineraries.id -->
+        <mxCell id="r_active" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERone;startArrow=ERzeroToOne;dashed=1;strokeColor=#9673a6;" edge="1" parent="1" source="p_active" target="i_1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="420" y="227" />
+              <mxPoint x="420" y="123" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_active_lbl" value="鎖定 Active 行程" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9673a6;" vertex="1" connectable="0" parent="r_active">
+          <mxGeometry x="0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- itineraries to itinerary_jobs (1:N) -->
+        <mxCell id="r_i_j" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=ERmany;startArrow=ERone;endFill=0;startFill=0;" edge="1" parent="1" source="i_1" target="j_2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="910" y="123" />
+              <mxPoint x="910" y="429" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_i_j_lbl" value="1 對多 (追蹤非同步任務)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="r_i_j">
+          <mxGeometry x="0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- itineraries to itinerary_shares (1:N) -->
+        <mxCell id="r_i_sh" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERmany;startArrow=ERone;endFill=0;startFill=0;" edge="1" parent="1" source="tbl_itineraries" target="tbl_shares">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- prompt_templates to itineraries (Dynamic Injection) -->
+        <mxCell id="r_pt_i" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;strokeColor=#b85450;" edge="1" parent="1" source="pt_3" target="i_9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="910" y="175" />
+              <mxPoint x="910" y="383" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r_pt_i_lbl" value="動態映射注入 Prompt" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#b85450;" vertex="1" connectable="0" parent="r_pt_i">
+          <mxGeometry x="0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

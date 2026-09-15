@@ -1,0 +1,29 @@
+=======================================================
+【Atrip 自由行旅遊助理】個人開工待辦與交件清單
+角色：視覺 UI/UX 設計組 - 設計師 1 (系統規範與核心版面)
+負責工單：TRACK0-01, TRACK0-02, TRACK0-05
+=======================================================
+
+【一、我的排程與每日推進目標】
+- [ ] Day 1~2 (最優先)：完成 [TRACK0-01] Atrip 品牌設計系統與 Tailwind Tokens 規範 (產出 tailwind.config.js 交付前端)
+- [ ] Day 3~4：完成 [TRACK0-02] 儀表板與雙層標籤精靈 UI/UX Wireframe 設計
+- [ ] Day 5~6：完成 [TRACK0-05] 離線 PDF 與專色列印排版樣式規範
+
+【二、我必須在【交付成品區】上傳的具體檔案】
+1. tailwind.config.js
+   - 擴充色階：brand-primary (#347FA3), brand-secondary (#6F8F72), brand-accent (#F97316)
+2. figma_links_dashboard_and_wizard.txt
+   - Figma 高保真設計稿連結（開啟 Inspect 模式供前端切版）
+3. A4_PDF_Print_Spec.pdf (或 print_style_spec.md)
+   - A4 列印樣式規範、邊距 15mm、隱藏網頁按鈕與 break-inside: avoid 防截斷規則
+
+【三、開工前 4 大自檢問詢門檻】
+1. 是否已查閱 品牌名稱提案.pptx 的旅行藍、鼠尾草綠、暖日橘色票？
+2. 是否清楚文字對比度必須符合 WCAG AA (>= 4.5:1)？
+3. 是否清楚標籤精靈必須是單手拇指 15 秒內可點選的極簡佈局，嚴禁設計成打字問卷？
+4. 是否確認交付物符合驗收標準？
+
+【四、複製貼給 AI (ChatGPT / Claude) 的專屬提問咒語】
+「你好！我是 Atrip 專案的視覺設計師 1，負責『TRACK0-01 品牌設計系統與 Tailwind Tokens 規範』。
+我們的主色是旅行藍 #347FA3、次色鼠尾草綠 #6F8F72、強調色暖日橘 #F97316。
+請引導我完成 Design Tokens 與 tailwind.config.js 設定檔，並告訴我 Figma 元件庫該如何建立。」

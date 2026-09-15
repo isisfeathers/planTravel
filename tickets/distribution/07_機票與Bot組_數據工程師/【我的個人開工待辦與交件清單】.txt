@@ -1,0 +1,37 @@
+=======================================================
+【Atrip 自由行旅遊助理】個人開工待辦與交件清單
+角色：LINE Bot & 數據 API/機票組 - 數據工程師 (API 與 Bot 專家)
+負責工單：TRACK3-01, TRACK3-02, TRACK3-03, TRACK3-04
+=======================================================
+
+【一、我的排程與每日推進目標】
+- [ ] Day 1~2 (純API先發)：完成 [TRACK3-02] 機票資料取得服務 (AFS) 搜尋調度器、供應商 Adapters 與評分演算法
+- [ ] Day 3~5 (純API先發)：完成 [TRACK3-03] 機票短期快取 (20分)、驗價可用性檢查與授權 Deep Link 轉址解析器
+- [ ] Day 6~7 (純Bot先發)：完成 [TRACK3-01] LINE Messaging API Webhook 接收與 Bubble Flex Message 推播服務
+- [ ] Day 7~8 (純Worker先發)：完成 [TRACK3-04] LINE Bot 實體 PDF 檔案渲染與推播 Worker
+
+【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 services.zip)】
+1. services/flight-service/ (機票獨立模組)
+   - src/orchestrator.ts (搜尋調度器，4.5s 超時控制與 Circuit Breaker 熔斷器)
+   - src/adapters/amadeus.adapter.ts ＆ src/adapters/skyscanner.adapter.ts
+   - src/resolvers/iata.resolver.ts (IATA 機場三字碼對照庫)
+   - src/services/scoring.service.ts (加權評分與去重演算法)
+   - src/services/cache.service.ts (Redis 20 分鐘短期快取)
+   - src/services/deeplink.service.ts (驗價與聯盟 Deep Link 轉址)
+   - package.json ＆ Dockerfile
+2. services/line-bot/
+   - src/webhook.ts (LINE Webhook 伺服器，驗證簽章，讀取 active_itinerary_id 回覆上下文)
+   - src/pushService.ts (推播 Bubble Flex Message 卡片服務)
+3. services/pdf-worker/
+   - src/pdfWorker.ts (Puppeteer A4 PDF 渲染並推播至 LINE 聊天室)
+
+【三、開工前 4 大自檢問詢門檻 (紅線守則)】
+1. 嚴禁對 Google Flights 或航司官網發起任何未授權的消費者網站 DOM 爬蟲！
+2. 調度器呼叫外部 API 是否配置了 4.5 秒超時截斷與 Circuit Breaker 熔斷器？
+3. 機票回傳結構是否 100% 符合 03-JSON-Schema 的 FlightOfferItem 定義？
+4. LINE Webhook 是否已校驗 x-line-signature？
+
+【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
+「你好！我是 Atrip 專案的數據工程師，負責『TRACK3-02 機票資料取得服務 (AFS) 搜尋調度器』。
+我們採用 Node.js / TypeScript，對接 Amadeus Flight Shopping API。
+請嚴格遵守 04-機票資料取得服務規格書，幫我實作 Search Orchestrator、IATA 解析器、4.5s 超時截斷與加權評分去重演算法，絕不使用網頁爬蟲！」

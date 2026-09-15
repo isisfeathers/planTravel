@@ -1,0 +1,32 @@
+=======================================================
+【Atrip 自由行旅遊助理】個人開工待辦與交件清單
+角色：視覺 UI/UX 設計組 - 設計師 2 (互動動效與通訊視覺)
+負責工單：TRACK0-03, TRACK0-04
+=======================================================
+
+【一、我的排程與每日推進目標】
+- [ ] Day 1~2：完成 [TRACK0-04] LINE Rich Menu 圖文選單與 Bubble Flex Message 視覺設計
+- [ ] Day 3~5：完成 [TRACK0-03] 動態行程主畫布與行李清單 UI/UX Wireframe 設計
+
+【二、我必須在【交付成品區】上傳的具體檔案】
+1. figma_links_canvas_and_packing.txt
+   - Figma 連結（時間軸卡片、交通提示膠囊、拖曳中陰影、地圖 FlyTo 視圖、行李清單 Tab）
+2. richmenu_atrip_2500x843.png
+   - LINE Rich Menu 實體圖檔（解析度 2500x843 px，容量 < 1MB）
+3. richmenu_bounds.json
+   - Rich Menu 3 大點擊區塊座標與 Action 設定檔
+4. flex_message_itinerary_ready.json
+   - LINE Flex Message 完成推播氣泡卡片 JSON 範本
+5. flex_message_error_retry.json
+   - 行程生成失敗時推播之重試氣泡卡片 JSON 範本
+
+【三、開工前 4 大自檢問詢門檻】
+1. 是否已向設計師 1 取得品牌色票代碼與 Tokens？
+2. 是否在 LINE Flex Simulator 驗證過氣泡卡片在手機無折行破圖？
+3. 是否確認時間軸活動卡片的拖曳手柄點擊熱區寬度 >= 44px？
+4. 是否確認交付物符合驗收標準？
+
+【四、複製貼給 AI (ChatGPT / Claude) 的專屬提問咒語】
+「你好！我是 Atrip 專案的視覺設計師 2，負責『TRACK0-04 LINE Rich Menu 與 Bubble Flex Message 設計』。
+主色是旅行藍 #347FA3、次色鼠尾草綠 #6F8F72。
+請幫我產出 2500x843 的選單座標配置 JSON，以及符合 LINE Messaging API 規範的 Bubble Flex Message JSON 範本。」

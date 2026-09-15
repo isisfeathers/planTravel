@@ -1,0 +1,33 @@
+=======================================================
+【Atrip 自由行旅遊助理】個人開工待辦與交件清單
+角色：後端與 AI 邏輯組 - 後端工程師 A (資料庫架構與 LLM)
+負責工單：TRACK2-01, TRACK2-02, TRACK2-05
+=======================================================
+
+【一、我的排程與每日推進目標】
+- [ ] Day 1~2 (純後端先發)：完成 [TRACK2-01] Supabase 資料庫完整 DDL 部署與 RLS 安全政策配置
+- [ ] Day 3 (純後端先發)：完成 [TRACK2-02] 動態提示詞範本庫 (prompt_templates) 種子資料與管理機制
+- [ ] Day 4~5 (純AI先發)：完成 [TRACK2-05] LLM Structured Output (JSON Mode) 整合與行李清單生成
+- [ ] Day 6~10：支援全系統管線壓測、Prompt 約束調優、檢查 RLS 安全漏洞
+
+【二、我必須在【交付成品區】上傳的具體檔案】
+1. supabase/migrations/20260915_atrip_initial_schema.sql
+   - 包含 6 大表 (profiles, user_preferences, itineraries, itinerary_jobs, prompt_templates, itinerary_shares)
+   - 包含 GIN 索引、軟刪除索引、updated_at 觸發器與 RLS Policies
+2. supabase/seed/prompt_templates_seed.sql
+   - 8 組標準種子資料 (連住基地、換宿行李、大眾捷運、自駕停車、賽事錨點)
+3. supabase/functions/auth-line/index.ts
+   - 驗證 LINE id_token 並簽發 Supabase JWT 的 Edge Function
+4. tests/openai_structured_output_test.ts (或 .py)
+   - OpenAI gpt-4o 整合測試腳本，驗證產出 100% 通過 atrip_itinerary_schema
+
+【三、開工前 4 大自檢問詢門檻 (紅線守則)】
+1. 是否已詳讀 Final SPEC/02-資料庫設計與SQL-DDL.md？
+2. service_role 密鑰是否已嚴格保護，絕不暴露給前端？
+3. 各表的 RLS 是否皆已開啟並通過 anon 唯讀與擁有者隔離驗證？
+4. OpenAI API 呼叫是否強制啟用 response_format: { type: "json_schema" }？
+
+【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
+「你好！我是 Atrip 專案的後端工程師 A，負責『TRACK2-01 Supabase DDL 與 RLS 安全政策配置』。
+我們使用 PostgreSQL 15+。
+請嚴格依據附帶的 02-資料庫設計與SQL-DDL.md 產出可執行的遷移腳本，包含 GIN 索引、外鍵約束與生產級 RLS 權限政策，嚴禁遺漏任何安全限制！」

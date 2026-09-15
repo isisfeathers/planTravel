@@ -1,0 +1,259 @@
+<mxfile host="app.diagrams.net" modified="2026-09-15T00:00:00.000Z" agent="Mozilla/5.0" version="21.6.8" type="device">
+  <diagram id="atrip-ticket-dependency-graph" name="Atrip 7人開工依賴關係圖">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 頂部標題列 -->
+        <mxCell id="hdr_title" value="Atrip (你的 AI 自由行規劃夥伴) - 7人團隊 4 軌道開工依賴與里程碑推進圖 (Ticket Dependency Graph)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontColor=#ffffff;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1840" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- 泳道 1: 基石與起跑區 (Foundation) -->
+        <mxCell id="lane_foundation" value="基石任務 (Foundation - 立即開工)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#495057;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="340" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="T000" value="&lt;b&gt;TRACK0-000&lt;/b&gt;&lt;br&gt;Mock 測試資料產生器&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;產出 itinerary &amp; prefs JSON&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0 立即開工]&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" vertex="1" parent="lane_foundation">
+          <mxGeometry x="30" y="50" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T201" value="&lt;b&gt;TRACK2-01&lt;/b&gt;&lt;br&gt;Supabase DDL &amp; RLS 安全部署&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;6大表、外鍵、GIN索引、RLS&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0 立即開工]&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="lane_foundation">
+          <mxGeometry x="30" y="160" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T001" value="&lt;b&gt;TRACK0-01&lt;/b&gt;&lt;br&gt;品牌設計系統與 Tailwind Tokens&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;藍/綠/橘、Pill元件、Config&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P1 立即開工]&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="lane_foundation">
+          <mxGeometry x="30" y="270" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 泳道 2: Track 0 視覺 UI/UX 設計組 (2人) -->
+        <mxCell id="lane_t0" value="Track 0: 視覺 UI/UX 設計組 (2 人)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="400" y="80" width="340" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="T002" value="&lt;b&gt;TRACK0-02&lt;/b&gt;&lt;br&gt;儀表板與標籤精靈 Wireframe&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;雙層結構、懶人套版預選點亮&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 設計師 1&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="lane_t0">
+          <mxGeometry x="30" y="50" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T003" value="&lt;b&gt;TRACK0-03&lt;/b&gt;&lt;br&gt;動態行程主畫布與行李清單稿&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;時間軸卡片、交通膠囊、Dnd陰影&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 設計師 2&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="lane_t0">
+          <mxGeometry x="30" y="160" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T004" value="&lt;b&gt;TRACK0-04&lt;/b&gt;&lt;br&gt;LINE 選單與 Flex Message 設計&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;Rich Menu 圖片 &amp; 完成推播氣泡&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P2] 設計師 2&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="lane_t0">
+          <mxGeometry x="30" y="270" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T005" value="&lt;b&gt;TRACK0-05&lt;/b&gt;&lt;br&gt;A4 離線 PDF 與列印樣式規範&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;@media print 規則、分頁防斷頭&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P2] 設計師 1&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="lane_t0">
+          <mxGeometry x="30" y="380" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 泳道 3: Track 1 前端開發組 (2人) -->
+        <mxCell id="lane_t1" value="Track 1: 前端開發組 - LIFF Web App (2 人)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="760" y="80" width="370" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="T101" value="&lt;b&gt;TRACK1-01&lt;/b&gt;&lt;br&gt;LIFF SDK 整合與 Token 登入交換&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;取得 id_token 換發 Supabase JWT&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0] 前端 A&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="50" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T102" value="&lt;b&gt;TRACK1-02&lt;/b&gt;&lt;br&gt;我的行程儀表板 (Dashboard)&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;活躍列表、封存、★ 關注切換、軟刪除&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 前端 A&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="145" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T103" value="&lt;b&gt;TRACK1-03&lt;/b&gt;&lt;br&gt;雙層標籤精靈 (Chip Selector)&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;第1層懶人套版[預選0點擊] + 第2層矩陣&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0] 前端 B&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="240" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T104" value="&lt;b&gt;TRACK1-04&lt;/b&gt;&lt;br&gt;動態等待畫布與 Realtime 即時切換&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;航線動畫、Tips、監聽 completed&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 前端 B&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="335" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T105" value="&lt;b&gt;TRACK1-05&lt;/b&gt;&lt;br&gt;時間軸主畫布、Dnd 拖曳與防抖儲存&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;卡片渲染、拖曳重排、800ms防抖寫回&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0] 前端 A&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="430" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T106" value="&lt;b&gt;TRACK1-06&lt;/b&gt;&lt;br&gt;互動地圖 (Mapbox/Leaflet) 與 FlyTo 聯動&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;坐標標記、路線軌跡、卡片點擊平滑移動&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P2] 前端 B&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="525" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T107" value="&lt;b&gt;TRACK1-07&lt;/b&gt;&lt;br&gt;智能行李打包清單 (Packing List) Tab&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;分類展示、打勾劃線、JSONB 持久化&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P2] 前端 A&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="620" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T108" value="&lt;b&gt;TRACK1-08&lt;/b&gt;&lt;br&gt;去個資外連分享頁面與 Fork 副本交易&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;免登入唯讀遮蔽個資、一鍵複製副本&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 前端 B&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="715" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T109" value="&lt;b&gt;TRACK1-09&lt;/b&gt;&lt;br&gt;離線 PDF 匯出與聊天室檔案推播觸發&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;@media print 原生列印 + 呼叫後端Worker&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P2] 前端 A&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="lane_t1">
+          <mxGeometry x="30" y="810" width="310" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- 泳道 4: Track 2 後端與 AI 邏輯組 (2人) -->
+        <mxCell id="lane_t2" value="Track 2: 後端與 AI 邏輯組 - n8n &amp; Supabase (2 人)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#d6b656;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="80" width="360" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="T202" value="&lt;b&gt;TRACK2-02&lt;/b&gt;&lt;br&gt;prompt_templates 種子資料與範本管理&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;連住基地、換宿行李、捷運出口、賽事錨點&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 後端 A&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="lane_t2">
+          <mxGeometry x="25" y="50" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T203" value="&lt;b&gt;TRACK2-03&lt;/b&gt;&lt;br&gt;n8n Webhook Ingress 與配額防刷檢查&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;Secret 驗證、每日3次、活躍&lt;=5 檢查&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0] 後端 B&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="lane_t2">
+          <mxGeometry x="25" y="145" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T204" value="&lt;b&gt;TRACK2-04&lt;/b&gt;&lt;br&gt;Prompt 動態拼裝與預設值自動回退&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;查詢資料庫依 priority 拼接 Master Prompt&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 後端 B&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="lane_t2">
+          <mxGeometry x="25" y="240" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T205" value="&lt;b&gt;TRACK2-05&lt;/b&gt;&lt;br&gt;OpenAI gpt-4o Structured Output 整合&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;注入 JSON Schema、行李清單自動生成&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0] 後端 A&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="lane_t2">
+          <mxGeometry x="25" y="335" width="310" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T206" value="&lt;b&gt;TRACK2-06&lt;/b&gt;&lt;br&gt;資料清洗、ID 注入、原子性入庫與重試&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;合併機票、更新 itineraries &amp; jobs completed&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0] 後端 B&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="lane_t2">
+          <mxGeometry x="25" y="430" width="310" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- 泳道 5: Track 3 LINE Bot & 機票 API 組 (1人) -->
+        <mxCell id="lane_t3" value="Track 3: LINE Bot &amp; 數據 API/機票組 (1 人)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1530" y="80" width="350" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="T302" value="&lt;b&gt;TRACK3-02&lt;/b&gt;&lt;br&gt;機票資料取得服務 (AFS) 搜尋調度器&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;IATA 解析、Amadeus/Skyscanner 適配&lt;/font&gt;&lt;br&gt;&lt;b style=&quot;color:#d9534f;&quot;&gt;[P0] 數據工程師&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="lane_t3">
+          <mxGeometry x="25" y="50" width="300" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T303" value="&lt;b&gt;TRACK3-03&lt;/b&gt;&lt;br&gt;機票短期快取、驗價與 Deep Link 轉址&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;TTL 20分、Price Refresh、Circuit Breaker&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 數據工程師&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="lane_t3">
+          <mxGeometry x="25" y="160" width="300" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T301" value="&lt;b&gt;TRACK3-01&lt;/b&gt;&lt;br&gt;LINE Messaging API 推播與 Webhook&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;Active 上下文回覆、Flex 完成通知推播&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P1] 數據工程師&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="lane_t3">
+          <mxGeometry x="25" y="270" width="300" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T304" value="&lt;b&gt;TRACK3-04&lt;/b&gt;&lt;br&gt;LINE Bot 實體 PDF 渲染與檔案推送 Worker&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;Puppeteer A4 渲染、推送到 LINE 對話框&lt;/font&gt;&lt;br&gt;&lt;b&gt;[P2] 數據工程師&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="lane_t3">
+          <mxGeometry x="25" y="380" width="300" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- 跨軌道依賴連線 (Dependencies) -->
+        <!-- Track 0 internal -->
+        <mxCell id="e_01_02" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T001" target="T002">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_01_03" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T001" target="T003">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_01_04" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T001" target="T004">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_03_05" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T003" target="T005">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Track 2 internal -->
+        <mxCell id="e_21_22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T201" target="T202">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_21_23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T201" target="T203">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_22_24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T202" target="T204">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_23_24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T203" target="T204">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_24_25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T204" target="T205">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_25_26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T205" target="T206">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Track 3 internal -->
+        <mxCell id="e_32_33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T302" target="T303">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_31_34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T301" target="T304">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Cross-track: T000 to T101, T205, T302 -->
+        <mxCell id="e_000_101" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T000" target="T101">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="360" y="165" /><mxPoint x="360" y="65" /><mxPoint x="740" y="65" /><mxPoint x="740" y="162" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_000_302" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T000" target="T302">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="370" y="150" /><mxPoint x="370" y="50" /><mxPoint x="1510" y="50" /><mxPoint x="1510" y="162" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Cross-track: T201 to T101 -->
+        <mxCell id="e_201_101" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T201" target="T101">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="380" y="275" /><mxPoint x="380" y="180" /><mxPoint x="770" y="180" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Track 1 internal and cross dependencies -->
+        <mxCell id="e_101_102" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T101" target="T102">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_002_102" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T002" target="T102">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="740" y="165" /><mxPoint x="740" y="257" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_101_103" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T101" target="T103">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="195" /><mxPoint x="770" y="352" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_002_103" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T002" target="T103">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="730" y="165" /><mxPoint x="730" y="352" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_103_104" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T103" target="T104">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_203_104" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T203" target="T104">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1130" y="260" /><mxPoint x="1130" y="447" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_104_105" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T104" target="T105">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_003_105" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T003" target="T105">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="740" y="275" /><mxPoint x="740" y="542" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_105_106" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T105" target="T106">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_105_107" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T105" target="T107">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_105_108" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T105" target="T108">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_105_109" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T105" target="T109">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_005_109" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T005" target="T109">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="730" y="495" /><mxPoint x="730" y="922" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Cross: T302 to T206 -->
+        <mxCell id="e_302_206" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T302" target="T206">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1520" y="147" /><mxPoint x="1520" y="542" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Cross: T206 and T004 to T301 -->
+        <mxCell id="e_206_301" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T206" target="T301">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_004_301" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T004" target="T301">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="750" y="385" /><mxPoint x="750" y="385" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Cross: T109 to T304 -->
+        <mxCell id="e_109_304" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T109" target="T304">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1130" y="922" /><mxPoint x="1130" y="990" /><mxPoint x="1705" y="990" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

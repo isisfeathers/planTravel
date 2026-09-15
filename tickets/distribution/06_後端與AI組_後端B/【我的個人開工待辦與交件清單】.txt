@@ -1,0 +1,27 @@
+=======================================================
+【Atrip 自由行旅遊助理】個人開工待辦與交件清單
+角色：後端與 AI 邏輯組 - 後端工程師 B (n8n 工作流與管線)
+負責工單：TRACK2-03, TRACK2-04, TRACK2-06
+=======================================================
+
+【一、我的排程與每日推進目標】
+- [ ] Day 1~2 (純中台先發)：完成 [TRACK2-03] n8n Webhook 觸發、密鑰驗證與用戶配額防刷檢查
+- [ ] Day 3~5 (純中台先發)：完成 [TRACK2-04] n8n 動態提示詞查詢與 Master System Prompt 組裝節點
+- [ ] Day 6~8 (純中台先發)：完成 [TRACK2-06] n8n 資料清洗、ID 注入、原子性寫入與異常重試機制
+
+【二、我必須在【交付成品區】上傳的具體檔案】
+1. n8n/atrip_main_workflow.json
+   - n8n 完整匯出之工作流 JSON (包含 Webhook、防刷限流、Prompt 拼裝、平行調用、清洗入庫、全域 Catch)
+2. n8n/n8n_env_config.txt
+   - n8n 所需環境變數清單 (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, WEBHOOK_SECRET 等)
+
+【三、開工前 4 大自檢問詢門檻 (紅線守則)】
+1. Webhook 是否有校驗 X-Webhook-Secret 避免偽造請求？
+2. 每日 3 次與活躍行程 <= 5 個之防刷檢查是否嚴格阻擋並回傳 QUOTA_EXCEEDED？
+3. 合併資料入庫時，每個 activity 是否都有全行程唯一字串 id？
+4. 是否設置了全局 Error Catch 節點，絕不讓任務卡在 generating？
+
+【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
+「你好！我是 Atrip 專案的後端工程師 B，負責『TRACK2-04 n8n 動態提示詞拼裝與 Master Prompt 生成』。
+我們使用 n8n 與 Supabase。
+請依據 05-n8n工作流與非同步資料管線 規格，幫我撰寫 n8n 查詢 prompt_templates 並依 priority 動態拼裝 System Prompt 的 JavaScript Code 節點程式碼！」
