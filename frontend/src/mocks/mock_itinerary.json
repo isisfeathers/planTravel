@@ -1,0 +1,382 @@
+{
+  "meta": {
+    "trip_title": "東京 5 天 4 夜慢活文藝與在地美食探索",
+    "destination": "東京, 日本",
+    "total_days": 5,
+    "currency": "TWD",
+    "budget_level": "standard",
+    "pace": "relaxed"
+  },
+  "daily_itinerary": [
+    {
+      "day_number": 1,
+      "date_label": "Day 1 - 抵達東京與下町漫遊",
+      "summary": "搭乘班機抵達羽田機場，入住淺草推薦飯店 (Basecamp 基地)，傍晚雷門參拜與晴空塔絕美百萬夜景。",
+      "activities": [
+        {
+          "id": "act-d1-01",
+          "time_slot": "14:30 - 16:00",
+          "location_name": "淺草雷門與仲見世商店街",
+          "category": "sightseeing",
+          "duration_minutes": 90,
+          "description": "漫步傳統江戶老街，品嚐現烤仙貝與人形燒，感受濃厚江戶下町氛圍。",
+          "coordinates": {
+            "lat": 35.7111,
+            "lng": 139.7964
+          },
+          "cost_estimate": 300,
+          "tips": "下午人潮熱絡，建議由雷門一路步行參拜至淺草寺本堂。",
+          "transit_to_next": {
+            "mode": "walking",
+            "duration_minutes": 20,
+            "route_name": "吾妻橋水岸步道",
+            "instructions": "穿過隅田川吾妻橋，沿著十間橋河岸步道漫步前往晴空塔。"
+          }
+        },
+        {
+          "id": "act-d1-02",
+          "time_slot": "16:30 - 19:00",
+          "location_name": "東京晴空塔 (Tokyo Skytree)",
+          "category": "sightseeing",
+          "duration_minutes": 150,
+          "description": "登上展望台俯瞰全東京日落與絕美夜景，下方商場可自由逛街用餐。",
+          "coordinates": {
+            "lat": 35.7101,
+            "lng": 139.8107
+          },
+          "cost_estimate": 700,
+          "tips": "建議預先於網路購票免排隊，展望台日落時間約在 17:15。",
+          "transit_to_next": {
+            "mode": "subway",
+            "duration_minutes": 15,
+            "route_name": "都營淺草線 (押上站 → 淺草站)",
+            "instructions": "搭乘都營淺草線至淺草站 A4 出口步行 2 分鐘返回飯店。"
+          }
+        }
+      ]
+    },
+    {
+      "day_number": 2,
+      "date_label": "Day 2 - 經典文青藝術與東京巨蛋賽事",
+      "summary": "上午造訪上野恩賜公園與國立西洋美術館，傍晚前往東京巨蛋觀賞日職焦點大戰 (Anchor Event)。",
+      "activities": [
+        {
+          "id": "act-d2-01",
+          "time_slot": "09:30 - 12:00",
+          "location_name": "上野恩賜公園與美術館散策",
+          "category": "sightseeing",
+          "duration_minutes": 150,
+          "description": "綠意盎然的文化綠洲，參訪勒·柯布西耶設計的世界遺產國立西洋美術館。",
+          "coordinates": {
+            "lat": 35.7153,
+            "lng": 139.7739
+          },
+          "cost_estimate": 500,
+          "tips": "常設展週一休館，公園內星巴克概念店極具特色。",
+          "transit_to_next": {
+            "mode": "walking",
+            "duration_minutes": 10,
+            "route_name": "公園大道",
+            "instructions": "步行穿過竹台廣場前往伊豆榮鰻魚飯用午餐。"
+          }
+        },
+        {
+          "id": "act-d2-02",
+          "time_slot": "12:00 - 13:30",
+          "location_name": "伊豆榮 本店 (百年鰻魚飯)",
+          "category": "dining",
+          "duration_minutes": 90,
+          "description": "江戶時代傳承至今的老牌鰻魚料理，炭火蒲燒香氣撲鼻。",
+          "coordinates": {
+            "lat": 35.7118,
+            "lng": 139.7712
+          },
+          "cost_estimate": 1200,
+          "tips": "午間鰻重套餐極受歡迎，窗邊座位可俯瞰不忍池綠景。",
+          "transit_to_next": {
+            "mode": "subway",
+            "duration_minutes": 20,
+            "route_name": "都營大江戶線 (上野御徒町站 → 春日站)",
+            "instructions": "由春日站 A2 出口出站，步行 3 分鐘即達東京巨蛋城。"
+          }
+        },
+        {
+          "id": "act-d2-03",
+          "time_slot": "17:30 - 21:30",
+          "location_name": "東京巨蛋 (讀賣巨人 vs 阪神虎 焦點賽事)",
+          "category": "sports_event",
+          "duration_minutes": 240,
+          "description": "【時間錨點】進場體驗日本職棒頂級傳統好戲，感受熱血應援氣氛與球場限定美食。",
+          "coordinates": {
+            "lat": 35.7056,
+            "lng": 139.7519
+          },
+          "cost_estimate": 1500,
+          "tips": "比賽 18:00 正式開打，建議 17:30 入場逛球隊官方周邊商品專賣店。",
+          "transit_to_next": {
+            "mode": "subway",
+            "duration_minutes": 25,
+            "route_name": "東京地鐵丸之內線 + 銀座線",
+            "instructions": "由後樂園站搭乘丸之內線至赤坂見附站同台轉乘銀座線返抵淺草飯店。"
+          }
+        }
+      ]
+    },
+    {
+      "day_number": 3,
+      "date_label": "Day 3 - 潮流商圈與米其林饗宴",
+      "summary": "穿梭澀谷十字路口、參觀宮下公園潮流小店，晚上品嚐極致壽喜燒。",
+      "activities": [
+        {
+          "id": "act-d3-01",
+          "time_slot": "10:00 - 13:00",
+          "location_name": "澀谷 Shibuya Sky 與 宮下公園",
+          "category": "shopping",
+          "duration_minutes": 180,
+          "description": "登上最新地標俯瞰十字路口全景，漫步結合綠地與精選品牌的空中商場。",
+          "coordinates": {
+            "lat": 35.6595,
+            "lng": 139.7005
+          },
+          "cost_estimate": 600,
+          "tips": "Shibuya Sky 必須提前 2 週預約熱門時段門票。",
+          "transit_to_next": {
+            "mode": "walking",
+            "duration_minutes": 15,
+            "route_name": "明治通綠色步道",
+            "instructions": "沿著明治通一路向北漫步至表參道。"
+          }
+        },
+        {
+          "id": "act-d3-02",
+          "time_slot": "18:00 - 20:00",
+          "location_name": "淺草今半 本店 (壽喜燒)",
+          "category": "dining",
+          "duration_minutes": 120,
+          "description": "百年老舖，嚴選日本特上黑毛和牛，秘傳醬汁搭配溫泉蛋風味濃郁。",
+          "coordinates": {
+            "lat": 35.7132,
+            "lng": 139.7915
+          },
+          "cost_estimate": 2500,
+          "tips": "晚間套餐建議事先請飯店代訂位，桌邊服務專業細膩。"
+        }
+      ]
+    },
+    {
+      "day_number": 4,
+      "date_label": "Day 4 - 古都風情與水岸花園漫步",
+      "summary": "清晨明治神宮森呼吸，午後遊覽濱離宮恩賜庭園並搭乘水上巴士。",
+      "activities": [
+        {
+          "id": "act-d4-01",
+          "time_slot": "09:00 - 11:30",
+          "location_name": "明治神宮與原宿森呼吸",
+          "category": "sightseeing",
+          "duration_minutes": 150,
+          "description": "置身市中心的廣闊森林神社，洗滌心靈，欣賞巨大木造大鳥居。",
+          "coordinates": {
+            "lat": 35.6764,
+            "lng": 139.6993
+          },
+          "cost_estimate": 0,
+          "tips": "清晨參道幽靜適合散步，可於神樂殿欣賞傳統巫女祈福舞。",
+          "transit_to_next": {
+            "mode": "subway",
+            "duration_minutes": 25,
+            "route_name": "東京地鐵銀座線 (澀谷站 → 新橋站)",
+            "instructions": "由新橋站步行 8 分鐘抵達濱離宮恩賜庭園大手門口。"
+          }
+        },
+        {
+          "id": "act-d4-02",
+          "time_slot": "14:00 - 16:30",
+          "location_name": "濱離宮恩賜庭園與水上巴士",
+          "category": "relaxation",
+          "duration_minutes": 150,
+          "description": "江戶幕府將軍的潮入迴遊式庭園，在潮入池中茶屋品嚐抹茶和果子。",
+          "coordinates": {
+            "lat": 35.6597,
+            "lng": 139.7634
+          },
+          "cost_estimate": 400,
+          "tips": "可在園內碼頭直接搭乘東京都觀光汽船 (水上巴士) 巡遊隅田川返回淺草。"
+        }
+      ]
+    },
+    {
+      "day_number": 5,
+      "date_label": "Day 5 - 銀座最後採買與返程",
+      "summary": "銀座商圈伴手禮最後掃貨，下午搭乘 Skyliner 專線輕鬆前往成田機場返台。",
+      "activities": [
+        {
+          "id": "act-d5-01",
+          "time_slot": "10:00 - 13:00",
+          "location_name": "銀座商圈與伊東屋鳩居堂",
+          "category": "shopping",
+          "duration_minutes": 180,
+          "description": "探索經典文具旗艦店伊東屋、老字號薰香鳩居堂與 GINZA SIX 免稅專櫃。",
+          "coordinates": {
+            "lat": 35.6712,
+            "lng": 139.7656
+          },
+          "cost_estimate": 1500,
+          "tips": "各大百貨服務台皆提供外籍旅客退稅手續服務。",
+          "transit_to_next": {
+            "mode": "train",
+            "duration_minutes": 40,
+            "route_name": "京成電鐵 Skyliner (京成上野站 → 成田機場)",
+            "instructions": "搭乘極速特急 41 分鐘直達成田機場第一航廈。"
+          }
+        }
+      ]
+    }
+  ],
+  "transit_overview": [
+    {
+      "from_zone": "市區所有地鐵站",
+      "to_zone": "各景區景點",
+      "suggested_pass": "Tokyo Subway 72-Hour Ticket (¥1,500)",
+      "estimated_cost": 330,
+      "notes": "全線東京地下鐵與都營地下鐵無限次搭乘，最省錢且班次密集。"
+    },
+    {
+      "from_zone": "淺草 / 晴空塔",
+      "to_zone": "濱離宮 / 台場",
+      "suggested_pass": "東京都觀光汽船單程船票 (¥1,000)",
+      "estimated_cost": 220,
+      "notes": "體驗水上漫遊隅田川，避開尖峰陸上交通。"
+    }
+  ],
+  "recommendations": {
+    "dining": [
+      {
+        "name": "淺草今半 (Asakusa Imahan)",
+        "type": "百年壽喜燒",
+        "rating": 4.6,
+        "approx_cost": "¥3,500 - ¥8,000",
+        "address": "東京都台東区西浅草3-1-12",
+        "reason": "日本頂級黑毛和牛老店，午間定食 CP 值極高。",
+        "google_map_query": "Asakusa Imahan Sukiyaki"
+      },
+      {
+        "name": "伊豆榮 本店",
+        "type": "江戶鰻魚料理",
+        "rating": 4.5,
+        "approx_cost": "¥4,000 - ¥6,500",
+        "address": "東京都台東区上野2-12-22",
+        "reason": "傳承 260 年江戶傳統蒲燒工法，鰻肉軟嫩醬汁甘醇。",
+        "google_map_query": "Izuei Honten Ueno"
+      }
+    ],
+    "accommodations": [
+      {
+        "name": "THE GATE HOTEL 雷門 by HULIC",
+        "type": "設計型景觀飯店",
+        "rating": 4.5,
+        "approx_cost": "TWD 4,200 / 晚",
+        "address": "東京都台東区雷門2-16-11",
+        "reason": "頂樓露台可直面晴空塔，距離淺草站步行僅 2 分鐘，極適合作為 5 天固定 Basecamp 基地。",
+        "google_map_query": "The Gate Hotel Asakusa"
+      }
+    ]
+  },
+  "packing_list": [
+    {
+      "id": "pack-01",
+      "category": "essentials",
+      "item_name": "護照 (有效期限 6 個月以上)",
+      "is_checked": false,
+      "notes": "出國必備"
+    },
+    {
+      "id": "pack-02",
+      "category": "clothing",
+      "item_name": "防風外套與好走球鞋",
+      "is_checked": false,
+      "notes": "每日步行 10,000~15,000 步"
+    },
+    {
+      "id": "pack-03",
+      "category": "electronics",
+      "item_name": "日本專用 eSIM 與 10000mAh 行動電源",
+      "is_checked": false,
+      "notes": "查地圖與拍照必備"
+    },
+    {
+      "id": "pack-04",
+      "category": "toiletries",
+      "item_name": "個人盥洗旅行組與保濕乳液",
+      "is_checked": false,
+      "notes": "日本秋冬氣候較乾燥"
+    },
+    {
+      "id": "pack-05",
+      "category": "essentials",
+      "item_name": "日幣現金與免海外手續費信用卡",
+      "is_checked": false,
+      "notes": "部分傳統店家僅收現金"
+    }
+  ],
+  "flight_data": [
+    {
+      "id": "fl-offer-001",
+      "provider": "Amadeus",
+      "outbound": {
+        "departure_time": "2026-10-15T08:50:00+08:00",
+        "arrival_time": "2026-10-15T12:55:00+09:00",
+        "duration": "3小時05分",
+        "stops": 0,
+        "segments": [
+          {
+            "airline_code": "BR",
+            "airline_name": "長榮航空 (EVA Air)",
+            "flight_number": "BR198",
+            "aircraft": "A330-300",
+            "departure": {
+              "airport_code": "TSA",
+              "airport_name": "台北松山機場",
+              "time": "2026-10-15T08:50:00+08:00"
+            },
+            "arrival": {
+              "airport_code": "HND",
+              "airport_name": "東京羽田機場",
+              "time": "2026-10-15T12:55:00+09:00"
+            },
+            "duration_minutes": 185
+          }
+        ]
+      },
+      "inbound": {
+        "departure_time": "2026-10-19T14:15:00+09:00",
+        "arrival_time": "2026-10-19T17:15:00+08:00",
+        "duration": "4小時00分",
+        "stops": 0,
+        "segments": [
+          {
+            "airline_code": "BR",
+            "airline_name": "長榮航空 (EVA Air)",
+            "flight_number": "BR197",
+            "aircraft": "A330-300",
+            "departure": {
+              "airport_code": "HND",
+              "airport_name": "東京羽田機場",
+              "time": "2026-10-19T14:15:00+09:00"
+            },
+            "arrival": {
+              "airport_code": "TSA",
+              "airport_name": "台北松山機場",
+              "time": "2026-10-19T17:15:00+08:00"
+            },
+            "duration_minutes": 240
+          }
+        ]
+      },
+      "price_total_twd": 14250,
+      "baggage_included": "含 1 件 23kg 托運行李與手提 7kg",
+      "deep_link_url": "https://partners.atrip.app/deeplink/checkout?offer_id=fl-offer-001&source=evaair",
+      "checked_at": "2026-09-15T08:00:00Z",
+      "expires_at": "2026-09-15T08:20:00Z"
+    }
+  ]
+}

@@ -4,34 +4,40 @@
 負責工單：TRACK1-03, TRACK1-04, TRACK1-06, TRACK1-08
 =======================================================
 
-💡 【Gatekeeper 階段二完工與階段三開工通知 (2026-09-18)】
+💡 【Gatekeeper Phase 2~3 完工驗收與 Phase 4 開工通知 (2026-09-18)】
 -------------------------------------------------------
-🟢 你的 [TRACK1-03 階段 2 (Wizard 視覺套版)] 已驗收通過，0 點擊直出與狀態管理非常完美！
-🟢 我即將幫你把你寫好的 Phase 2 模組整合進主 `frontend` 應用中。
-🟢 你現在可以**直接無縫推進**你的下一個工單：[TRACK1-04 動態等待畫布] 與第三階段的 [TRACK1-06 互動地圖]！
-   ★ 註：因為你目前是獨立開發這幾個頁面 (`/waiting/[id]` 與地圖元件)，不需要等待我完成整合，你可以直接在你現有的本機環境或新開分支繼續往下做。等我把你的 Phase 2 整合好，會再發布統一的 Base 給你們。
+🟢 恭喜！你交付的 [TRACK1-03 Wizard 精靈]、[TRACK1-04 等待頁面] 與 [TRACK1-06 互動地圖] 已完成驗收整合！
+🟢 專案已發布最新完整整合包 `frontend_app_complete_phase2_3.zip`，內含：
+   - 包含前端 A 交付的 Dashboard、Canvas、時間軸拖曳與行李清單。
+   - 地圖元件 (`InteractiveMap` / `InteractiveMapClient`) 與 Realtime Hook 已內置就緒。
+🟢 你現在的核心任務：
+   1. 【畫布地圖雙向聯動】：在 `src/app/canvas/[id]/page.tsx` 中嵌入你的 `InteractiveMapClient`，實現「點擊時間軸卡片地圖平移 (flyTo) 至座標、點擊地圖景點 Marker 高亮時間軸卡片」。
+   2. 【TRACK1-08 去識別化分享與社群 Fork】：實作 `/share/[token]` 頁面與 Fork 複製行程功能！
 -------------------------------------------------------
 
 【一、我的排程與每日推進目標】
-- [x] Day 1~2 (純邏輯先發)：完成 [TRACK1-03 (階段 1)] 雙層標籤精靈 (無頭狀態機) (已交付)
-- [x] Day 3~4 (視覺套版)：完成 [TRACK1-03 (階段 2)] 雙層標籤精靈 (視覺套版與 Tokens 注入) (已交付)
-- [ ] Day 4~5 (動態介面)：【現在進行中】完成 [TRACK1-04] 動態等待畫布與 Supabase Realtime 即時切換
-- [ ] Day 6~8 (核心功能)：【現在進行中】完成 [TRACK1-06] 互動地圖 (Mapbox / Leaflet) 整合與卡片平滑聯動 (FlyTo)
-- [ ] Day 9~10 (社群功能)：完成 [TRACK1-08] 去識別化外連分享視圖與社群複製 (Fork) 交易
+- [x] Day 1~2 (純邏輯先發)：完成 [TRACK1-03 (階段 1)] 雙層標籤精靈 (無頭狀態機) (已驗收)
+- [x] Day 3~4 (視覺套版)：完成 [TRACK1-03 (階段 2)] 雙層標籤精靈 (視覺套版與 Tokens 注入) (已驗收)
+- [x] Day 4~5 (動態介面)：完成 [TRACK1-04] 動態等待畫布與 Supabase Realtime 即時切換 (已驗收)
+- [x] Day 6~8 (核心功能)：完成 [TRACK1-06] 互動地圖 (Mapbox / Leaflet) 元件製作 (已驗收)
+- [ ] 【現在進行中・立即開工】：
+  - 任務 A (聯動串接)：將 `InteractiveMapClient` 嵌入至前端 A 的 `canvas/[id]` 頁面，完成地圖與卡片之雙向 FlyTo / 狀態選取聯動。
+  - 任務 B [TRACK1-08 社群功能]：實作去識別化外連分享視圖 (`/share/[token]`) 與社群複製 (Fork) 交易。
 
-【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 frontend_B_phase3.zip)】
-1. src/app/waiting/[id]/page.tsx - 動態等待畫布頁面 (動畫 + Tips 輪播) 
-2. src/hooks/useRealtimeSubscription.ts - Supabase Realtime Channel 訂閱 Hook (含 5 秒輪詢備援，監聽 status = 'completed')
-3. src/components/map/InteractiveMap.tsx - Mapbox/Leaflet 互動地圖元件
-4. src/app/share/[token]/page.tsx ＆ src/components/share/ForkButton.tsx - 去個資分享與 Fork 按鈕
+【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 frontend_B_phase4.zip)】
+1. src/app/canvas/[id]/page.tsx - 嵌入地圖並支援 activeActivityId 與 onActivitySelect 雙向連動之畫布頁面
+2. src/app/share/[token]/page.tsx - 去識別化分享頁面 (嚴禁洩漏作者姓名、頭像與預算數字)
+3. src/components/share/ForkButton.tsx - 複製到我的行程按鈕 (未登入引導 LIFF 登入，登入後寫入全新副本並跳轉)
 
 【三、開工前 4 大自檢問詢門檻 (紅線守則)】
-1. Realtime 監聽若遇到 WebSocket 斷線，是否有實作 setInterval 5 秒的備援輪詢機制？
-2. 地圖聯動 (FlyTo) 時，點選時間軸卡片是否能平滑移動到該景點的 lat/lng？
-3. 外連分享端點是否確保未登入訪客看不見作者姓名、頭貼與預算金額？
-4. 是否已研讀 03-JSON-Schema 中地圖與座標的資料結構？
+1. 外連分享端點 `/share/[token]` 是否嚴格確保未登入訪客看不見作者姓名、頭貼與預算金額？
+2. 訪客在分享頁面點擊「複製到我的行程」時，若尚未登入是否能正確引導 LINE 登入，並在授權完成後複製出全新行程？
+3. 地圖元件嵌入畫布後，在手機版螢幕是否支援摺疊或 Tab 切換（地圖/時間軸視圖切換）以確保體驗？
+4. 詳細要求請參閱工單 `TRACK1-08-deidentified-share-and-fork.md` 與 `TRACK1-06-interactive-map-and-sync.md`。
 
-【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
-「你好！我是 Atrip 專案的前端工程師 B，現在要實作『TRACK1-04 動態等待畫布與 Supabase Realtime』與『TRACK1-06 互動地圖』。
-我們使用 Next.js 14、Tailwind CSS、Supabase Client 與 React-Leaflet (或 Mapbox)。
-請幫我寫出在 `/waiting/[id]` 監聽 public.itineraries 狀態變成 completed 時自動轉場的 Hook，以及包含 FlyTo 平滑移動的互動地圖元件！」
+【四、複製貼給 AI (Cursor / Claude) 的專屬開工咒語】
+「你好！我是 Atrip 專案的前端工程師 B。
+我現在要基於最新整合的 `frontend_app_complete_phase2_3.zip` 進行兩項工作：
+1. 將 `InteractiveMapClient` 整合進 `src/app/canvas/[id]/page.tsx`，讓使用者在時間軸點擊卡片時地圖平移 flyTo 該活動座標，點選地圖 Marker 時滾動高亮時間軸卡片。
+2. 依據 `TRACK1-08-deidentified-share-and-fork.md` 實作 `/share/[token]` 去識別化分享頁面（遮蔽作者個資與預算）與「複製到我的行程 (Fork)」功能。
+請依據上述架構幫我撰寫這兩個頁面與元件程式碼！」

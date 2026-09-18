@@ -1,0 +1,177 @@
+{
+  "name": "atrip_itinerary_schema",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "required": [
+      "meta",
+      "daily_itinerary",
+      "transit_overview",
+      "recommendations",
+      "packing_list"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "meta": {
+        "type": "object",
+        "required": ["trip_title", "destination", "total_days", "currency", "budget_level", "pace"],
+        "additionalProperties": false,
+        "properties": {
+          "trip_title": { "type": "string" },
+          "destination": { "type": "string" },
+          "total_days": { "type": "integer" },
+          "currency": { "type": "string" },
+          "budget_level": { "type": "string", "enum": ["budget", "standard", "luxury"] },
+          "pace": { "type": "string", "enum": ["relaxed", "moderate", "packed"] }
+        }
+      },
+      "daily_itinerary": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["day_number", "date_label", "summary", "activities"],
+          "additionalProperties": false,
+          "properties": {
+            "day_number": { "type": "integer" },
+            "date_label": { "type": "string" },
+            "summary": { "type": "string" },
+            "activities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "time_slot",
+                  "location_name",
+                  "category",
+                  "duration_minutes",
+                  "description",
+                  "coordinates",
+                  "cost_estimate",
+                  "tips",
+                  "transit_to_next"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": { "type": "string" },
+                  "time_slot": { "type": "string" },
+                  "location_name": { "type": "string" },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "sightseeing",
+                      "dining",
+                      "shopping",
+                      "transit",
+                      "relaxation",
+                      "accommodation_checkin",
+                      "sports_event"
+                    ]
+                  },
+                  "duration_minutes": { "type": "integer" },
+                  "description": { "type": "string" },
+                  "coordinates": {
+                    "type": "object",
+                    "required": ["lat", "lng"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "lat": { "type": "number" },
+                      "lng": { "type": "number" }
+                    }
+                  },
+                  "cost_estimate": { "type": "number" },
+                  "tips": { "type": "string" },
+                  "transit_to_next": {
+                    "type": "object",
+                    "required": ["mode", "duration_minutes", "route_name", "instructions"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "enum": ["subway", "bus", "walking", "taxi", "train", "driving"]
+                      },
+                      "duration_minutes": { "type": "integer" },
+                      "route_name": { "type": "string" },
+                      "instructions": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "transit_overview": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["from_zone", "to_zone", "suggested_pass", "estimated_cost", "notes"],
+          "additionalProperties": false,
+          "properties": {
+            "from_zone": { "type": "string" },
+            "to_zone": { "type": "string" },
+            "suggested_pass": { "type": "string" },
+            "estimated_cost": { "type": "number" },
+            "notes": { "type": "string" }
+          }
+        }
+      },
+      "recommendations": {
+        "type": "object",
+        "required": ["dining", "accommodations"],
+        "additionalProperties": false,
+        "properties": {
+          "dining": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "rating", "approx_cost", "address", "reason", "google_map_query"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "rating": { "type": "number" },
+                "approx_cost": { "type": "string" },
+                "address": { "type": "string" },
+                "reason": { "type": "string" },
+                "google_map_query": { "type": "string" }
+              }
+            }
+          },
+          "accommodations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "rating", "approx_cost", "address", "reason", "google_map_query"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "rating": { "type": "number" },
+                "approx_cost": { "type": "string" },
+                "address": { "type": "string" },
+                "reason": { "type": "string" },
+                "google_map_query": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "packing_list": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "category", "item_name", "is_checked", "notes"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "type": "string" },
+            "category": { "type": "string", "enum": ["essentials", "clothing", "electronics", "toiletries"] },
+            "item_name": { "type": "string" },
+            "is_checked": { "type": "boolean" },
+            "notes": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -2,12 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: theme("colors.atrip-surface-subtle");
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    background: theme("colors.atrip-surface-subtle");
+    color: theme("colors.atrip-text-primary");
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
-  background-color: #FFFDFA;
-  color: #182B36;
+@layer components {
+  .atrip-focus {
+    @apply focus-visible:outline focus-visible:outline-atrip-focus focus-visible:outline-atrip-focus-ring focus-visible:outline-offset-atrip-focus;
+  }
+
+  .atrip-icon-button {
+    @apply atrip-focus inline-flex min-h-atrip-icon-button min-w-atrip-icon-button items-center justify-center rounded-atrip-full text-atrip-text-secondary transition-atrip duration-atrip ease-atrip motion-reduce:transition-none;
+  }
+
+  .atrip-preset-card {
+    @apply atrip-focus relative flex min-h-[132px] min-w-atrip-card basis-[calc((100%-0.75rem)/2)] snap-start flex-col justify-between rounded-atrip-xl border-atrip-chip border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 text-left text-atrip-text-primary transition-atrip duration-atrip ease-atrip motion-reduce:transition-none;
+  }
+
+  .atrip-preset-card[aria-pressed="true"] {
+    @apply border-atrip-selection-foreground bg-atrip-selection-background shadow-atrip-soft;
+  }
+
+  .atrip-chip {
+    @apply atrip-focus inline-flex min-h-atrip-chip max-w-full items-center gap-atrip-2 rounded-atrip-full border-atrip-chip border-transparent px-atrip-chip-x py-atrip-chip-y text-left text-atrip-chip transition-atrip duration-atrip ease-atrip motion-reduce:transition-none;
+  }
+
+  .atrip-chip[aria-pressed="true"] {
+    @apply border-atrip-selection-foreground shadow-atrip-soft;
+  }
+
+  .atrip-chip:active,
+  .atrip-preset-card:active {
+    border-color: theme("colors.atrip-selection-foreground");
+    box-shadow: inset 0 0 0 1px theme("colors.atrip-selection-foreground");
+  }
+
+  .atrip-chip[aria-pressed="true"]:active,
+  .atrip-preset-card[aria-pressed="true"]:active {
+    box-shadow: inset 0 0 0 2px theme("colors.atrip-selection-foreground");
+  }
+
+  .atrip-primary-button {
+    @apply atrip-focus inline-flex min-h-atrip-button w-full items-center justify-center gap-atrip-2 rounded-atrip-full border border-transparent bg-atrip-action-primary px-atrip-button-x py-atrip-button-y text-atrip-button text-atrip-action-on-primary transition-atrip duration-atrip ease-atrip motion-reduce:transition-none;
+  }
+
+  .atrip-primary-button:active {
+    @apply border-atrip-selection-foreground bg-atrip-action-primary-hover;
+  }
+
+  .atrip-primary-button[aria-disabled="true"] {
+    cursor: wait;
+  }
+
+  .atrip-input {
+    @apply atrip-focus min-h-atrip-input w-full rounded-atrip-md border border-atrip-brand-logo-ai bg-atrip-surface-card px-atrip-input-x py-atrip-input-y text-atrip-input text-atrip-text-primary placeholder:text-atrip-text-secondary;
+  }
+
+  .atrip-scrollbar-hidden {
+    scrollbar-width: none;
+  }
+
+  .atrip-scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .atrip-icon-button:hover {
+    @apply bg-atrip-selection-background text-atrip-selection-foreground;
+  }
+
+  .atrip-chip:hover:not(:disabled),
+  .atrip-preset-card:hover:not(:disabled) {
+    @apply border-atrip-text-secondary;
+  }
+
+  .atrip-chip[aria-pressed="true"]:hover,
+  .atrip-preset-card[aria-pressed="true"]:hover {
+    @apply border-atrip-selection-foreground;
+    box-shadow:
+      inset 0 0 0 1px theme("colors.atrip-selection-foreground"),
+      theme("boxShadow.atrip-soft");
+  }
+
+  .atrip-primary-button:hover:not([aria-disabled="true"]) {
+    @apply bg-atrip-action-primary-hover;
+  }
+}
+
+@media (max-width: 359px) {
+  .atrip-preset-card {
+    flex-basis: theme("minWidth.atrip-card");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atrip-loading-icon {
+    animation: none;
+  }
 }

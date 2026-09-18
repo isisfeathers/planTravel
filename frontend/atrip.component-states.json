@@ -1,0 +1,481 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "format": "atrip-state-references-v1",
+    "referenceSource": "atrip.tokens.json",
+    "context": "category is one of color.category entries; missing properties use component base styles"
+  },
+  "priority": [
+    "disabled",
+    "loading",
+    "pressed",
+    "hover",
+    "default"
+  ],
+  "focusOverlay": {
+    "outlineColor": {
+      "$ref": "color.focus.ring"
+    },
+    "outlineWidth": {
+      "$ref": "focus.width"
+    },
+    "outlineOffset": {
+      "$ref": "focus.offset"
+    },
+    "outlineStyle": "solid"
+  },
+  "button": {
+    "borderWidth": {
+      "$ref": "border.default"
+    },
+    "primary": {
+      "default": {
+        "background": {
+          "$ref": "color.action.primary"
+        },
+        "foreground": {
+          "$ref": "color.action.on-primary"
+        },
+        "borderColor": "transparent",
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      },
+      "hover": {
+        "background": {
+          "$ref": "color.action.primary-hover"
+        },
+        "foreground": {
+          "$ref": "color.action.on-primary"
+        },
+        "borderColor": "transparent",
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      },
+      "pressed": {
+        "background": {
+          "$ref": "color.action.primary-hover"
+        },
+        "foreground": {
+          "$ref": "color.action.on-primary"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      },
+      "disabled": {
+        "background": {
+          "$ref": "color.surface.subtle"
+        },
+        "foreground": {
+          "$ref": "color.text.secondary"
+        },
+        "borderColor": {
+          "$ref": "color.border.subtle"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      },
+      "loading": {
+        "background": {
+          "$ref": "color.action.primary"
+        },
+        "foreground": {
+          "$ref": "color.action.on-primary"
+        },
+        "borderColor": "transparent",
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      }
+    },
+    "secondary": {
+      "default": {
+        "background": {
+          "$ref": "color.surface.card"
+        },
+        "foreground": {
+          "$ref": "color.text.primary"
+        },
+        "borderColor": {
+          "$ref": "color.text.secondary"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      },
+      "hover": {
+        "background": {
+          "$ref": "color.selection.background"
+        },
+        "foreground": {
+          "$ref": "color.text.primary"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      },
+      "pressed": {
+        "background": {
+          "$ref": "color.selection.background"
+        },
+        "foreground": {
+          "$ref": "color.text.primary"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "1px"
+      },
+      "disabled": {
+        "background": {
+          "$ref": "color.surface.subtle"
+        },
+        "foreground": {
+          "$ref": "color.text.secondary"
+        },
+        "borderColor": {
+          "$ref": "color.border.subtle"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      },
+      "loading": {
+        "background": {
+          "$ref": "color.surface.card"
+        },
+        "foreground": {
+          "$ref": "color.text.primary"
+        },
+        "borderColor": {
+          "$ref": "color.text.secondary"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      }
+    }
+  },
+  "chip": {
+    "borderWidth": {
+      "$ref": "border.chip"
+    },
+    "unselected": {
+      "default": {
+        "background": {
+          "$context": "category.background"
+        },
+        "foreground": {
+          "$context": "category.foreground"
+        },
+        "borderColor": "transparent",
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px",
+        "checkColor": {
+          "$ref": "color.selection.foreground"
+        }
+      },
+      "hover": {
+        "background": {
+          "$context": "category.background"
+        },
+        "foreground": {
+          "$context": "category.foreground"
+        },
+        "borderColor": {
+          "$ref": "color.text.secondary"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px",
+        "checkColor": {
+          "$ref": "color.selection.foreground"
+        }
+      },
+      "pressed": {
+        "background": {
+          "$context": "category.background"
+        },
+        "foreground": {
+          "$context": "category.foreground"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "1px",
+        "checkColor": {
+          "$ref": "color.selection.foreground"
+        }
+      },
+      "disabled": {
+        "background": {
+          "$ref": "color.surface.subtle"
+        },
+        "foreground": {
+          "$ref": "color.text.secondary"
+        },
+        "borderColor": {
+          "$ref": "color.border.subtle"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": false,
+        "insetStrokeWidth": "0px"
+      }
+    },
+    "selected": {
+      "default": {
+        "background": {
+          "$context": "category.background"
+        },
+        "foreground": {
+          "$context": "category.foreground"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.soft"
+        },
+        "checkVisible": true,
+        "insetStrokeWidth": "0px",
+        "checkColor": {
+          "$ref": "color.selection.foreground"
+        }
+      },
+      "hover": {
+        "background": {
+          "$context": "category.background"
+        },
+        "foreground": {
+          "$context": "category.foreground"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.soft"
+        },
+        "checkVisible": true,
+        "insetStrokeWidth": "1px",
+        "checkColor": {
+          "$ref": "color.selection.foreground"
+        }
+      },
+      "pressed": {
+        "background": {
+          "$context": "category.background"
+        },
+        "foreground": {
+          "$context": "category.foreground"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": true,
+        "insetStrokeWidth": "2px",
+        "checkColor": {
+          "$ref": "color.selection.foreground"
+        }
+      },
+      "disabled": {
+        "background": {
+          "$context": "category.background"
+        },
+        "foreground": {
+          "$context": "category.foreground"
+        },
+        "borderColor": {
+          "$ref": "color.selection.foreground"
+        },
+        "shadow": {
+          "$ref": "shadow.none"
+        },
+        "checkVisible": true,
+        "insetStrokeWidth": "0px",
+        "checkColor": {
+          "$ref": "color.selection.foreground"
+        }
+      }
+    }
+  },
+  "iconButton": {
+    "default": {
+      "background": {
+        "$ref": "color.surface.card"
+      },
+      "foreground": {
+        "$ref": "color.text.secondary"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "0px"
+    },
+    "hover": {
+      "background": {
+        "$ref": "color.selection.background"
+      },
+      "foreground": {
+        "$ref": "color.selection.foreground"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "0px"
+    },
+    "pressed": {
+      "background": {
+        "$ref": "color.selection.background"
+      },
+      "foreground": {
+        "$ref": "color.selection.foreground"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "1px"
+    },
+    "disabled": {
+      "background": {
+        "$ref": "color.surface.subtle"
+      },
+      "foreground": {
+        "$ref": "color.text.secondary"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "0px"
+    },
+    "selected-default": {
+      "background": {
+        "$ref": "color.selection.background"
+      },
+      "foreground": {
+        "$ref": "color.selection.foreground"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "0px",
+      "iconFill": "currentColor"
+    },
+    "selected-hover": {
+      "background": {
+        "$ref": "color.selection.background"
+      },
+      "foreground": {
+        "$ref": "color.selection.foreground"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "1px",
+      "iconFill": "currentColor"
+    },
+    "selected-pressed": {
+      "background": {
+        "$ref": "color.selection.background"
+      },
+      "foreground": {
+        "$ref": "color.selection.foreground"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "2px",
+      "iconFill": "currentColor"
+    },
+    "selected-disabled": {
+      "background": {
+        "$ref": "color.surface.subtle"
+      },
+      "foreground": {
+        "$ref": "color.text.secondary"
+      },
+      "borderColor": "transparent",
+      "shadow": {
+        "$ref": "shadow.none"
+      },
+      "checkVisible": false,
+      "insetStrokeWidth": "0px",
+      "iconFill": "currentColor"
+    }
+  },
+  "infoTag": {
+    "background": {
+      "$ref": "color.tag.background"
+    },
+    "foreground": {
+      "$ref": "color.tag.foreground"
+    },
+    "borderColor": "transparent",
+    "shadow": {
+      "$ref": "shadow.none"
+    },
+    "checkVisible": false,
+    "insetStrokeWidth": "0px"
+  },
+  "insetStrokeColor": {
+    "$ref": "color.selection.foreground"
+  }
+}

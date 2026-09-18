@@ -4,35 +4,37 @@
 負責工單：TRACK1-01, TRACK1-02, TRACK1-05, TRACK1-07, TRACK1-09
 =======================================================
 
-💡 【Gatekeeper 專案環境就緒通知 (2026-09-18)】
+💡 【Gatekeeper Phase 2~3 完工驗收與 Phase 4 開工通知 (2026-09-18)】
 -------------------------------------------------------
-🟢 專案根目錄 frontend/ 已將階段一成果（LIFF 與 狀態機）整合成單一 Next.js 14 應用！
-🟢 Tailwind Tokens 已配置就緒（Primary CTA 強制使用 #B9E85A），測試與 Build 100% 通過。
-🟢 「設計與後端交付規範」資料夾中已同步最新版 schema.sql 與機票對接指南。
+🟢 恭喜！你先前交付的 [TRACK1-02 儀表板]、[TRACK1-05 時間軸拖曳] 與 [TRACK1-07 行李清單] 已完成驗收整合！
+🟢 專案已發布最新完整整合包 `frontend_app_complete_phase2_3.zip`，內含：
+   - 包含前端 B 交付的地圖與等待頁面，以及完整型別與相依套件。
+🟢 你現在的唯一核心推進工單：[TRACK1-09 離線 PDF 匯出]！
 -------------------------------------------------------
 
 【一、我的排程與每日推進目標】
-- [x] Day 1~2 (純邏輯先發)：完成 [TRACK1-01] LINE LIFF SDK 整合與 Supabase Token 交換會話建立 (已交付)
-- [ ] Day 3~5 (邏輯+套版)：【現在進行中】完成 [TRACK1-02] 我的行程儀表板 (Dashboard) 與 Active 行程切換 (設計稿已在「設計師交付_Phase2-3/Atrip_TRACK0-02_delivery」)
-- [ ] Day 6~7 (邏輯+套版)：完成 [TRACK1-05] 動態行程時間軸卡片、拖曳重排 (Dnd) 與防抖自動儲存
-- [ ] Day 7~8 (邏輯+套版)：完成 [TRACK1-07] 智能行李打包清單 (Packing List) 互動分頁開發
-- [ ] Day 9~10 (邏輯+套版)：完成 [TRACK1-09] 離線 PDF 匯出 (瀏覽器列印樣板與 LINE Bot 檔案推送，規範在「設計師交付_Phase2-3/Atrip_TRACK0-05_delivery」)
+- [x] Day 1~2 (純邏輯先發)：完成 [TRACK1-01] LINE LIFF SDK 整合與 Supabase Token 交換會話建立 (已驗收)
+- [x] Day 3~5 (邏輯+套版)：完成 [TRACK1-02] 我的行程儀表板 (Dashboard) 與 Active 行程切換 (已驗收)
+- [x] Day 6~7 (邏輯+套版)：完成 [TRACK1-05] 動態行程時間軸卡片、拖曳重排 (Dnd) 與防抖自動儲存 (已驗收)
+- [x] Day 7~8 (邏輯+套版)：完成 [TRACK1-07] 智能行李打包清單 (Packing List) 互動分頁開發 (已驗收)
+- [ ] Day 9~10 (邏輯+套版)：【現在進行中・立即開工】完成 [TRACK1-09] 離線 PDF 匯出 (瀏覽器列印樣板與 LINE Bot 檔案推送，規範在「設計師交付_Phase2-3/Atrip_TRACK0-05_delivery」)
 
-【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 frontend_A.zip)】
-1. src/hooks/useLiffAuth.ts (或 src/lib/liff.ts) - LIFF 初始化與登入 Hook (已於 Phase 1 完成)
-2. src/app/dashboard/page.tsx ＆ src/components/dashboard/ - 儀表板頁面與卡片 (Phase 2 重點)
-3. src/stores/useItineraryStore.ts - Zustand 狀態樹與拖曳陣列重算邏輯
-4. src/app/canvas/[id]/page.tsx ＆ src/components/canvas/ - 時間軸卡片與交通膠囊
-5. src/components/packing/PackingListTab.tsx - 行李清單分頁與打勾狀態
-6. src/app/print/[id]/page.tsx ＆ src/styles/print.css - 專用 A4 列印樣式 (套用 atrip-print.css)
+【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 frontend_A_phase4.zip)】
+1. src/app/canvas/[id]/page.tsx (或專用匯出按鈕/列印觸發點) - 觸發列印或呼叫後端 API
+2. src/app/print/[id]/page.tsx (若有獨立預覽頁) ＆ 專用 A4 列印樣式 (套用 atrip-print.css / @media print 規則)
+3. 確保 LINE LIFF 內環境呼叫 `POST /functions/v1/export-pdf-line`（或專用 Edge Function/Service）通知 LINE Bot 推送
 
 【三、開工前 4 大自檢問詢門檻 (紅線守則)】
-1. 階段 1 已完成純邏輯與 Token 交換。
-2. 階段 2 (現在) 請務必查閱「設計師交付_Phase2-3/Atrip_Track0_Frontend_Handoff_Pack_2026-09-17/Atrip_Track0_to_Track1_Frontend_Handoff_v1.0.md」！Primary CTA 一律使用 #B9E85A (action.primary)，嚴禁使用舊橘色 #F97316！
-3. 拖曳重排是否已加入 800ms 防抖更新，寫回時是否帶上樂觀鎖 version 檢核？
-4. 是否已研讀 03-JSON-Schema 與 mock_itinerary.json？
+1. 列印模式 (@media print) 下嚴禁出現頂部導覽列、頁籤按鈕、浮動懸浮鈕與無關操作元件。
+2. 卡片必須加入 `break-inside: avoid` (或 page-break-inside: avoid) 避免被 A4 換頁硬生生腰斬。
+3. 環境判斷：非 LINE 瀏覽器調用 `window.print()`，LINE 內嵌瀏覽器 (liff.isInClient()) 則跳出確認後呼叫後端發送檔案到對話框。
+4. 詳細要求請參閱工單 `TRACK1-09-offline-pdf-export.md` 與 `設計師交付_Phase2-3/Atrip_TRACK0-05_delivery/`。
 
-【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
-「你好！我是 Atrip 專案的前端工程師 A，負責『TRACK1-02 我的行程儀表板 (Dashboard)』。
-我們使用 Next.js 14、Tailwind CSS 與 Zustand。
-請嚴格依據『設計師交付_Phase2-3/Atrip_TRACK0-02_delivery/01_dashboard.svg』與『Atrip_Track0_to_Track1_Frontend_Handoff_v1.0.md』規範，幫我實作 Dashboard 頁面（含活躍/歷史行程切換、當前關注 Active 行程標記與 Primary CTA #B9E85A）！」
+【四、複製貼給 AI (Cursor / Claude) 的專屬開工咒語】
+「你好！我是 Atrip 專案的前端工程師 A。
+我現在要依據 `TRACK1-09-offline-pdf-export.md` 實作『離線 PDF 匯出 (瀏覽器列印樣板與 LINE Bot 推送)』。
+專案基礎請解壓縮最新的 `frontend_app_complete_phase2_3.zip`。
+請幫我：
+1. 在行程畫布頂部加入匯出 PDF 按鈕，判斷當前環境（LINE 內嵌瀏覽器 liff.isInClient() vs 外部瀏覽器）。
+2. 在外部瀏覽器下觸發 window.print()，並實作 @media print 規則（A4 邊距 15mm、卡片 break-inside: avoid、隱藏導覽列與按鈕）。
+3. 在 LINE 內嵌瀏覽器中，發送 API 請求給後端推送 PDF，並顯示 30 秒內推播至 LINE 的提示訊息！」
