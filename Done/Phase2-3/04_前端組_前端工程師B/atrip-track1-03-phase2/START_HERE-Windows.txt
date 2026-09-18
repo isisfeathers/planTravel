@@ -1,0 +1,46 @@
+Atrip TRACK1-03 階段 1－Windows 開啟說明
+==========================================
+
+一、為什麼 .ts 檔案會跑到「媒體播放器」？
+
+.ts 同時可能代表：
+1. TypeScript 程式碼（本交件包使用的格式）。
+2. MPEG Transport Stream 影片。
+
+你的 Windows 目前把 .ts 副檔名綁定到媒體播放器，因此雙擊
+useWizardStore.test.ts 時，系統會把程式碼誤當成影片。這不是檔案損壞。
+
+二、正確開啟方式
+
+1. 對 atrip-track1-03-phase1.zip 按右鍵。
+2. 選擇「解壓縮全部」。
+3. 安裝 Visual Studio Code：https://code.visualstudio.com/
+4. 開啟 Visual Studio Code。
+5. 選擇「檔案」→「開啟資料夾」。
+6. 選取解壓縮後的 atrip-track1-03-phase1 資料夾。
+
+不要逐一雙擊 .ts 或 .tsx 檔案，也不要把副檔名改成 .txt；改名會讓
+Next.js／TypeScript 專案無法編譯。
+
+三、只想閱讀說明
+
+可直接用記事本開啟本檔。README.md 請在 Visual Studio Code 內開啟，
+再按 Ctrl+Shift+V 顯示格式化預覽。
+
+四、工程師執行專案
+
+電腦須先安裝 Node.js 20 或 22，以及 pnpm。接著在專案資料夾開啟終端機：
+
+pnpm install
+pnpm test
+pnpm typecheck
+pnpm build
+pnpm dev
+
+本機啟動後開啟：http://localhost:3000/wizard
+
+五、團隊交件
+
+Google Drive 只要上傳完整 ZIP 與 README.md，不需要逐一開啟或個別上傳
+src 內的 TypeScript 程式碼。不要上傳 node_modules、.next、.env.local，
+也不要在任何檔案放入 Supabase service_role 金鑰。

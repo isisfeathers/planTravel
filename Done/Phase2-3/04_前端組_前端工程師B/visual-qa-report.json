@@ -1,0 +1,90 @@
+{
+  "baseUrl": "http://127.0.0.1:3018",
+  "report": [
+    {
+      "case": "default-320",
+      "viewportWidth": 320,
+      "viewportHeight": 844,
+      "documentScrollWidth": 320,
+      "noPageHorizontalOverflow": true,
+      "minChipHeight": null,
+      "primaryButtonHeight": 52,
+      "contentBottomPadding": 112,
+      "selectedChipCount": 0,
+      "selectedPresetCount": 1
+    },
+    {
+      "case": "default-375",
+      "viewportWidth": 375,
+      "viewportHeight": 844,
+      "documentScrollWidth": 375,
+      "noPageHorizontalOverflow": true,
+      "minChipHeight": null,
+      "primaryButtonHeight": 52,
+      "contentBottomPadding": 112,
+      "selectedChipCount": 0,
+      "selectedPresetCount": 1
+    },
+    {
+      "case": "default-390",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "documentScrollWidth": 390,
+      "noPageHorizontalOverflow": true,
+      "minChipHeight": null,
+      "primaryButtonHeight": 52,
+      "contentBottomPadding": 112,
+      "selectedChipCount": 0,
+      "selectedPresetCount": 1
+    },
+    {
+      "case": "default-430",
+      "viewportWidth": 430,
+      "viewportHeight": 844,
+      "documentScrollWidth": 430,
+      "noPageHorizontalOverflow": true,
+      "minChipHeight": null,
+      "primaryButtonHeight": 52,
+      "contentBottomPadding": 112,
+      "selectedChipCount": 0,
+      "selectedPresetCount": 1
+    },
+    {
+      "case": "expanded-375",
+      "viewportWidth": 375,
+      "viewportHeight": 844,
+      "documentScrollWidth": 375,
+      "noPageHorizontalOverflow": true,
+      "minChipHeight": 44,
+      "primaryButtonHeight": 52,
+      "contentBottomPadding": 112,
+      "selectedChipCount": 5,
+      "selectedPresetCount": 1
+    },
+    {
+      "case": "sports-selected-focus-375",
+      "viewportWidth": 375,
+      "viewportHeight": 844,
+      "documentScrollWidth": 375,
+      "noPageHorizontalOverflow": true,
+      "minChipHeight": 44,
+      "primaryButtonHeight": 52,
+      "contentBottomPadding": 112,
+      "selectedChipCount": 4,
+      "selectedPresetCount": 1
+    },
+    {
+      "case": "expanded-320-text-200-percent",
+      "viewportWidth": 320,
+      "viewportHeight": 844,
+      "documentScrollWidth": 320,
+      "noPageHorizontalOverflow": true,
+      "minChipHeight": 88,
+      "primaryButtonHeight": 146,
+      "contentBottomPadding": 224,
+      "selectedChipCount": 5,
+      "selectedPresetCount": 1
+    }
+  ],
+  "failures": []
+}
