@@ -1,0 +1,108 @@
+{
+  "type": "flex",
+  "altText": "Atrip 行程產生失敗，請點選重新規劃。",
+  "contents": {
+    "type": "bubble",
+    "size": "mega",
+    "header": {
+      "type": "box",
+      "layout": "vertical",
+      "backgroundColor": "#347FA3",
+      "paddingAll": "18px",
+      "contents": [
+        {
+          "type": "text",
+          "text": "旅程暫時迷路了",
+          "color": "#FFFFFF",
+          "weight": "bold",
+          "size": "lg",
+          "wrap": true
+        }
+      ]
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "paddingAll": "20px",
+      "spacing": "md",
+      "contents": [
+        {
+          "type": "text",
+          "text": "🧭",
+          "size": "3xl",
+          "align": "center"
+        },
+        {
+          "type": "text",
+          "text": "這次沒有順利產生行程",
+          "color": "#1F2937",
+          "weight": "bold",
+          "size": "xl",
+          "align": "center",
+          "wrap": true
+        },
+        {
+          "type": "text",
+          "text": "可能是網路或服務暫時忙碌，原本的旅行偏好已保留，不需要重新填寫。",
+          "color": "#6B7280",
+          "size": "sm",
+          "align": "center",
+          "wrap": true,
+          "lineSpacing": "4px"
+        },
+        {
+          "type": "box",
+          "layout": "vertical",
+          "backgroundColor": "#E7EFE8",
+          "cornerRadius": "12px",
+          "paddingAll": "12px",
+          "contents": [
+            {
+              "type": "text",
+              "text": "你的設定與進度都還在，稍後再試即可。",
+              "color": "#58745B",
+              "size": "sm",
+              "weight": "bold",
+              "align": "center",
+              "wrap": true
+            }
+          ]
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "sm",
+      "paddingStart": "20px",
+      "paddingEnd": "20px",
+      "paddingTop": "0px",
+      "paddingBottom": "20px",
+      "contents": [
+        {
+          "type": "button",
+          "style": "primary",
+          "height": "sm",
+          "color": "#6F8F72",
+          "action": {
+            "type": "postback",
+            "label": "重新產生行程",
+            "data": "action=retry_itinerary&itinerary_id=ITINERARY_ID",
+            "displayText": "請幫我重新產生行程"
+          }
+        },
+        {
+          "type": "button",
+          "style": "link",
+          "height": "sm",
+          "color": "#347FA3",
+          "action": {
+            "type": "uri",
+            "label": "返回我的行程",
+            "uri": "https://liff.line.me/LIFF_ID/dashboard"
+          }
+        }
+      ]
+    }
+  }
+}

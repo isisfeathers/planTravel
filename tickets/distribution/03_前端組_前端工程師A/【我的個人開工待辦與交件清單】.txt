@@ -4,28 +4,35 @@
 負責工單：TRACK1-01, TRACK1-02, TRACK1-05, TRACK1-07, TRACK1-09
 =======================================================
 
+💡 【Gatekeeper 專案環境就緒通知 (2026-09-18)】
+-------------------------------------------------------
+🟢 專案根目錄 frontend/ 已將階段一成果（LIFF 與 狀態機）整合成單一 Next.js 14 應用！
+🟢 Tailwind Tokens 已配置就緒（Primary CTA 強制使用 #B9E85A），測試與 Build 100% 通過。
+🟢 「設計與後端交付規範」資料夾中已同步最新版 schema.sql 與機票對接指南。
+-------------------------------------------------------
+
 【一、我的排程與每日推進目標】
-- [ ] Day 1~2 (純邏輯先發)：完成 [TRACK1-01] LINE LIFF SDK 整合與 Supabase Token 交換會話建立
-- [ ] Day 3~5 (邏輯+套版)：完成 [TRACK1-02] 我的行程儀表板 (Dashboard) 與 Active 行程切換
+- [x] Day 1~2 (純邏輯先發)：完成 [TRACK1-01] LINE LIFF SDK 整合與 Supabase Token 交換會話建立 (已交付)
+- [ ] Day 3~5 (邏輯+套版)：【現在進行中】完成 [TRACK1-02] 我的行程儀表板 (Dashboard) 與 Active 行程切換 (設計稿已在「設計師交付_Phase2-3/Atrip_TRACK0-02_delivery」)
 - [ ] Day 6~7 (邏輯+套版)：完成 [TRACK1-05] 動態行程時間軸卡片、拖曳重排 (Dnd) 與防抖自動儲存
 - [ ] Day 7~8 (邏輯+套版)：完成 [TRACK1-07] 智能行李打包清單 (Packing List) 互動分頁開發
-- [ ] Day 9~10 (邏輯+套版)：完成 [TRACK1-09] 離線 PDF 匯出 (瀏覽器列印樣板與 LINE Bot 檔案推送)
+- [ ] Day 9~10 (邏輯+套版)：完成 [TRACK1-09] 離線 PDF 匯出 (瀏覽器列印樣板與 LINE Bot 檔案推送，規範在「設計師交付_Phase2-3/Atrip_TRACK0-05_delivery」)
 
 【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 frontend_A.zip)】
-1. src/hooks/useLiffAuth.ts (或 src/lib/liff.ts) - LIFF 初始化與登入 Hook
-2. src/app/dashboard/page.tsx ＆ src/components/dashboard/ - 儀表板頁面與卡片
+1. src/hooks/useLiffAuth.ts (或 src/lib/liff.ts) - LIFF 初始化與登入 Hook (已於 Phase 1 完成)
+2. src/app/dashboard/page.tsx ＆ src/components/dashboard/ - 儀表板頁面與卡片 (Phase 2 重點)
 3. src/stores/useItineraryStore.ts - Zustand 狀態樹與拖曳陣列重算邏輯
 4. src/app/canvas/[id]/page.tsx ＆ src/components/canvas/ - 時間軸卡片與交通膠囊
 5. src/components/packing/PackingListTab.tsx - 行李清單分頁與打勾狀態
-6. src/app/print/[id]/page.tsx ＆ src/styles/print.css - 專用 A4 列印樣式
+6. src/app/print/[id]/page.tsx ＆ src/styles/print.css - 專用 A4 列印樣式 (套用 atrip-print.css)
 
 【三、開工前 4 大自檢問詢門檻 (紅線守則)】
-1. 階段 1 (Day 1~3) 嚴禁在程式碼中寫死客製 hex 色碼（如 #347FA3），先寫純邏輯與資料流！
-2. 階段 2 (Day 4 起) 是否已取得設計師 1 的 tailwind.config.js？只能使用 bg-brand-primary 等類名。
+1. 階段 1 已完成純邏輯與 Token 交換。
+2. 階段 2 (現在) 請務必查閱「設計師交付_Phase2-3/Atrip_Track0_Frontend_Handoff_Pack_2026-09-17/Atrip_Track0_to_Track1_Frontend_Handoff_v1.0.md」！Primary CTA 一律使用 #B9E85A (action.primary)，嚴禁使用舊橘色 #F97316！
 3. 拖曳重排是否已加入 800ms 防抖更新，寫回時是否帶上樂觀鎖 version 檢核？
 4. 是否已研讀 03-JSON-Schema 與 mock_itinerary.json？
 
 【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
-「你好！我是 Atrip 專案的前端工程師 A，負責『TRACK1-05 時間軸 Dnd 拖曳與防抖自動儲存』。
-我們使用 Next.js 14、Tailwind CSS、Zustand 與 @hello-pangea/dnd。
-請嚴格遵守附帶的 03-JSON-Schema 與 mock_itinerary.json，幫我寫出無頭拖曳重排邏輯、800ms 防抖寫回與樂觀鎖版本控制代碼，嚴禁手寫死板色碼！」
+「你好！我是 Atrip 專案的前端工程師 A，負責『TRACK1-02 我的行程儀表板 (Dashboard)』。
+我們使用 Next.js 14、Tailwind CSS 與 Zustand。
+請嚴格依據『設計師交付_Phase2-3/Atrip_TRACK0-02_delivery/01_dashboard.svg』與『Atrip_Track0_to_Track1_Frontend_Handoff_v1.0.md』規範，幫我實作 Dashboard 頁面（含活躍/歷史行程切換、當前關注 Active 行程標記與 Primary CTA #B9E85A）！」

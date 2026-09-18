@@ -302,6 +302,20 @@
       "item_name": "日本專用 eSIM 與 10000mAh 行動電源",
       "is_checked": false,
       "notes": "查地圖與拍照必備"
+    },
+    {
+      "id": "pack-04",
+      "category": "toiletries",
+      "item_name": "個人盥洗旅行組與保濕乳液",
+      "is_checked": false,
+      "notes": "日本秋冬氣候較乾燥"
+    },
+    {
+      "id": "pack-05",
+      "category": "essentials",
+      "item_name": "日幣現金與免海外手續費信用卡",
+      "is_checked": false,
+      "notes": "部分傳統店家僅收現金"
     }
   ],
   "flight_data": [

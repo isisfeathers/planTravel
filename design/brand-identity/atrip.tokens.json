@@ -1,0 +1,193 @@
+{
+  "meta": {
+    "name": "Atrip",
+    "version": "1.0.0",
+    "format": "atrip-project-tokens-v1",
+    "baseFontSizePx": 16,
+    "sources": [
+      "01_Atrip_Color_Brand_Spec_v1.md (v1.1)",
+      "02_Atrip_Typography_Layout_Spec_v1.1.md",
+      "03_Atrip_Component_States_Spec_v1.md"
+    ]
+  },
+  "color": {
+    "action": {
+      "primary": "#B9E85A",
+      "on-primary": "#182B36",
+      "primary-hover": "#ACDD4D"
+    },
+    "surface": {
+      "page": "#FFFDFA",
+      "card": "#FFFFFF",
+      "subtle": "#F3F5EF"
+    },
+    "text": {
+      "primary": "#182B36",
+      "secondary": "#52616B"
+    },
+    "border": {
+      "subtle": "#E4E8E0"
+    },
+    "selection": {
+      "background": "#EFF8DA",
+      "foreground": "#416519"
+    },
+    "brand": {
+      "logo-ai": "#277E99",
+      "logo-trp": "#182B36"
+    },
+    "focus": {
+      "ring": "#277E99"
+    },
+    "tag": {
+      "background": "#F0F2EC",
+      "foreground": "#52616B"
+    },
+    "category": {
+      "coffee": {
+        "background": "#F0ECE3",
+        "foreground": "#6B604B"
+      },
+      "nature": {
+        "background": "#EBF1E8",
+        "foreground": "#446345"
+      },
+      "food": {
+        "background": "#F2ECE5",
+        "foreground": "#72604F"
+      },
+      "walk": {
+        "background": "#F0EFEB",
+        "foreground": "#5D625B"
+      },
+      "culture": {
+        "background": "#EAE8F0",
+        "foreground": "#56566C"
+      },
+      "photo": {
+        "background": "#EAF1F3",
+        "foreground": "#3E6373"
+      }
+    }
+  },
+  "font": {
+    "family": [
+      "Noto Sans TC",
+      "PingFang TC",
+      "Microsoft JhengHei",
+      "sans-serif"
+    ],
+    "weight": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    }
+  },
+  "type": {
+    "display": {
+      "fontSize": "1.75rem",
+      "lineHeight": "2.5rem",
+      "fontWeight": 700
+    },
+    "h1": {
+      "fontSize": "1.25rem",
+      "lineHeight": "1.875rem",
+      "fontWeight": 700
+    },
+    "h2": {
+      "fontSize": "1rem",
+      "lineHeight": "1.5rem",
+      "fontWeight": 600
+    },
+    "body": {
+      "fontSize": "0.875rem",
+      "lineHeight": "1.375rem",
+      "fontWeight": 400
+    },
+    "caption": {
+      "fontSize": "0.75rem",
+      "lineHeight": "1.125rem",
+      "fontWeight": 400
+    },
+    "button": {
+      "fontSize": "1rem",
+      "lineHeight": "1.5rem",
+      "fontWeight": 600
+    },
+    "chip": {
+      "fontSize": "0.875rem",
+      "lineHeight": "1.25rem",
+      "fontWeight": 500
+    },
+    "input": {
+      "fontSize": "1rem",
+      "lineHeight": "1.5rem",
+      "fontWeight": 400
+    }
+  },
+  "space": {
+    "1": "0.25rem",
+    "2": "0.5rem",
+    "3": "0.75rem",
+    "4": "1rem",
+    "5": "1.25rem",
+    "6": "1.5rem",
+    "8": "2rem"
+  },
+  "radius": {
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "20px",
+    "full": "9999px"
+  },
+  "shadow": {
+    "none": "none",
+    "soft": "0 2px 8px rgba(24, 43, 54, 0.06)",
+    "popover": "0 8px 24px rgba(24, 43, 54, 0.12)"
+  },
+  "size": {
+    "button": "3.25rem",
+    "chip": "2.75rem",
+    "input": "3rem",
+    "icon-button": "2.75rem",
+    "nav": "4rem",
+    "icon-chip": "18px",
+    "icon-button-glyph": "20px",
+    "icon-nav": "24px",
+    "check": "16px"
+  },
+  "inset": {
+    "button-x": "1.25rem",
+    "button-y": "0.75rem",
+    "chip-x": "0.75rem",
+    "chip-y": "0.625rem",
+    "input-x": "0.75rem",
+    "input-y": "0.75rem",
+    "tag-x": "0.5rem",
+    "tag-y": "0.25rem"
+  },
+  "border": {
+    "default": "1px",
+    "chip": "2px"
+  },
+  "focus": {
+    "width": "3px",
+    "offset": "3px",
+    "clearance": "6px"
+  },
+  "motion": {
+    "duration": "120ms",
+    "easing": "ease-out"
+  },
+  "layout": {
+    "gutter": "1.25rem",
+    "gutterNarrow": "1rem",
+    "narrowBelowPx": 360,
+    "cardMinWidth": "152px",
+    "cardGap": "0.75rem",
+    "twoColumnMinContainerPx": 316,
+    "sectionGap": "2rem"
+  }
+}

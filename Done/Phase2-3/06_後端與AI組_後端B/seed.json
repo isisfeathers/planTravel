@@ -1,0 +1,10 @@
+[
+  {"category":"accommodation","option_key":"single_hotel","prompt_directive":"【住宿約束】整趟行程必須以第 1 晚之推薦飯店作為每日出發與返回之固定 Basecamp，每日景點動線以該飯店為圓心規劃，行程中途嚴禁安排 Check-in/out 或更換住宿。","is_default":true,"priority":10},
+  {"category":"accommodation","option_key":"switch_hotel","prompt_directive":"【住宿與行李約束】行程允許隨景點區域更換住宿。更換飯店當日，必須在上午 09:00 前安排「行李寄存於原飯店或轉運車站」，並於 15:00-16:00 強制插入「前往新飯店 Check-in 放置行李」行程節點，前後景點必須順向排列，嚴禁折返跑。","is_default":false,"priority":10},
+  {"category":"transit","option_key":"public_transit","prompt_directive":"【交通指引規範】所有景點間交通必須優先搭乘地鐵、捷運、公車或鐵路，並精確輸出建議路線代碼、方向、出入口與時間。","is_default":true,"priority":20},
+  {"category":"transit","option_key":"self_drive","prompt_directive":"【自駕指引規範】景點間交通以自駕車程為主，估算距離、車程時間並提示停車資訊。","is_default":false,"priority":20},
+  {"category":"interest","option_key":"gourmet","prompt_directive":"【美食強化】每日午餐與晚餐必須安排當地高評價、具代表性的特色餐飲，避免觀光客陷阱餐廳，每餐停留時間需預留 60-90 分鐘。","is_default":true,"priority":30},
+  {"category":"interest","option_key":"shopping","prompt_directive":"【購物排程】每日下午或傍晚精選 1-2 個核心商圈、特色老街或購物中心，預留 2-3 小時充裕逛街時間。","is_default":false,"priority":30},
+  {"category":"interest","option_key":"sports","prompt_directive":"【運動賽事與球場巡禮】若用戶提供特定比賽日期/時間，必須將該賽事設為不可撼動之主要時間錨點，當天其他活動皆圍繞該球場安排。","is_default":false,"priority":30},
+  {"category":"interest","option_key":"cultural","prompt_directive":"【文化參訪】優先推薦歷史悠久之神社、寺廟、美術館、博物館或歷史古道，景點描述需包含深度的文化背景導覽。","is_default":true,"priority":30}
+]

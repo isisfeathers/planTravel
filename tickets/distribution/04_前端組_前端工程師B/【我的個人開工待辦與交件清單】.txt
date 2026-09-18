@@ -4,28 +4,35 @@
 負責工單：TRACK1-03, TRACK1-04, TRACK1-06, TRACK1-08
 =======================================================
 
+💡 【Gatekeeper 專案環境就緒通知 (2026-09-18)】
+-------------------------------------------------------
+🟢 專案根目錄 frontend/ 已將階段一成果（LIFF 與 狀態機）整合成單一 Next.js 14 應用！
+🟢 Tailwind Tokens 已配置就緒（Primary CTA 強制使用 #B9E85A），測試與 Build 100% 通過。
+🟢 「設計與後端交付規範」資料夾中已同步最新版 schema.sql 與機票對接指南。
+-------------------------------------------------------
+
 【一、我的排程與每日推進目標】
-- [ ] Day 1~2 (純邏輯先發)：完成 [TRACK1-03 (階段 1)] 雙層標籤精靈 (階段 1：無頭狀態機與資料邏輯)
-- [ ] Day 3~4 (視覺套版)：完成 [TRACK1-03 (階段 2)] 雙層標籤精靈 (階段 2：視覺套版與 Tokens 注入)
-- [ ] Day 4~5 (純邏輯先發)：完成 [TRACK1-04] 動態等待畫布與 Supabase Realtime 即時切換
+- [x] Day 1~2 (純邏輯先發)：完成 [TRACK1-03 (階段 1)] 雙層標籤精靈 (階段 1：無頭狀態機與資料邏輯，已交付)
+- [ ] Day 3~4 (視覺套版)：【現在進行中】完成 [TRACK1-03 (階段 2)] 雙層標籤精靈 (階段 2：視覺套版與 Tokens 注入，視覺稿已在「設計師交付_Phase2-3/Atrip_TRACK0-02_delivery」)
+- [ ] Day 4~5 (純邏輯先發)：【現在進行中】完成 [TRACK1-04] 動態等待畫布與 Supabase Realtime 即時切換
 - [ ] Day 6~8 (純邏輯先發)：完成 [TRACK1-06] 互動地圖 (Mapbox / Leaflet) 整合與卡片平滑聯動 (FlyTo)
 - [ ] Day 9~10 (純邏輯先發)：完成 [TRACK1-08] 去識別化外連分享視圖與社群複製 (Fork) 交易
 
 【二、我必須在【交付成品區】上傳的具體檔案 (可打包成 frontend_B.zip)】
-1. src/app/wizard/page.tsx ＆ src/components/wizard/ - 雙層標籤精靈主頁與元件
-2. src/stores/useWizardStore.ts - 標籤狀態機 (套版全選、自選切換、組裝 snapshot)
-3. src/app/waiting/[id]/page.tsx - 動態等待畫布頁面 (動畫 + Tips 輪播)
+1. src/app/wizard/page.tsx ＆ src/components/wizard/ - 雙層標籤精靈主頁與元件 (Phase 2 重點)
+2. src/stores/useWizardStore.ts - 標籤狀態機 (套版全選、自選切換、組裝 snapshot) (Phase 1 已完成基礎，本階段整合視覺狀態)
+3. src/app/waiting/[id]/page.tsx - 動態等待畫布頁面 (動畫 + Tips 輪播) (Phase 2 重點)
 4. src/hooks/useRealtimeSubscription.ts - Supabase Realtime Channel 訂閱 Hook (含 5 秒輪詢備援)
 5. src/components/map/InteractiveMap.tsx - Mapbox/Leaflet 互動地圖元件
 6. src/app/share/[token]/page.tsx ＆ src/components/share/ForkButton.tsx - 去個資分享與 Fork 按鈕
 
 【三、開工前 4 大自檢問詢門檻 (紅線守則)】
-1. 階段 1 先以 mock_user_prefs.json 測試 Zustand 狀態機，嚴禁手寫客製顏色代碼！
+1. 階段 2 (現在) 請務必查閱「設計師交付_Phase2-3/Atrip_Track0_Frontend_Handoff_Pack_2026-09-17/Atrip_Track0_to_Track1_Frontend_Handoff_v1.0.md」！Primary CTA 一律使用 #B9E85A (action.primary)，嚴禁使用舊橘色 #F97316！
 2. 標籤精靈是否落實「初次進入預設點亮經典套版，用戶可 0 點擊直接按送出」？
 3. 外連分享端點是否確保未登入訪客看不見作者姓名、頭貼與預算金額？
 4. 是否已研讀 03-JSON-Schema 與 mock_user_prefs.json？
 
 【四、複製貼給 AI (Cursor / Claude) 的專屬提問咒語】
-「你好！我是 Atrip 專案的前端工程師 B，負責『TRACK1-03 雙層標籤精靈 (Chip Selector)』。
-我們使用 Next.js 14 與 Zustand。
-請嚴格遵守 03-JSON-Schema 規範，幫我實作雙層心智模型（頂部橫向一鍵懶人套版預選、下方自選矩陣微調）之狀態機，確保初次進入預設點亮，用戶可 0 點擊直接送出，嚴禁手寫死板色碼！」
+「你好！我是 Atrip 專案的前端工程師 B，負責『TRACK1-03 雙層標籤精靈 (Chip Selector) 階段 2 視覺套版』。
+我們使用 Next.js 14、Tailwind CSS 與 Zustand。
+請嚴格依據『設計師交付_Phase2-3/Atrip_TRACK0-02_delivery/02~04_wizard_*.svg』與『Atrip_Track0_to_Track1_Frontend_Handoff_v1.0.md』規範，幫我完成雙層心智模型標籤精靈的 UI 套版，確保 0 點擊直出、Selected 狀態外框與 Primary CTA #B9E85A！」

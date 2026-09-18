@@ -1,0 +1,294 @@
+:root {
+  --action-primary: #B9E85A;
+  --action-on-primary: #182B36;
+  --surface-page: #FFFDFA;
+  --surface-card: #FFFFFF;
+  --surface-subtle: #F3F5EF;
+  --text-primary: #182B36;
+  --text-secondary: #52616B;
+  --border-subtle: #E4E8E0;
+  --selection-bg: #EFF8DA;
+  --selection-fg: #416519;
+  --brand-blue: #277E99;
+  --tag-bg: #F0F2EC;
+  --tag-fg: #52616B;
+  --culture-bg: #EAE8F0;
+  --culture-fg: #56566C;
+  --food-bg: #F2ECE5;
+  --food-fg: #72604F;
+  --photo-bg: #EAF1F3;
+  --photo-fg: #3E6373;
+  --radius-xl: 5.3mm;
+  --radius-pill: 999px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #e8ebe7; }
+body {
+  font-family: "Noto Sans CJK TC", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+@page { size: A4 portrait; margin: 0; }
+
+.print-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 10mm auto;
+  padding: 12mm 15mm 11mm;
+  background: var(--surface-page);
+  position: relative;
+  overflow: hidden;
+}
+
+.print-header {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  padding-bottom: 4.5mm;
+  border-bottom: 0.3mm solid var(--border-subtle);
+}
+.brand-mark {
+  width: 11mm;
+  height: 11mm;
+  border-radius: 50%;
+  background: var(--selection-bg);
+  flex: 0 0 11mm;
+  position: relative;
+}
+.brand-mark svg { width: 100%; height: 100%; display: block; }
+.trip-title {
+  font-size: 14pt;
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: 0;
+  flex: 1;
+}
+.day-chip {
+  display: inline-block;
+  vertical-align: middle;
+  justify-content: center;
+  min-height: 8mm;
+  padding: 1.5mm 4mm;
+  border-radius: var(--radius-pill);
+  background: var(--action-primary);
+  font-size: 9.5pt;
+  line-height: 1.1;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.day-summary { margin-top: 5mm; }
+.day-heading {
+  font-size: 16.5pt;
+  line-height: 1.35;
+  font-weight: 700;
+  margin: 0;
+}
+.day-meta {
+  margin-top: 1.4mm;
+  font-size: 9.4pt;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.map-preview {
+  margin-top: 4mm;
+  height: 28mm;
+  border: 0.3mm solid var(--border-subtle);
+  border-radius: 5.2mm;
+  background: var(--surface-subtle);
+  position: relative;
+  overflow: hidden;
+}
+.map-preview svg { width: 100%; height: 100%; display: block; }
+.map-caption {
+  position: absolute;
+  right: 5mm;
+  bottom: 3.5mm;
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  padding: 1.3mm 3.5mm;
+  font-size: 7.8pt;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--brand-blue);
+}
+
+.timeline {
+  margin-top: 5mm;
+  position: relative;
+  padding-bottom: 1mm;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 15.2mm;
+  top: 4.7mm;
+  bottom: 4mm;
+  width: 0.8mm;
+  background: rgba(39, 126, 153, 0.27);
+}
+.timeline-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24mm minmax(0, 1fr);
+  column-gap: 3.5mm;
+  align-items: start;
+  margin-bottom: 3.7mm;
+}
+.timeline-row.transit-row { margin-bottom: 3.7mm; }
+.timeline-time {
+  position: relative;
+  min-height: 8mm;
+  font-size: 8.7pt;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding-top: 2.3mm;
+  text-align: left;
+}
+.timeline-time::after {
+  content: "";
+  position: absolute;
+  right: 0.1mm;
+  top: 1.2mm;
+  width: 5.6mm;
+  height: 5.6mm;
+  border-radius: 50%;
+  background: var(--brand-blue);
+}
+.timeline-row.anchor .timeline-time::after {
+  width: 6.4mm;
+  height: 6.4mm;
+  top: 0.8mm;
+  background: var(--action-primary);
+  border: 0.7mm solid var(--text-primary);
+}
+.timeline-time.empty { color: transparent; }
+.timeline-time.empty::after { display: none; }
+
+.activity-card {
+  background: var(--surface-card);
+  border: 0.3mm solid var(--border-subtle);
+  border-radius: 5mm;
+  min-height: 37mm;
+  padding: 4mm 5mm 3.5mm;
+  box-shadow: 0 1.5mm 4mm rgba(24, 43, 54, 0.07);
+  position: relative;
+}
+.activity-card.anchor-card {
+  background: var(--selection-bg);
+  border: 0.65mm solid var(--selection-fg);
+  min-height: 48mm;
+  box-shadow: 0 1.5mm 4mm rgba(24, 43, 54, 0.06);
+}
+.category-tag, .anchor-tag {
+  display: inline-block;
+  vertical-align: middle;
+  min-height: 6.5mm;
+  padding: 1mm 3.2mm;
+  border-radius: var(--radius-pill);
+  font-size: 7.6pt;
+  line-height: 1.1;
+  font-weight: 700;
+}
+.category-tag.culture { background: var(--culture-bg); color: var(--culture-fg); }
+.category-tag.food { background: var(--food-bg); color: var(--food-fg); }
+.anchor-tag { background: var(--action-primary); color: var(--action-on-primary); font-weight: 700; }
+.card-title {
+  margin-top: 2.7mm;
+  font-size: 12.1pt;
+  line-height: 1.38;
+  font-weight: 700;
+}
+.card-meta {
+  margin-top: 1.7mm;
+  font-size: 8.8pt;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+.card-note {
+  margin-top: 1.5mm;
+  font-size: 8.2pt;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+.anchor-rule {
+  margin-top: 2.2mm;
+  font-size: 8.1pt;
+  line-height: 1.4;
+  color: var(--selection-fg);
+  font-weight: 700;
+}
+
+.transit-pill {
+  margin-left: 6mm;
+  width: calc(100% - 10mm);
+  min-height: 15.5mm;
+  border-radius: var(--radius-pill);
+  background: var(--tag-bg);
+  padding: 2.7mm 5mm 2.2mm;
+  color: var(--tag-fg);
+}
+.transit-pill.metro { background: var(--photo-bg); color: var(--photo-fg); }
+.transit-title {
+  font-size: 8.3pt;
+  line-height: 1.25;
+  font-weight: 700;
+}
+.transit-sub {
+  margin-top: 0.8mm;
+  font-size: 7.5pt;
+  line-height: 1.25;
+  color: var(--text-secondary);
+}
+
+.print-footer {
+  position: absolute;
+  left: 15mm;
+  right: 15mm;
+  bottom: 5.2mm;
+  padding-top: 2.4mm;
+  border-top: 0.3mm solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7pt;
+  line-height: 1.2;
+  color: var(--text-secondary);
+}
+
+/* Print-only translation: source LIFF UI is unchanged. */
+.screen-only, .interactive-only, .drag-handle { display: none !important; }
+
+/* Pagination primitives for production rendering. */
+.print-keep,
+.day-summary,
+.map-preview,
+.activity-card,
+.timeline-row.activity-row,
+.segment-with-destination,
+.anchor-card {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.segment-with-destination { display: contents; }
+.page-break-before { break-before: page; page-break-before: always; }
+.page-break-after { break-after: page; page-break-after: always; }
+
+@media print {
+  html, body { background: #fff; }
+  body { margin: 0; }
+  .print-sheet {
+    margin: 0;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
