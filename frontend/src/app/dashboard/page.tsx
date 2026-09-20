@@ -2,23 +2,25 @@
 
 import React from 'react';
 import { useItineraries } from '@/hooks/useItineraries';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { TripSection } from '@/components/dashboard/TripSection';
 
 export default function DashboardPage() {
   // 測試時可傳入使用者 ID，後續會由 Auth Context 統一注入
-  const currentUserId = 'mock-user-id';
+  
+  const { user } = useAuthStore();
+  const { 
+    activeItineraryId, 
+    activeAndUpcoming, 
+    archived, 
+    isLoading, 
+    error, 
+    setActiveItinerary, 
+    archiveItinerary, 
+    softDeleteItinerary 
+  } = useItineraries(user?.id);
 
-  const {
-    activeItineraryId,
-    activeAndUpcoming,
-    archived,
-    isLoading,
-    error,
-    setActiveItinerary,
-    archiveItinerary,
-    softDeleteItinerary,
-  } = useItineraries(currentUserId);
 
   if (isLoading) {
     return (

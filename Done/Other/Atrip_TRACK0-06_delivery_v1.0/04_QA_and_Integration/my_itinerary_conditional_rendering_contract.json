@@ -1,0 +1,55 @@
+{
+  "template": "flex_message_my_itinerary.json",
+  "purpose": "TRACK0-06 My Itinerary / completed state rendering rules",
+  "dynamic_fields": {
+    "{{HERO_IMAGE_URL}}": {
+      "required": false,
+      "when_missing": "remove contents.hero entirely"
+    },
+    "{{TRIP_TITLE}}": {
+      "required": false,
+      "fallback": "你的 Atrip 旅程"
+    },
+    "{{DESTINATION}}": {
+      "required": false,
+      "when_missing": "remove destination text component; retain DAYS if available"
+    },
+    "{{DAYS}}": {
+      "required": false,
+      "format": "display-ready text, e.g. 5 天 4 夜",
+      "when_missing": "remove days text component; retain DESTINATION if available"
+    },
+    "{{TAG_1}}": {
+      "required": false
+    },
+    "{{TAG_2}}": {
+      "required": false
+    },
+    "{{ITINERARY_URL}}": {
+      "required": true,
+      "when_missing": {
+        "hero": "retain hero image but remove hero.action",
+        "cta_preferred_fallback": "https://liff.line.me/{{LIFF_ID}}/dashboard",
+        "cta_if_no_dashboard_fallback": "remove footer CTA and log data error"
+      }
+    }
+  },
+  "tag_policy": {
+    "normalization": "take first two non-empty tags and compact them into TAG_1/TAG_2",
+    "display": "template adds # prefix",
+    "two_tags": "render separator + tag row with two pills",
+    "one_tag": "render separator + tag row with one pill",
+    "zero_tags": "remove both separator and tag row"
+  },
+  "metadata_policy": {
+    "destination_and_days": "render both in two columns",
+    "destination_only": "render destination left-aligned",
+    "days_only": "render days left-aligned",
+    "neither": "remove metadata row"
+  },
+  "title_policy": {
+    "wrap": true,
+    "maxLines": 2
+  },
+  "product_boundary": "Current itinerary selection logic is owned by product/backend; this template only renders the selected completed itinerary."
+}

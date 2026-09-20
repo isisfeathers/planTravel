@@ -1,0 +1,78 @@
+{
+  "create": {
+    "trigger": "action=help&topic=create",
+    "message": {
+      "type": "text",
+      "text": "點擊下方「開始規劃」，選擇目的地、旅行天數與偏好，就能讓 Atrip 為你產生專屬行程。",
+      "quickReply": {
+        "items": [
+          {
+            "type": "action",
+            "action": {
+              "type": "uri",
+              "label": "開始規劃",
+              "uri": "https://liff.line.me/{{LIFF_ID}}/wizard"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "edit": {
+    "trigger": "action=help&topic=edit",
+    "message": {
+      "type": "text",
+      "text": "開啟行程後，可以長按景點卡片右側把手調整順序，系統會儲存更新後的安排。",
+      "quickReply": {
+        "items": [
+          {
+            "type": "action",
+            "action": {
+              "type": "uri",
+              "label": "開啟我的行程",
+              "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "share": {
+    "trigger": "action=help&topic=share",
+    "message": {
+      "type": "text",
+      "text": "在行程主畫布點擊「分享」，即可建立去識別化分享頁；分享內容不會顯示個人資料、偏好快照與預算。",
+      "quickReply": {
+        "items": [
+          {
+            "type": "action",
+            "action": {
+              "type": "uri",
+              "label": "查看我的行程",
+              "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "retry": {
+    "trigger": "action=help&topic=retry",
+    "message": {
+      "type": "text",
+      "text": "若行程生成失敗，可以保留原本設定重新嘗試，或修改條件後再次送出。",
+      "quickReply": {
+        "items": [
+          {
+            "type": "action",
+            "action": {
+              "type": "uri",
+              "label": "查看我的行程",
+              "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

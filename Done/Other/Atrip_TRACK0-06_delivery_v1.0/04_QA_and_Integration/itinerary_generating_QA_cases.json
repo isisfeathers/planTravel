@@ -1,0 +1,46 @@
+{
+  "width_cases": [
+    {
+      "name": "baseline_375",
+      "trip_title": "東京 5 日｜巷弄美食與城市漫遊",
+      "expected": "no truncation"
+    },
+    {
+      "name": "baseline_320",
+      "trip_title": "東京 5 日｜巷弄美食與城市漫遊",
+      "expected": "no horizontal overflow"
+    },
+    {
+      "name": "long_title_320",
+      "trip_title": "東京春季五日深度自由行｜巷弄美食、城市散步與近郊文化探索",
+      "expected": "max 2 lines"
+    }
+  ],
+  "status_cases": [
+    {
+      "job_status": "queued",
+      "display": "已收到規劃需求"
+    },
+    {
+      "job_status": "searching_flight",
+      "display": "正在查詢航班資訊"
+    },
+    {
+      "job_status": "generating_itinerary",
+      "display": "正在安排每日行程"
+    },
+    {
+      "job_status": "validating",
+      "display": "正在進行最後檢查"
+    },
+    {
+      "job_status": "other_or_null",
+      "display": "正在準備行程"
+    }
+  ],
+  "fallbacks": {
+    "TRIP_TITLE_missing": "你的 Atrip 旅程",
+    "JOB_STATUS_TEXT_missing": "正在準備行程",
+    "PROGRESS_URL_missing": "hide entire CTA box"
+  }
+}

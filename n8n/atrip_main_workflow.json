@@ -1,0 +1,203 @@
+{
+  "name": "Atrip AI Itinerary Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-itinerary",
+        "responseMode": "onReceived",
+        "responseData": "202 Accepted",
+        "options": {}
+      },
+      "id": "webhook-ingress",
+      "name": "Webhook Ingress",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// TRACK2-03 Quota Guard\nconst data = $input.item.json.body;\nif (!data.userId || !data.itineraryId) throw new Error('Missing parameters');\nreturn [{ json: data }];"
+      },
+      "id": "quota-guard",
+      "name": "Quota & Secret Guard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer ={{ $env.OPENAI_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "model", "value": "gpt-4o" },
+            { "name": "response_format", "value": "{\"type\":\"json_schema\"}" }
+          ]
+        }
+      },
+      "id": "llm-structured-output",
+      "name": "OpenAI GPT-4o (Strict Schema)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [800, 200]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://flight-service:3001/api/v1/flights/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "origin", "value": "={{ $node[\"Quota & Secret Guard\"].json.origin }}" },
+            { "name": "destination", "value": "={{ $node[\"Quota & Secret Guard\"].json.destination }}" }
+          ]
+        }
+      },
+      "id": "flight-search",
+      "name": "Flight Orchestrator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// TRACK2-06 Data Cleaner & UUID Injector\nconst itinerary = $node[\"OpenAI GPT-4o (Strict Schema)\"].json.choices[0].message.content;\nconst flights = $node[\"Flight Orchestrator\"].json.data;\n// ... injection logic ...\nreturn [{ json: { itinerary_data: JSON.parse(itinerary), flight_data: flights } }];"
+      },
+      "id": "data-cleaner",
+      "name": "Clean & Inject UUID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/itineraries?id=eq.{{ $node[\"Quota & Secret Guard\"].json.itineraryId }}",
+        "method": "PATCH",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer ={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "status", "value": "completed" },
+            { "name": "itinerary_data", "value": "={{ $node[\"Clean & Inject UUID\"].json.itinerary_data }}" },
+            { "name": "flight_data", "value": "={{ $node[\"Clean & Inject UUID\"].json.flight_data }}" }
+          ]
+        }
+      },
+      "id": "supabase-persistence",
+      "name": "Update Supabase (Completed)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://line-bot-service:3002/webhook/push-ready",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "userId", "value": "={{ $node[\"Quota & Secret Guard\"].json.userId }}" },
+            { "name": "itineraryId", "value": "={{ $node[\"Quota & Secret Guard\"].json.itineraryId }}" }
+          ]
+        }
+      },
+      "id": "line-push-notification",
+      "name": "LINE Push (Flex Message)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1400, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Ingress": {
+      "main": [
+        [
+          {
+            "node": "Quota & Secret Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quota & Secret Guard": {
+      "main": [
+        [
+          {
+            "node": "OpenAI GPT-4o (Strict Schema)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Flight Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-4o (Strict Schema)": {
+      "main": [
+        [
+          {
+            "node": "Clean & Inject UUID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flight Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "Clean & Inject UUID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean & Inject UUID": {
+      "main": [
+        [
+          {
+            "node": "Update Supabase (Completed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Supabase (Completed)": {
+      "main": [
+        [
+          {
+            "node": "LINE Push (Flex Message)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f7ab2d1a-4632-47de-8fb7-9b2f34e6c0c2"
+}

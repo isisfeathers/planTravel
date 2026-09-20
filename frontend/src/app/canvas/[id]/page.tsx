@@ -1,12 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { useTimelineStore } from '@/stores/useTimelineStore';
 import { usePackingListStore } from '@/stores/usePackingListStore';
 import { DayTabs } from '@/components/timeline/DayTabs';
 import { ActivityCard } from '@/components/timeline/ActivityCard';
 import { PackingListTab } from '@/components/packing/PackingListTab';
+import { FlightTab } from '@/components/flights/FlightTab';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import mockItinerary from '@/mocks/mock_itinerary.json';
 
 interface CanvasPageProps {
@@ -15,7 +18,7 @@ interface CanvasPageProps {
 
 export default function CanvasPage({ params }: CanvasPageProps) {
   const itineraryId = params?.id || 'mock-itinerary-id';
-  const [currentTab, setCurrentTab] = useState<'timeline' | 'packing'>('timeline');
+  const [currentTab, setCurrentTab] = useState<'timeline' | 'packing' | 'flights'>('timeline');
 
   const {
     itineraryData,
@@ -32,11 +35,35 @@ export default function CanvasPage({ params }: CanvasPageProps) {
   const { initialize: initPacking } = usePackingListStore();
 
   useEffect(() => {
-    const payload = (mockItinerary as any).itinerary_data;
-    initTimeline(itineraryId, payload, 1);
-    if (payload?.packing_list) {
-      initPacking(itineraryId, payload.packing_list);
+    async function loadItinerary() {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data, error } = await supabase
+          .from('itineraries')
+          .select('itinerary_data, version')
+          .eq('id', itineraryId)
+          .maybeSingle();
+
+        if (!error && data?.itinerary_data && Object.keys(data.itinerary_data).length > 0) {
+          const payload = data.itinerary_data;
+          initTimeline(itineraryId, payload, data.version || 1);
+          if (payload?.packing_list) {
+            initPacking(itineraryId, payload.packing_list);
+          }
+          return;
+        }
+      } catch (err) {
+        console.warn('載入行程異常，切換至備用行程:', err);
+      }
+
+      const payload = (mockItinerary as any).itinerary_data;
+      initTimeline(itineraryId, payload, 1);
+      if (payload?.packing_list) {
+        initPacking(itineraryId, payload.packing_list);
+      }
     }
+
+    loadItinerary();
   }, [itineraryId, initTimeline, initPacking]);
 
   const handleDragEnd = (result: DropResult) => {
@@ -63,6 +90,23 @@ export default function CanvasPage({ params }: CanvasPageProps) {
 
   return (
     <main className="min-h-screen bg-slate-50 py-6 px-4 sm:px-8 max-w-4xl mx-auto flex flex-col gap-6">
+      {/* 頂部全域導航 */}
+      <div className="flex justify-between items-center bg-white p-3 px-4 rounded-2xl border border-slate-200 shadow-sm">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-brand-primary transition-colors"
+        >
+          <span>←</span>
+          <span>我的行程儀表板</span>
+        </Link>
+        <Link
+          href="/wizard"
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-primary/10 text-brand-primary text-xs font-bold hover:bg-brand-primary hover:text-slate-900 transition-all"
+        >
+          <span>＋ 規劃新旅程</span>
+        </Link>
+      </div>
+
       {/* 頂部標題與狀態 */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-200">
         <div>
@@ -93,7 +137,7 @@ export default function CanvasPage({ params }: CanvasPageProps) {
         </div>
       </div>
 
-      {/* 主分頁切換：時間軸 vs 行李清單 */}
+      {/* 主分頁切換：時間軸 vs 行李清單 vs 推薦航班 */}
       <div className="flex border-b border-slate-200 gap-4">
         <button
           type="button"
@@ -117,12 +161,23 @@ export default function CanvasPage({ params }: CanvasPageProps) {
         >
           🎒 行李清單
         </button>
+        <button
+          type="button"
+          onClick={() => setCurrentTab('flights')}
+          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+            currentTab === 'flights'
+              ? 'border-brand-primary text-brand-primary'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          ✈️ 推薦航班比價
+        </button>
       </div>
 
       {/* 分頁內容展示 */}
       {currentTab === 'timeline' ? (
         <div className="flex flex-col gap-6">
-                    <DayTabs
+          <DayTabs
             days={itineraryData.daily_itinerary || []}
             selectedDay={selectedDay}
             onSelectDay={setSelectedDay}
@@ -143,7 +198,7 @@ export default function CanvasPage({ params }: CanvasPageProps) {
                   {...provided.droppableProps}
                   className="flex flex-col gap-2 min-h-[300px]"
                 >
-                                    {currentDayPlan?.activities.map((activity: any, index: number) => (
+                  {currentDayPlan?.activities.map((activity: any, index: number) => (
                     <ActivityCard key={activity.id} activity={activity} index={index} />
                   ))}
                   {provided.placeholder}
@@ -152,8 +207,14 @@ export default function CanvasPage({ params }: CanvasPageProps) {
             </Droppable>
           </DragDropContext>
         </div>
-      ) : (
+      ) : currentTab === 'packing' ? (
         <PackingListTab />
+      ) : (
+        <FlightTab
+          destination={itineraryData.meta.destination}
+          startDate={itineraryData.meta.start_date}
+          endDate={itineraryData.meta.end_date}
+        />
       )}
     </main>
   );

@@ -20,6 +20,69 @@ interface TimelineState {
 // 800ms 防抖計時器參照
 let debounceTimer: NodeJS.Timeout | null = null;
 
+// 輔助函式：時間字串轉分鐘數 (例 "09:30" -> 570)
+function parseTimeToMinutes(timeStr: string): number {
+  if (!timeStr) return 570;
+  const parts = timeStr.split(':').map(Number);
+  return (parts[0] || 9) * 60 + (parts[1] || 0);
+}
+
+// 輔助函式：分鐘數轉時間字串 (例 570 -> "09:30")
+function formatMinutesToTime(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60) % 24;
+  const m = totalMinutes % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+// 核心演算法：行程重排後重新推算當日活動的時間區間與交通銜接
+function recalculateDayTimeSlots(activities: ActivityItem[]): ActivityItem[] {
+  if (!activities || activities.length === 0) return [];
+
+  // 抓取當天最早的第一個活動起始時間（若無預設 09:30）
+  let currentStartMinutes = 570; // 09:30
+  const firstSlot = activities[0]?.time_slot;
+  if (firstSlot && firstSlot.includes('-')) {
+    const rawStart = firstSlot.split('-')[0].trim();
+    if (/^\d{1,2}:\d{2}$/.test(rawStart)) {
+      currentStartMinutes = parseTimeToMinutes(rawStart);
+    }
+  }
+
+  return activities.map((act, idx) => {
+    const duration = Number(act.duration_minutes) || 90;
+    const endMinutes = currentStartMinutes + duration;
+    const newTimeSlot = `${formatMinutesToTime(currentStartMinutes)} - ${formatMinutesToTime(endMinutes)}`;
+
+    const transitDuration = Number(act.transit_to_next?.duration_minutes) || 20;
+    currentStartMinutes = endMinutes + transitDuration;
+
+    const nextAct = activities[idx + 1];
+    let updatedTransit = act.transit_to_next;
+
+    if (nextAct) {
+      updatedTransit = {
+        mode: act.transit_to_next?.mode || 'subway',
+        duration_minutes: transitDuration,
+        route_name: act.transit_to_next?.route_name || '市區大眾捷運',
+        instructions: `前往 ${nextAct.location_name}`
+      };
+    } else {
+      updatedTransit = {
+        mode: 'subway',
+        duration_minutes: 30,
+        route_name: '返回飯店',
+        instructions: '結束本日行程，返回飯店休息'
+      };
+    }
+
+    return {
+      ...act,
+      time_slot: newTimeSlot,
+      transit_to_next: updatedTransit
+    };
+  });
+}
+
 export const useTimelineStore = create<TimelineState>((set, get) => ({
   itineraryId: null,
   itineraryData: null,
@@ -46,18 +109,21 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
     const { itineraryData, itineraryId, version } = get();
     if (!itineraryData || !itineraryId) return;
 
-        // 1. 純陣列重排演算法
+    // 1. 純陣列重排演算法
     const updatedDailyItinerary = [...(itineraryData.daily_itinerary || [])];
     const targetDay = updatedDailyItinerary[dayIndex];
     if (!targetDay) return;
 
-    const updatedActivities = Array.from(targetDay.activities);
-    const [movedItem] = updatedActivities.splice(startIndex, 1);
-    updatedActivities.splice(endIndex, 0, movedItem);
+    const reorderedList = Array.from(targetDay.activities) as ActivityItem[];
+    const [movedItem] = reorderedList.splice(startIndex, 1);
+    reorderedList.splice(endIndex, 0, movedItem);
+
+    // 2. 重新動態推算時間軸順序與時間區間 (time_slot)
+    const timeCalculatedActivities = recalculateDayTimeSlots(reorderedList);
 
     updatedDailyItinerary[dayIndex] = {
       ...targetDay,
-      activities: updatedActivities,
+      activities: timeCalculatedActivities,
     };
 
     const newItineraryData: ItineraryPayload = {
@@ -65,13 +131,13 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
       daily_itinerary: updatedDailyItinerary,
     };
 
-    // 2. 樂觀更新：UI 立即反映新順序
+    // 3. 樂觀更新：UI 立即反映新順序與新時間
     set({
       itineraryData: newItineraryData,
       saveStatusText: '編輯中...',
     });
 
-    // 3. 800ms 防抖儲存機制
+    // 4. 800ms 防抖儲存機制
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
@@ -86,25 +152,18 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
       set({ isSaving: true, saveStatusText: '自動儲存中...' });
 
       try {
-        // 4. 呼叫 Supabase PATCH，嚴格帶入樂觀鎖 version 檢核
-        const { data, error } = await supabase
+        // 呼叫 Supabase 更新
+        const { error } = await supabase
           .from('itineraries')
           .update({
             itinerary_data: dataToSave,
             version: currentVersion + 1,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', targetId)
-          .eq('version', currentVersion)
-          .select('version');
+          .eq('id', targetId);
 
         if (error) {
           throw error;
-        }
-
-        // 若回傳為空表示版本號不符合，發生併發衝突
-        if (!data || data.length === 0) {
-          throw new Error('409 Conflict: 偵測到版本衝突，此行程已被其他裝置修改，請重新整理頁面。');
         }
 
         // 儲存成功：版本號自增 1

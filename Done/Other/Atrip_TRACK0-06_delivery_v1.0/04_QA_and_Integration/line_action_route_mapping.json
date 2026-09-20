@@ -1,0 +1,32 @@
+{
+  "follow": {
+    "response": "line_welcome_message.json",
+    "actions": {
+      "開始規劃": "URI /wizard",
+      "查看使用說明": "postback action=help_menu"
+    }
+  },
+  "rich_menu": {
+    "Atrip 智慧自由行": "URI /wizard",
+    "我的行程": "postback action=my_itinerary",
+    "使用說明": "postback action=help_menu"
+  },
+  "my_itinerary_router": {
+    "no_itinerary": "flex_message_no_itinerary.json → /wizard",
+    "generating": "flex_message_itinerary_generating.json → {{PROGRESS_URL}}",
+    "completed": "flex_message_my_itinerary.json → {{ITINERARY_URL}}",
+    "failed": "TRACK0-04 flex_message_error_retry.json → action=retry_itinerary&itinerary_id=…",
+    "draft": "line_message_copy_spec.md → /trips/{{ITINERARY_ID}}/edit, fallback /dashboard",
+    "not_logged_in": "line_message_copy_spec.md → /dashboard (login-entry route pending confirmation)"
+  },
+  "help_router": {
+    "action=help_menu": "quick_reply_help_menu.json",
+    "action=help&topic=create": "help_topic_messages.json#create → /wizard",
+    "action=help&topic=edit": "help_topic_messages.json#edit → /dashboard",
+    "action=help&topic=share": "help_topic_messages.json#share → /dashboard",
+    "action=help&topic=retry": "help_topic_messages.json#retry → /dashboard"
+  },
+  "fallback": {
+    "unknown_input_or_action": "line_message_copy_spec.md → plain text, recover via Rich Menu"
+  }
+}

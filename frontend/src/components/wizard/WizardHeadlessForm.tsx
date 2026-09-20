@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { createItinerary } from "@/repositories/itineraryRepository";
+import { useAuthStore } from "@/stores/useAuthStore";
 import {
   useWizardStore,
   type PresetBundleId,
@@ -62,6 +62,7 @@ const bundleNames: Readonly<Record<PresetBundleId, string>> = {
 
 function getSummaryLabels(wizard: ReturnType<typeof useWizardStore.getState>) {
   const labels = [
+    `📍 ${wizard.destination} · ${wizard.totalDays} 天`,
     wizard.accommodation === "single_hotel" ? "連住同一間" : "隨景點換宿",
     wizard.transit === "public_transit" ? "大眾捷運" : "租車自駕",
   ];
@@ -73,6 +74,24 @@ function getSummaryLabels(wizard: ReturnType<typeof useWizardStore.getState>) {
 
   return labels;
 }
+
+const POPULAR_DESTINATIONS = [
+  { label: "🇯🇵 東京", value: "東京" },
+  { label: "🇯🇵 京阪神", value: "京都與大阪" },
+  { label: "🇯🇵 沖繩", value: "沖繩" },
+  { label: "🇰🇷 首爾", value: "首爾" },
+  { label: "🇹🇭 曼谷", value: "曼谷" },
+  { label: "🇫🇷 巴黎", value: "巴黎" },
+  { label: "🇬🇧 倫敦", value: "倫敦" },
+  { label: "🇮🇸 冰島", value: "冰島雷克雅維克" },
+];
+
+const POPULAR_DAYS = [
+  { label: "3 天 2 夜", value: 3 },
+  { label: "5 天 4 夜", value: 5 },
+  { label: "7 天 6 夜", value: 7 },
+  { label: "10 天探索", value: 10 },
+];
 
 export function WizardHeadlessForm() {
   const router = useRouter();
@@ -108,20 +127,32 @@ export function WizardHeadlessForm() {
 
     try {
       const preferenceSnapshot = wizard.buildPreferenceSnapshot();
-      const supabase = getSupabaseBrowserClient();
-      const { data, error } = await supabase.auth.getUser();
+      const { user } = useAuthStore.getState();
+      const userId = user?.id || "11111111-1111-1111-1111-111111111111"; // Fallback to mock
 
-      if (error || !data.user) {
-        throw new Error("請先完成 LINE／Supabase 登入再建立行程。");
-      }
-
-      const created = await createItinerary(supabase, {
-        userId: data.user.id,
-        title: `${preferenceSnapshot.destination} ${preferenceSnapshot.total_days} 天行程`,
-        preferenceSnapshot,
+      // Bypass RLS, directly call our server API
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId,
+          destination: preferenceSnapshot.destination,
+          total_days: preferenceSnapshot.total_days,
+          preferenceSnapshot: preferenceSnapshot
+        })
       });
 
-      router.push(`/waiting/${created.id}`);
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "伺服器建立行程失敗");
+      }
+
+      const resData = await response.json();
+      if (!resData.id) {
+        throw new Error("伺服器未回傳行程 ID");
+      }
+
+      router.push(`/waiting/${resData.id}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "建立行程失敗。");
     } finally {
@@ -131,16 +162,25 @@ export function WizardHeadlessForm() {
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-[430px] bg-atrip-surface-page">
-      <header className="flex min-h-atrip-nav items-center gap-atrip-2 border-b border-atrip-border-subtle bg-atrip-surface-card px-atrip-gutter max-[359px]:px-atrip-gutter-narrow">
+      <header className="flex min-h-atrip-nav items-center justify-between border-b border-atrip-border-subtle bg-atrip-surface-card px-atrip-gutter max-[359px]:px-atrip-gutter-narrow">
+        <div className="flex items-center gap-atrip-2">
+          <button
+            type="button"
+            className="atrip-icon-button bg-atrip-selection-background text-atrip-brand-logo-ai"
+            aria-label="返回儀表板"
+            onClick={() => router.push('/dashboard')}
+          >
+            <ArrowLeft aria-hidden="true" size={20} />
+          </button>
+          <span className="text-atrip-h2 font-bold text-slate-800">建立新旅程</span>
+        </div>
         <button
           type="button"
-          className="atrip-icon-button bg-atrip-selection-background text-atrip-brand-logo-ai"
-          aria-label="返回上一頁"
-          onClick={() => router.back()}
+          onClick={() => router.push('/dashboard')}
+          className="text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
         >
-          <ArrowLeft aria-hidden="true" size={20} />
+          🗂️ 我的行程
         </button>
-        <span className="text-atrip-h2">建立新旅程</span>
       </header>
 
       <form
@@ -150,11 +190,134 @@ export function WizardHeadlessForm() {
       >
         <main className="px-atrip-gutter py-atrip-6 max-[359px]:px-atrip-gutter-narrow">
           <div>
-            <h1 className="text-atrip-h1">先選一個旅行模式</h1>
+            <h1 className="text-atrip-h1">開始規劃你的專屬自由行</h1>
             <p className="mt-atrip-1 text-atrip-body text-atrip-text-secondary">
-              系統已替你套用推薦組合，也可以再微調。
+              選擇目的地與天數，由 AI 旅遊管家為您量身打造行程。
             </p>
           </div>
+
+          {/* 目的地與天數客製區塊 */}
+          <section className="mt-atrip-5 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-sm">
+            <label className="flex items-center gap-atrip-2 text-atrip-h2 font-bold text-slate-900">
+              <MapPin aria-hidden="true" size={18} className="text-atrip-brand-logo-ai" />
+              想去哪座城市？
+            </label>
+            
+            {/* 快速熱門推薦標籤 */}
+            <div className="mt-atrip-2 flex flex-wrap gap-atrip-2">
+              {POPULAR_DESTINATIONS.map((dest) => (
+                <button
+                  key={dest.value}
+                  type="button"
+                  onClick={() => wizard.setField("destination", dest.value)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+                    wizard.destination === dest.value
+                      ? "bg-brand-primary text-white shadow-sm ring-2 ring-brand-primary/30"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {dest.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 自訂輸入城市 */}
+            <div className="mt-atrip-3">
+              <input
+                type="text"
+                value={wizard.destination}
+                onChange={(e) => wizard.setField("destination", e.target.value)}
+                placeholder="或輸入任何想去的城市（如：北海道、巴黎、羅馬、曼谷）"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              />
+            </div>
+
+            {/* 行程天數 */}
+            <div className="mt-atrip-4 border-t border-slate-100 pt-atrip-3">
+              <label className="flex items-center gap-atrip-2 text-xs font-bold text-slate-600">
+                <CalendarDays aria-hidden="true" size={16} className="text-atrip-brand-logo-ai" />
+                規劃天數
+              </label>
+              <div className="mt-atrip-2 flex flex-wrap gap-atrip-2">
+                {POPULAR_DAYS.map((d) => (
+                  <button
+                    key={d.value}
+                    type="button"
+                    onClick={() => {
+                      wizard.setField("totalDays", d.value);
+                      if (wizard.startDate) {
+                        const start = new Date(wizard.startDate);
+                        const end = new Date(start.getTime() + (d.value - 1) * 24 * 3600 * 1000);
+                        wizard.setField("endDate", end.toISOString().slice(0, 10));
+                      }
+                    }}
+                    className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
+                      wizard.totalDays === d.value
+                        ? "bg-brand-primary text-white font-bold"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 出發日期設定 */}
+            <div className="mt-atrip-4 border-t border-slate-100 pt-atrip-3">
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="flex items-center gap-atrip-2 text-xs font-bold text-slate-700">
+                  <CalendarDays aria-hidden="true" size={16} className="text-atrip-brand-logo-ai" />
+                  出發日期設定
+                </label>
+                <span className="text-[11px] font-medium text-slate-500">
+                  {wizard.startDate && wizard.endDate ? `${wizard.startDate} ~ ${wizard.endDate}` : 'AI 推薦出發時機'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    wizard.setField("startDate", undefined);
+                    wizard.setField("endDate", undefined);
+                  }}
+                  className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
+                    !wizard.startDate
+                      ? "border-brand-primary bg-brand-primary/10 text-slate-900 ring-1 ring-brand-primary"
+                      : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  <span className="block">✨ 尚未確定日期</span>
+                  <span className="text-[10px] font-normal text-slate-500">由 AI 安排最合適季節與航班</span>
+                </button>
+
+                <div className={`p-2.5 rounded-xl border transition-all ${
+                  wizard.startDate ? "border-brand-primary bg-white ring-1 ring-brand-primary" : "border-slate-200 bg-slate-50"
+                }`}>
+                  <label className="block text-[10px] font-bold text-slate-600 mb-0.5">📅 指定出發日期</label>
+                  <input
+                    type="date"
+                    min={new Date().toISOString().slice(0, 10)}
+                    value={wizard.startDate || ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val) {
+                        const start = new Date(val);
+                        const end = new Date(start.getTime() + (wizard.totalDays - 1) * 24 * 3600 * 1000);
+                        wizard.setField("startDate", val);
+                        wizard.setField("endDate", end.toISOString().slice(0, 10));
+                      } else {
+                        wizard.setField("startDate", undefined);
+                        wizard.setField("endDate", undefined);
+                      }
+                    }}
+                    className="w-full text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
 
           <section className="mt-atrip-6" aria-labelledby="preset-title">
             <div className="flex items-center justify-between gap-atrip-3">

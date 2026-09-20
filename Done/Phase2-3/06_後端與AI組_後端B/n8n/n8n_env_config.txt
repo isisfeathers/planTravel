@@ -1,0 +1,7 @@
+# n8n 啟動所需環境變數清單
+SUPABASE_URL=https://<your-project>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+WEBHOOK_SECRET=your-secret-token
+OPENAI_API_KEY=sk-...
+FLIGHT_SERVICE_URL=http://flight-service:3001
+LINE_BOT_URL=http://line-bot-service:3002

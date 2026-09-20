@@ -22,41 +22,72 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
   const [error, setError] = useState<string | null>(null);
 
   const fetchDashboardData = useCallback(async () => {
-    if (!userId) {
-      setIsLoading(false);
-      return;
-    }
-
     try {
       setIsLoading(true);
       setError(null);
 
-      const [profileRes, itinerariesRes] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('active_itinerary_id')
-          .eq('id', userId)
-          .single(),
-        supabase
-          .from('itineraries')
-          .select('*')
-          .eq('user_id', userId)
-          .is('deleted_at', null)
-          .order('created_at', { ascending: false })
-      ]);
-
-      if (profileRes.error) {
-        throw new Error(`Profile 查詢失敗: ${profileRes.error.message}`);
-      }
-      if (itinerariesRes.error) {
-        throw new Error(`行程列表查詢失敗: ${itinerariesRes.error.message}`);
+      let effectiveUserId = userId;
+      if (!effectiveUserId) {
+        try {
+          const { data: authData } = await supabase.auth.getUser();
+          if (authData?.user?.id) {
+            effectiveUserId = authData.user.id;
+          }
+        } catch (e) {}
       }
 
-      setActiveItineraryId(profileRes.data?.active_itinerary_id ?? null);
-      const validItineraries = (itinerariesRes.data as ItineraryEntity[]).filter(
-        (item) => item.deleted_at === null
-      );
-      setItineraries(validItineraries);
+      let activeId = null;
+      let userItineraries: ItineraryEntity[] = [];
+
+      if (effectiveUserId) {
+        try {
+          const { data: pData } = await supabase
+            .from('profiles')
+            .select('active_itinerary_id')
+            .eq('id', effectiveUserId)
+            .maybeSingle();
+          if (pData) activeId = pData.active_itinerary_id;
+        } catch (e) {
+          console.warn('Profiles 讀取跳過:', e);
+        }
+
+        try {
+          const { data: iData, error: iErr } = await supabase
+            .from('itineraries')
+            .select('*')
+            .eq('user_id', effectiveUserId)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false });
+
+          if (!iErr && iData && iData.length > 0) {
+            userItineraries = iData;
+          }
+        } catch (e) {
+          console.warn('Itineraries 依 userId 讀取跳過:', e);
+        }
+      }
+
+      // 如果依特定 userId 沒找到或尚未登入，讀取資料庫最近未刪除的行程
+      if (userItineraries.length === 0) {
+        try {
+          const { data: allData, error: allErr } = await supabase
+            .from('itineraries')
+            .select('*')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(30);
+
+          if (!allErr && allData) {
+            userItineraries = allData;
+          }
+        } catch (e) {
+          console.warn('Fallback 行程讀取跳過:', e);
+        }
+      }
+
+      setActiveItineraryId(activeId);
+      setItineraries(userItineraries);
+
     } catch (err: any) {
       setError(err.message || '資料讀取異常');
     } finally {

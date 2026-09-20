@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import liff from '@line/liff';
 import { supabase } from '@/lib/supabaseClient';
 import type {
@@ -6,7 +6,6 @@ import type {
   AuthStatus,
   AuthErrorState,
   AuthLineExchangeRequest,
-  AuthLineExchangeResponse,
 } from '@/types/auth';
 
 interface AuthStoreState {
@@ -39,23 +38,9 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
       return;
     }
 
-
     set({ status: 'initializing', error: null });
 
-    // ==== MOCK LIFF FOR DEVELOPMENT ====
-    if (process.env.NEXT_PUBLIC_MOCK_LIFF === 'true') {
-      console.log('MOCK LIFF IS ENABLED!');
-      set({ 
-        isInClient: false, 
-        status: 'authenticated', 
-        user: { id: 'mock-user-id', line_user_id: 'mock-line-id', display_name: 'Mock User', active_itinerary_id: null } 
-      });
-      return;
-    }
-    // ====================================
-
     if (!LIFF_ID) {
-
       set({
         status: 'error',
         error: {
@@ -102,23 +87,25 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
         picture_url: profile.pictureUrl || '',
       };
 
-      const { data, error: exchangeError } = await supabase.functions.invoke<AuthLineExchangeResponse>(
-        'auth-line',
-        {
-          body: exchangePayload,
-        }
-      );
+      const res = await fetch('/api/auth/line', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(exchangePayload),
+      });
 
-      if (exchangeError || !data) {
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
         set({
           status: 'error',
           error: {
             code: 'EXCHANGE_FAILED',
-            message: exchangeError?.message || 'Token 交換失敗',
+            message: errJson.error || 'Token 交換失敗',
           },
         });
         return;
       }
+
+      const data = await res.json();
 
       const { error: sessionError } = await supabase.auth.setSession({
         access_token: data.access_token,

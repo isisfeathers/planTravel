@@ -1,0 +1,172 @@
+{
+  "type": "flex",
+  "altText": "您的 Atrip 專屬自由行已規劃完成！",
+  "contents": {
+    "type": "bubble",
+    "size": "mega",
+    "header": {
+      "type": "box",
+      "layout": "vertical",
+      "backgroundColor": "#FFFFFF",
+      "paddingAll": "18px",
+      "contents": [
+        {
+          "type": "text",
+          "text": "🎉 您的專屬自由行已規劃就緒！",
+          "color": "#182B36",
+          "weight": "bold",
+          "size": "lg",
+          "wrap": true
+        }
+      ]
+    },
+    "hero": {
+      "type": "image",
+      "url": "https://example.com/assets/destination-cover.jpg",
+      "size": "full",
+      "aspectRatio": "20:13",
+      "aspectMode": "cover",
+      "action": {
+        "type": "uri",
+        "label": "查看專屬行程",
+        "uri": "https://liff.line.me/LIFF_ID/canvas/ITINERARY_ID"
+      }
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "paddingAll": "20px",
+      "spacing": "md",
+      "contents": [
+        {
+          "type": "text",
+          "text": "東京 5 日｜巷弄美食與城市漫遊",
+          "color": "#182B36",
+          "weight": "bold",
+          "size": "xl",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
+          "type": "box",
+          "layout": "horizontal",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "text",
+              "text": "📍 東京",
+              "color": "#52616B",
+              "size": "sm",
+              "flex": 1
+            },
+            {
+              "type": "text",
+              "text": "🗓 5 天 4 夜",
+              "color": "#52616B",
+              "size": "sm",
+              "align": "end",
+              "flex": 1
+            }
+          ]
+        },
+        {
+          "type": "separator",
+          "color": "#E4E8E0",
+          "margin": "sm"
+        },
+        {
+          "type": "box",
+          "layout": "horizontal",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "backgroundColor": "#F2ECE5",
+              "cornerRadius": "16px",
+              "paddingStart": "12px",
+              "paddingEnd": "12px",
+              "paddingTop": "6px",
+              "paddingBottom": "6px",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "#在地老饕",
+                  "color": "#72604F",
+                  "size": "xs",
+                  "weight": "bold",
+                  "align": "center"
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "backgroundColor": "#F0F2EC",
+              "cornerRadius": "16px",
+              "paddingStart": "12px",
+              "paddingEnd": "12px",
+              "paddingTop": "6px",
+              "paddingBottom": "6px",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "#大眾捷運",
+                  "color": "#52616B",
+                  "size": "xs",
+                  "weight": "bold",
+                  "align": "center"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "從街區散步到交通安排，Atrip 已替你整理好每天的旅行節奏。",
+          "color": "#52616B",
+          "size": "sm",
+          "wrap": true,
+          "lineSpacing": "4px"
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "paddingStart": "20px",
+      "paddingEnd": "20px",
+      "paddingTop": "0px",
+      "paddingBottom": "20px",
+      "contents": [
+        {
+          "type": "box",
+          "layout": "vertical",
+          "backgroundColor": "#B9E85A",
+          "cornerRadius": "14px",
+          "paddingAll": "14px",
+          "action": {
+            "type": "uri",
+            "label": "開啟 Atrip 專屬行程",
+            "uri": "https://liff.line.me/LIFF_ID/canvas/ITINERARY_ID"
+          },
+          "contents": [
+            {
+              "type": "text",
+              "text": "開啟 Atrip 專屬行程",
+              "color": "#182B36",
+              "weight": "bold",
+              "size": "md",
+              "align": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "styles": {
+      "footer": {
+        "separator": false
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "width_cases": [
+    {
+      "name": "baseline_375",
+      "expected": "no overflow"
+    },
+    {
+      "name": "baseline_320",
+      "expected": "no horizontal overflow"
+    },
+    {
+      "name": "long_title_320",
+      "expected": "TRIP_TITLE remains max 2 lines"
+    }
+  ],
+  "hero_cases": {
+    "hero_present": "render hero; clickable only when ITINERARY_URL exists",
+    "hero_missing": "remove hero entirely"
+  },
+  "tag_cases": {
+    "two_tags": "render 2 pills",
+    "one_tag": "render 1 pill",
+    "zero_tags": "remove separator and tag row"
+  },
+  "metadata_cases": {
+    "destination_and_days": "two columns",
+    "destination_only": "single left-aligned item",
+    "days_only": "single left-aligned item",
+    "neither": "remove metadata row"
+  },
+  "url_cases": {
+    "itinerary_url_present": "hero action + CTA -> itinerary URL",
+    "itinerary_url_missing_dashboard_available": "remove hero action; CTA label = 開啟 Atrip; CTA -> /dashboard",
+    "itinerary_url_missing_no_dashboard": "remove hero action; hide CTA; log data error"
+  },
+  "fallbacks": {
+    "TRIP_TITLE_missing": "你的 Atrip 旅程",
+    "HERO_IMAGE_URL_missing": "hide hero",
+    "DESTINATION_missing": "hide destination item",
+    "DAYS_missing": "hide days item",
+    "TAG_missing": "compact remaining non-empty tags"
+  }
+}

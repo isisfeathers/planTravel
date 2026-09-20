@@ -20,6 +20,68 @@ interface ItineraryState {
   deletePackingItem: (id: string) => void;
 }
 
+// 輔助函式：時間字串轉分鐘數 (例 "09:30" -> 570)
+function parseTimeToMinutes(timeStr: string): number {
+  if (!timeStr) return 570;
+  const parts = timeStr.split(':').map(Number);
+  return (parts[0] || 9) * 60 + (parts[1] || 0);
+}
+
+// 輔助函式：分鐘數轉時間字串 (例 570 -> "09:30")
+function formatMinutesToTime(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60) % 24;
+  const m = totalMinutes % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+// 核心演算法：行程重排後重新推算當日活動的時間區間與交通銜接
+function recalculateDayTimeSlots(activities: ActivityItem[]): ActivityItem[] {
+  if (!activities || activities.length === 0) return [];
+
+  let currentStartMinutes = 570; // 09:30
+  const firstSlot = activities[0]?.time_slot;
+  if (firstSlot && firstSlot.includes('-')) {
+    const rawStart = firstSlot.split('-')[0].trim();
+    if (/^\d{1,2}:\d{2}$/.test(rawStart)) {
+      currentStartMinutes = parseTimeToMinutes(rawStart);
+    }
+  }
+
+  return activities.map((act, idx) => {
+    const duration = Number(act.duration_minutes) || 90;
+    const endMinutes = currentStartMinutes + duration;
+    const newTimeSlot = `${formatMinutesToTime(currentStartMinutes)} - ${formatMinutesToTime(endMinutes)}`;
+
+    const transitDuration = Number(act.transit_to_next?.duration_minutes) || 20;
+    currentStartMinutes = endMinutes + transitDuration;
+
+    const nextAct = activities[idx + 1];
+    let updatedTransit = act.transit_to_next;
+
+    if (nextAct) {
+      updatedTransit = {
+        mode: act.transit_to_next?.mode || 'subway',
+        duration_minutes: transitDuration,
+        route_name: act.transit_to_next?.route_name || '市區大眾捷運',
+        instructions: `前往 ${nextAct.location_name}`
+      };
+    } else {
+      updatedTransit = {
+        mode: 'subway',
+        duration_minutes: 30,
+        route_name: '返回飯店',
+        instructions: '結束本日行程，返回飯店休息'
+      };
+    }
+
+    return {
+      ...act,
+      time_slot: newTimeSlot,
+      transit_to_next: updatedTransit
+    };
+  });
+}
+
 let debounceTimer: NodeJS.Timeout | null = null;
 
 export const useItineraryStore = create<ItineraryState>((set, get) => ({
@@ -53,11 +115,14 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
     const targetDay = updatedDaily[dayIndex];
     if (!targetDay) return;
 
-    const updatedActivities = Array.from(targetDay.activities);
-    const [movedItem] = updatedActivities.splice(startIndex, 1);
-    updatedActivities.splice(endIndex, 0, movedItem);
+    const reorderedList = Array.from(targetDay.activities) as ActivityItem[];
+    const [movedItem] = reorderedList.splice(startIndex, 1);
+    reorderedList.splice(endIndex, 0, movedItem);
 
-    updatedDaily[dayIndex] = { ...targetDay, activities: updatedActivities };
+    // 重新推算時間軸與交通指引
+    const timeCalculatedActivities = recalculateDayTimeSlots(reorderedList);
+
+    updatedDaily[dayIndex] = { ...targetDay, activities: timeCalculatedActivities };
     const newItineraryData: ItineraryPayload = { ...itineraryData, daily_itinerary: updatedDaily };
 
     set({ itineraryData: newItineraryData, saveStatusText: '編輯中...' });

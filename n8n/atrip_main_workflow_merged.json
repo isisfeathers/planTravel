@@ -1,0 +1,193 @@
+{
+  "name": "Atrip AI Travel Itinerary Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-itinerary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-ingress",
+      "name": "1. Webhook Ingress",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        100,
+        300
+      ],
+      "webhookId": "generate-itinerary"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Workflow was started\",\n  \"status\": \"processing\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "webhook-respond",
+      "name": "2. Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.item.json;\nconst data = inputData.body || inputData;\nconst destination = data.destination || (data.preference_snapshot && data.preference_snapshot.destination) || '東京';\nconst days = Number(data.days || (data.preference_snapshot && data.preference_snapshot.total_days) || 3);\nconst prefs = data.preference_snapshot || {};\nconst pace = prefs.pace || 'moderate';\nconst budget = prefs.budget_level || 'standard';\nconst accommodation = prefs.accommodation_strategy || 'single_hotel';\nconst transit = prefs.transit_mode || 'public_transit';\nconst interests = Array.isArray(prefs.interests) ? prefs.interests : ['gourmet', 'cultural'];\nconst eventNote = prefs.event_note || '';\n\nconst baseRules = [\n  '你是 Atrip 頂級 AI 自由行旅遊管家。擅長規劃真實可行、具備地理精確度、深度在地化的行程。',\n  '必須嚴格輸出純 JSON 格式，不得包含 markdown。',\n  '所有 location_name 必須是真實世界具體的景點、歷史地標、餐廳或商圈全名（嚴禁使用泛稱）。',\n  '每個活動皆須包含真實經緯度 (lat/lng)、停留時間 (duration_minutes) 與交通轉乘指引 (transit_to_next)。',\n  '每日活動按照同一個市區分區安排，避免折返跑。'\n].join('\\n');\n\nconst directives = [];\nif (accommodation === 'single_hotel') {\n  directives.push('【住宿約束】以推薦飯店為固定 Basecamp，每日動線以飯店為圓心，中途嚴禁更換住宿。');\n} else {\n  directives.push('【換宿約束】允許分區換宿。更換飯店當日，上午安排行李寄存，下午安排 Check-in。');\n}\n\nif (transit === 'public_transit') {\n  directives.push('【交通模式】優先搭乘地鐵、捷運或鐵路。transit_to_next 具體指明路線代碼、方向與出口。');\n} else {\n  directives.push('【交通模式】自駕為主，估算自駕時間並提示周邊停車方便度。');\n}\n\nif (interests.includes('gourmet')) directives.push('【美食強化】每日午晚餐推薦高評價特色餐飲，避免觀光客陷阱。');\nif (interests.includes('shopping')) directives.push('【購物排程】安排 1-2 個核心商圈，預留充裕逛街時間。');\nif (interests.includes('sports')) directives.push('【運動賽事】優先安排知名體育場館或賽事活動。');\nif (eventNote && eventNote.trim()) {\n  directives.push(`【時間錨點】活動：${eventNote.trim().slice(0, 100)}，當日周邊活動以此為軸心安排。`);\n}\n\nconst formatSchema = {\n  meta: { trip_title: `${destination} ${days} 天深度自由行`, destination, total_days: days, currency: 'TWD', budget_level: budget, pace },\n  daily_itinerary: [{\n    day_number: 1, date_label: '第 1 天 · 區域核心探索', summary: '探索核心地標與排隊名店',\n    activities: [{\n      id: 'act-d1-1', time_slot: '10:00 - 12:30', location_name: '真實景點全名', category: 'sightseeing', duration_minutes: 150,\n      description: '具體描繪該景點特色與遊覽重點。', coordinates: { lat: 35.7147, lng: 139.7967 }, cost_estimate: 500,\n      tips: '實用避坑技巧與最佳時段。',\n      transit_to_next: { mode: 'subway', duration_minutes: 15, route_name: '地鐵/巴士路線', instructions: '從 A 站搭乘 X 線至 B 站' }\n    }]\n  }],\n  transit_overview: { primary_mode: 'public_transit', summary: '主要交通工具概況', recommendations: ['推薦交通票券', '乘車秘訣'] },\n  recommendations: { dining: ['必吃名店 1', '必吃名店 2'], notes: '注意事項' },\n  packing_list: [\n    { category: 'essentials', item_name: '護照正本（效期6個月以上）與入境申報碼', is_checked: false, notes: '隨身攜帶勿托運' },\n    { category: 'essentials', item_name: '海外高回饋雙幣信用卡與當地現鈔', is_checked: false, notes: '應急金流備用' },\n    { category: 'clothing', item_name: '配合當地季節的透氣排汗衫與好走健步鞋', is_checked: false, notes: '每日萬步健走必備' },\n    { category: 'clothing', item_name: '防風保暖外套或折疊雨傘', is_checked: false, notes: '因應早晚溫差與天氣' },\n    { category: 'electronics', item_name: '大容量行動電源與該國專用規格轉接插頭', is_checked: false, notes: '行動電源需放隨身行李' },\n    { category: 'electronics', item_name: '當地上網 eSIM / 實體 SIM 卡與快充線組', is_checked: false, notes: '出發前完成開通' },\n    { category: 'toiletries', item_name: '個人常備用藥（止痛/胃腸藥/暈車藥）', is_checked: false, notes: '隨身備用' },\n    { category: 'toiletries', item_name: '旅行分裝盥洗包、保濕乳液與防曬乳', is_checked: false, notes: '隨身攜帶需小於100ml' }\n  ]\n};\n\nconst assembledSystemPrompt = [\n  '## Base System Rules', baseRules, '',\n  '## Injected Directives', directives.join('\\n'), '',\n  '## Output JSON Schema Reference', JSON.stringify(formatSchema, null, 2)\n].join('\\n');\n\nconst userPrompt = `目的地：${destination}，天數：${days} 天，步調：${pace}。請為我產生完整 ${days} 天每天 3~4 個真實具體景點與美食，以及完整的 4 大類（重要證件與金流、季節衣物與配件、3C 數位與充電設備、隨身常備藥與盥洗）行李打包清單 JSON。`;\n\nreturn [{\n  json: {\n    itineraryId: data.itineraryId,\n    userId: data.userId,\n    destination,\n    days,\n    assembledSystemPrompt,\n    userPrompt,\n    llmRequestBody: {\n      model: 'openai/gpt-4o-mini',\n      response_format: { type: 'json_object' },\n      messages: [\n        { role: 'system', content: assembledSystemPrompt },\n        { role: 'user', content: userPrompt }\n      ]\n    }\n  }\n}];"
+      },
+      "id": "prompt-assembler",
+      "name": "3. Prompt Assembler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.llmRequestBody }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "openrouter-llm",
+      "name": "4. OpenRouter LLM (GPT-4o)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawResponse = $input.item.json;\nlet content = '';\nif (rawResponse.choices && rawResponse.choices[0] && rawResponse.choices[0].message) {\n  content = rawResponse.choices[0].message.content;\n} else if (typeof rawResponse === 'string') {\n  content = rawResponse;\n} else {\n  content = JSON.stringify(rawResponse);\n}\n\ncontent = content.replace(/^\\s*```json/i, '').replace(/```\\s*$/i, '').trim();\n\nlet parsed = {};\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  throw new Error('LLM output could not be parsed as JSON: ' + e.message);\n}\n\n// 1. 活動 UUID 注入\nif (Array.isArray(parsed.daily_itinerary)) {\n  parsed.daily_itinerary.forEach((day, dIdx) => {\n    const dNum = day.day_number || dIdx + 1;\n    if (Array.isArray(day.activities)) {\n      day.activities.forEach((act, aIdx) => {\n        if (!act.id || act.id.length < 5) {\n          const rand = Math.random().toString(16).slice(2, 8);\n          act.id = `act-d${dNum}-${aIdx + 1}-${rand}`;\n        }\n        if (act.coordinates) {\n          act.coordinates.lat = Number(act.coordinates.lat) || 0;\n          act.coordinates.lng = Number(act.coordinates.lng) || 0;\n        }\n        act.duration_minutes = Number(act.duration_minutes) || 60;\n        act.cost_estimate = Number(act.cost_estimate) || 0;\n      });\n    }\n  });\n}\n\n// 2. 4 大類行李清單標準化\nconst DEFAULT_PACKING = {\n  essentials: [\n    { item_name: '護照正本（效期6個月以上）與入境申報碼', notes: '隨身攜帶勿托運' },\n    { item_name: '海外高回饋信用卡與當地貨幣現鈔', notes: '應急金流備用' }\n  ],\n  clothing: [\n    { item_name: '舒適好走防滑健步鞋', notes: '每日萬步自由行必備' },\n    { item_name: '防風保暖外套與換洗衣物', notes: '因應早晚溫差' }\n  ],\n  electronics: [\n    { item_name: '大容量行動電源 (需隨身攜帶)', notes: '嚴禁托運' },\n    { item_name: '該國專用規格轉接插頭與充電線組', notes: '充電必備' }\n  ],\n  toiletries: [\n    { item_name: '個人常備藥（止痛/胃腸藥/暈車藥）', notes: '隨身備用' },\n    { item_name: '旅行分裝盥洗包與保濕防曬乳', notes: '隨身小於100ml' }\n  ]\n};\n\nconst normalizedList = [];\nconst categoriesPresent = new Set();\n\nif (Array.isArray(parsed.packing_list)) {\n  parsed.packing_list.forEach((item, idx) => {\n    let cat = String(item.category || 'essentials').toLowerCase();\n    if (cat === 'essential' || cat === 'document' || cat === 'documents') cat = 'essentials';\n    if (cat === 'clothes') cat = 'clothing';\n    if (cat === 'electronic' || cat === 'tech') cat = 'electronics';\n    if (cat === 'toiletry' || cat === 'medicine') cat = 'toiletries';\n    if (!['essentials', 'clothing', 'electronics', 'toiletries'].includes(cat)) cat = 'essentials';\n\n    categoriesPresent.add(cat);\n    normalizedList.push({\n      id: item.id || `pack-${cat}-${idx + 1}-${Math.random().toString(16).slice(2, 8)}`,\n      category: cat,\n      item_name: item.item_name || item.item || item.name || '必備物品',\n      is_checked: Boolean(item.is_checked || item.packed),\n      notes: item.notes || item.tips || ''\n    });\n  });\n}\n\n['essentials', 'clothing', 'electronics', 'toiletries'].forEach((cat) => {\n  if (!categoriesPresent.has(cat)) {\n    (DEFAULT_PACKING[cat] || []).forEach((def, dIdx) => {\n      normalizedList.push({\n        id: `pack-${cat}-def-${dIdx + 1}-${Math.random().toString(16).slice(2, 8)}`,\n        category: cat,\n        item_name: def.item_name,\n        is_checked: false,\n        notes: def.notes\n      });\n    });\n  }\n});\n\nparsed.packing_list = normalizedList;\n\nconst itineraryId = $node[\"3. Prompt Assembler\"].json.itineraryId;\nconst userId = $node[\"3. Prompt Assembler\"].json.userId;\n\nreturn [{\n  json: {\n    itineraryId,\n    userId,\n    status: 'completed',\n    itinerary_data: parsed,\n    flight_data: [],\n    supabaseUpdateBody: {\n      status: 'completed',\n      is_public: true,\n      itinerary_data: parsed,\n      flight_data: [],\n      updated_at: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "data-cleaner",
+      "name": "5. Clean & Format Itinerary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://fvnxaksfcftatvxddhpx.supabase.co/rest/v1/itineraries?id=eq.' + $json.itineraryId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.supabaseUpdateBody }}",
+        "options": {}
+      },
+      "id": "supabase-update",
+      "name": "6. Update Supabase Itinerary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        380
+      ]
+    }
+  ],
+  "connections": {
+    "1. Webhook Ingress": {
+      "main": [
+        [
+          {
+            "node": "2. Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "3. Prompt Assembler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Prompt Assembler": {
+      "main": [
+        [
+          {
+            "node": "4. OpenRouter LLM (GPT-4o)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. OpenRouter LLM (GPT-4o)": {
+      "main": [
+        [
+          {
+            "node": "5. Clean & Format Itinerary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Clean & Format Itinerary": {
+      "main": [
+        [
+          {
+            "node": "6. Update Supabase Itinerary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

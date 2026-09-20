@@ -1,0 +1,42 @@
+--- frontend/src/components/wizard/WizardHeadlessForm.tsx
++++ frontend/src/components/wizard/WizardHeadlessForm.tsx
+@@ -114,13 +114,6 @@
+       const supabase = getSupabaseBrowserClient();
+ 
+-      const created = await createItinerary(supabase, {
+-        userId: userId,
+-        title: `${preferenceSnapshot.destination} ${preferenceSnapshot.total_days} 天行程`,
+-        preferenceSnapshot,
+-      });
+-
+       // 觸發 n8n Webhook 透過 Next.js API Route (避免 CORS)
+-      await fetch("/api/generate", {
++      const response = await fetch("/api/generate", {
+         method: "POST",
+         headers: {
+@@ -128,15 +121,21 @@
+         },
+         body: JSON.stringify({
+-          itineraryId: created.id,
+           userId: userId,
+           destination: preferenceSnapshot.destination,
+-          days: preferenceSnapshot.total_days,
+-          preference_snapshot: preferenceSnapshot
++          total_days: preferenceSnapshot.total_+          total_dreferenceSnapshot: preferenceSnapshot
+         })
+-      -      -      -      -      -      -      -      -      r -      -      -      -      -      -      -      - );
+ 
+-      router.push(`/waiting/${created.id}`);
++      if (!response.ok) {
++        const errData = await response.json().catch(() => ({}));
++        throw new Error(errData.error || "伺服器建立行程失敗");
++      }
++
++      const resData = await response.json();
++      if (!resData.id) {
++        throw new Error("伺服器未回傳行程 ID");
++      }
++
++      router.push(`/waiting/${resData.id}`);
+     } catch (error) {
+       setSubmitError(error instanceof Error ? error.message : "建立行程失敗。");

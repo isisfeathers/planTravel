@@ -1,0 +1,111 @@
+{
+  "type": "flex",
+  "altText": "Atrip 正在規劃你的行程，點此查看處理進度。",
+  "contents": {
+    "type": "bubble",
+    "size": "mega",
+    "header": {
+      "type": "box",
+      "layout": "vertical",
+      "backgroundColor": "#FFFFFF",
+      "paddingAll": "18px",
+      "contents": [
+        {
+          "type": "text",
+          "text": "行程規劃中",
+          "color": "#182B36",
+          "weight": "bold",
+          "size": "lg",
+          "wrap": true
+        }
+      ]
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "paddingAll": "20px",
+      "spacing": "lg",
+      "contents": [
+        {
+          "type": "text",
+          "text": "{{TRIP_TITLE}}",
+          "color": "#182B36",
+          "weight": "bold",
+          "size": "xl",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
+          "type": "text",
+          "text": "正在安排你的專屬行程……",
+          "color": "#52616B",
+          "size": "sm",
+          "wrap": true
+        },
+        {
+          "type": "box",
+          "layout": "vertical",
+          "backgroundColor": "#F3F5EF",
+          "cornerRadius": "14px",
+          "paddingAll": "16px",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "text",
+              "text": "目前進度",
+              "color": "#52616B",
+              "size": "xs",
+              "wrap": true
+            },
+            {
+              "type": "text",
+              "text": "{{JOB_STATUS_TEXT}}",
+              "color": "#182B36",
+              "weight": "bold",
+              "size": "md",
+              "wrap": true,
+              "maxLines": 2
+            }
+          ]
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "paddingStart": "20px",
+      "paddingEnd": "20px",
+      "paddingTop": "0px",
+      "paddingBottom": "20px",
+      "contents": [
+        {
+          "type": "box",
+          "layout": "vertical",
+          "backgroundColor": "#B9E85A",
+          "cornerRadius": "14px",
+          "paddingAll": "14px",
+          "action": {
+            "type": "uri",
+            "label": "查看處理進度",
+            "uri": "{{PROGRESS_URL}}"
+          },
+          "contents": [
+            {
+              "type": "text",
+              "text": "查看處理進度",
+              "color": "#182B36",
+              "weight": "bold",
+              "size": "md",
+              "align": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "styles": {
+      "footer": {
+        "separator": false
+      }
+    }
+  }
+}

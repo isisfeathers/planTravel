@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"n8n": {
+			"type": "http",
+			"url": "https://n8n-210083939307.asia-east1.run.app/mcp-server/http"
+		}
+	},
+	"inputs": []
+}

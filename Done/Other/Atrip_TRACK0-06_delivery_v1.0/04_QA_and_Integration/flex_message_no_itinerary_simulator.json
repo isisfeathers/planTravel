@@ -1,0 +1,89 @@
+{
+  "type": "bubble",
+  "size": "mega",
+  "header": {
+    "type": "box",
+    "layout": "vertical",
+    "backgroundColor": "#FFFFFF",
+    "paddingAll": "18px",
+    "contents": [
+      {
+        "type": "text",
+        "text": "我的行程",
+        "color": "#182B36",
+        "weight": "bold",
+        "size": "lg",
+        "wrap": true
+      }
+    ]
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "paddingAll": "20px",
+    "spacing": "md",
+    "contents": [
+      {
+        "type": "text",
+        "text": "🗺️",
+        "size": "3xl",
+        "align": "center"
+      },
+      {
+        "type": "text",
+        "text": "還沒有建立旅程",
+        "color": "#182B36",
+        "weight": "bold",
+        "size": "xl",
+        "align": "center",
+        "wrap": true
+      },
+      {
+        "type": "text",
+        "text": "從下一趟想去的地方開始，讓 Atrip 幫你安排專屬自由行。",
+        "color": "#52616B",
+        "size": "sm",
+        "align": "center",
+        "wrap": true,
+        "lineSpacing": "4px"
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "paddingStart": "20px",
+    "paddingEnd": "20px",
+    "paddingTop": "0px",
+    "paddingBottom": "20px",
+    "contents": [
+      {
+        "type": "box",
+        "layout": "vertical",
+        "backgroundColor": "#B9E85A",
+        "cornerRadius": "14px",
+        "paddingAll": "14px",
+        "action": {
+          "type": "uri",
+          "label": "開始規劃",
+          "uri": "https://example.com/wizard"
+        },
+        "contents": [
+          {
+            "type": "text",
+            "text": "開始規劃",
+            "color": "#182B36",
+            "weight": "bold",
+            "size": "md",
+            "align": "center"
+          }
+        ]
+      }
+    ]
+  },
+  "styles": {
+    "footer": {
+      "separator": false
+    }
+  }
+}

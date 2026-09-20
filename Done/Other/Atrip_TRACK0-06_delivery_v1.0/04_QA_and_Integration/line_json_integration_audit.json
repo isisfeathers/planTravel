@@ -1,0 +1,624 @@
+{
+  "task": "TRACK0-06-4 LINE JSON integration audit",
+  "source_files_checked": {
+    "TRACK0-04 richmenu v1": "/mnt/data/track04/Atrip_TRACK0-04_delivery/richmenu_bounds.json",
+    "TRACK0-04 ready flex": "/mnt/data/track04/Atrip_TRACK0-04_delivery/flex_message_itinerary_ready.json",
+    "TRACK0-04 error/retry flex": "/mnt/data/track04/Atrip_TRACK0-04_delivery/flex_message_error_retry.json",
+    "TRACK0-06 richmenu v2": "/mnt/data/richmenu_bounds_v2.json",
+    "TRACK0-06 no itinerary": "/mnt/data/flex_message_no_itinerary.json",
+    "TRACK0-06 generating": "/mnt/data/flex_message_itinerary_generating.json",
+    "TRACK0-06 my itinerary": "/mnt/data/flex_message_my_itinerary.json",
+    "TRACK0-06 welcome": "/mnt/data/line_welcome_message.json",
+    "TRACK0-06 help menu": "/mnt/data/quick_reply_help_menu.json",
+    "TRACK0-06 help topics": "/mnt/data/help_topic_messages.json",
+    "TRACK0-06 my itinerary conditional contract": "/mnt/data/my_itinerary_conditional_rendering_contract.json",
+    "TRACK0-06 generating QA cases": "/mnt/data/itinerary_generating_QA_cases.json",
+    "TRACK0-06 my itinerary QA cases": "/mnt/data/my_itinerary_QA_cases.json"
+  },
+  "richmenu_geometry_checks": [
+    {
+      "check": "area_1_within_canvas",
+      "pass": true
+    },
+    {
+      "check": "area_2_within_canvas",
+      "pass": true
+    },
+    {
+      "check": "area_3_within_canvas",
+      "pass": true
+    },
+    {
+      "check": "no_horizontal_gap",
+      "pass": true
+    },
+    {
+      "check": "no_overlap",
+      "pass": true
+    },
+    {
+      "check": "full_2500px_width_coverage",
+      "pass": true
+    },
+    {
+      "check": "full_843px_height_coverage",
+      "pass": true
+    },
+    {
+      "check": "bounds_unchanged_from_TRACK0_04",
+      "pass": true
+    }
+  ],
+  "integration_checks": [
+    {
+      "check": "all_relevant_json_parse",
+      "pass": true,
+      "severity": "pass",
+      "detail": "All JSON files parse."
+    },
+    {
+      "check": "richmenu_area1_wizard_uri",
+      "pass": true,
+      "severity": "pass",
+      "detail": "Atrip 智慧自由行 must remain URI → /wizard."
+    },
+    {
+      "check": "richmenu_area2_my_itinerary_postback",
+      "pass": true,
+      "severity": "pass",
+      "detail": "我的行程 must be postback action=my_itinerary."
+    },
+    {
+      "check": "richmenu_area3_help_postback",
+      "pass": true,
+      "severity": "pass",
+      "detail": "使用說明 must be postback action=help_menu."
+    },
+    {
+      "check": "richmenu_postback_displayText_user_facing",
+      "pass": true,
+      "severity": "pass",
+      "detail": "Do not expose raw engineering action strings."
+    },
+    {
+      "check": "welcome_has_wizard_uri",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "welcome_has_help_menu_postback",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "help_menu_all_four_topics",
+      "pass": true,
+      "severity": "pass",
+      "detail": "Found: ['action=help&topic=create', 'action=help&topic=edit', 'action=help&topic=retry', 'action=help&topic=share']"
+    },
+    {
+      "check": "help_create_goes_to_wizard",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "help_generic_topics_do_not_require_itinerary_id",
+      "pass": true,
+      "severity": "pass",
+      "detail": "Generic help CTAs currently use /dashboard; this avoids broken trip-specific routes."
+    },
+    {
+      "check": "no_itinerary_single_wizard_cta",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "generating_has_required_dynamic_fields",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "generating_progress_cta",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "my_itinerary_has_required_dynamic_fields",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "my_itinerary_hero_and_cta_same_url",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "existing_retry_action_present",
+      "pass": true,
+      "severity": "pass",
+      "detail": ""
+    },
+    {
+      "check": "legacy_ready_route_matches_TRACK0_06_route_contract",
+      "pass": false,
+      "severity": "route_confirmation",
+      "detail": "TRACK0-04 Ready Flex still uses /canvas/ITINERARY_ID; TRACK0-06 defines /trips/{ITINERARY_ID}. Do not silently change until TRACK3-01 confirms canonical route."
+    },
+    {
+      "check": "legacy_TRACK0_04_placeholder_syntax_normalized",
+      "pass": false,
+      "severity": "handoff_note",
+      "detail": "TRACK0-04 uses LIFF_ID / ITINERARY_ID without {{ }}. New TRACK0-06 templates use {{...}}. Engineering substitution must support both or normalize before final delivery."
+    },
+    {
+      "check": "help_topic_bundle_not_mistaken_for_direct_LINE_payload",
+      "pass": true,
+      "severity": "pass",
+      "detail": "help_topic_messages.json is an engineering lookup bundle. Send the nested `message` object, not the whole file, to LINE Messaging API."
+    },
+    {
+      "check": "design_placeholders_are_resolved_before_API_send",
+      "pass": false,
+      "severity": "engineering_required",
+      "detail": "16 URI/action values still contain design placeholders by design; TRACK3-01 must substitute them before sending/creating LINE resources."
+    }
+  ],
+  "actions_by_file": {
+    "TRACK0-04 richmenu v1": [
+      {
+        "path": "$.areas[0].action",
+        "type": "uri",
+        "label": "Atrip 智慧自由行",
+        "uri": "https://liff.line.me/LIFF_ID/wizard",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.areas[1].action",
+        "type": "uri",
+        "label": "我的行程",
+        "uri": "https://liff.line.me/LIFF_ID/dashboard",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.areas[2].action",
+        "type": "uri",
+        "label": "使用說明",
+        "uri": "https://liff.line.me/LIFF_ID/help",
+        "data": null,
+        "displayText": null
+      }
+    ],
+    "TRACK0-04 ready flex": [
+      {
+        "path": "$.contents.hero.action",
+        "type": "uri",
+        "label": "查看專屬行程",
+        "uri": "https://liff.line.me/LIFF_ID/canvas/ITINERARY_ID",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.contents.footer.contents[0].action",
+        "type": "uri",
+        "label": "開啟 Atrip 專屬行程",
+        "uri": "https://liff.line.me/LIFF_ID/canvas/ITINERARY_ID",
+        "data": null,
+        "displayText": null
+      }
+    ],
+    "TRACK0-04 error/retry flex": [
+      {
+        "path": "$.contents.footer.contents[0].action",
+        "type": "postback",
+        "label": "重新產生行程",
+        "uri": null,
+        "data": "action=retry_itinerary&itinerary_id=ITINERARY_ID",
+        "displayText": "請幫我重新產生行程"
+      },
+      {
+        "path": "$.contents.footer.contents[1].action",
+        "type": "uri",
+        "label": "返回我的行程",
+        "uri": "https://liff.line.me/LIFF_ID/dashboard",
+        "data": null,
+        "displayText": null
+      }
+    ],
+    "TRACK0-06 richmenu v2": [
+      {
+        "path": "$.areas[0].action",
+        "type": "uri",
+        "label": "Atrip 智慧自由行",
+        "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.areas[1].action",
+        "type": "postback",
+        "label": "我的行程",
+        "uri": null,
+        "data": "action=my_itinerary",
+        "displayText": "查看我的行程"
+      },
+      {
+        "path": "$.areas[2].action",
+        "type": "postback",
+        "label": "使用說明",
+        "uri": null,
+        "data": "action=help_menu",
+        "displayText": "查看使用說明"
+      }
+    ],
+    "TRACK0-06 no itinerary": [
+      {
+        "path": "$.contents.footer.contents[0].action",
+        "type": "uri",
+        "label": "開始規劃",
+        "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+        "data": null,
+        "displayText": null
+      }
+    ],
+    "TRACK0-06 generating": [
+      {
+        "path": "$.contents.footer.contents[0].action",
+        "type": "uri",
+        "label": "查看處理進度",
+        "uri": "{{PROGRESS_URL}}",
+        "data": null,
+        "displayText": null
+      }
+    ],
+    "TRACK0-06 my itinerary": [
+      {
+        "path": "$.contents.hero.action",
+        "type": "uri",
+        "label": "開啟完整行程",
+        "uri": "{{ITINERARY_URL}}",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.contents.footer.contents[0].action",
+        "type": "uri",
+        "label": "開啟完整行程",
+        "uri": "{{ITINERARY_URL}}",
+        "data": null,
+        "displayText": null
+      }
+    ],
+    "TRACK0-06 welcome": [
+      {
+        "path": "$.quickReply.items[0].action",
+        "type": "uri",
+        "label": "開始規劃",
+        "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.quickReply.items[1].action",
+        "type": "postback",
+        "label": "查看使用說明",
+        "uri": null,
+        "data": "action=help_menu",
+        "displayText": null
+      }
+    ],
+    "TRACK0-06 help menu": [
+      {
+        "path": "$.quickReply.items[0].action",
+        "type": "postback",
+        "label": "開始規劃",
+        "uri": null,
+        "data": "action=help&topic=create",
+        "displayText": null
+      },
+      {
+        "path": "$.quickReply.items[1].action",
+        "type": "postback",
+        "label": "調整行程",
+        "uri": null,
+        "data": "action=help&topic=edit",
+        "displayText": null
+      },
+      {
+        "path": "$.quickReply.items[2].action",
+        "type": "postback",
+        "label": "分享行程",
+        "uri": null,
+        "data": "action=help&topic=share",
+        "displayText": null
+      },
+      {
+        "path": "$.quickReply.items[3].action",
+        "type": "postback",
+        "label": "生成失敗",
+        "uri": null,
+        "data": "action=help&topic=retry",
+        "displayText": null
+      }
+    ],
+    "TRACK0-06 help topics": [
+      {
+        "path": "$.create.message.quickReply.items[0].action",
+        "type": "uri",
+        "label": "開始規劃",
+        "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.edit.message.quickReply.items[0].action",
+        "type": "uri",
+        "label": "開啟我的行程",
+        "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.share.message.quickReply.items[0].action",
+        "type": "uri",
+        "label": "查看我的行程",
+        "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard",
+        "data": null,
+        "displayText": null
+      },
+      {
+        "path": "$.retry.message.quickReply.items[0].action",
+        "type": "uri",
+        "label": "查看我的行程",
+        "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard",
+        "data": null,
+        "displayText": null
+      }
+    ],
+    "TRACK0-06 my itinerary conditional contract": [],
+    "TRACK0-06 generating QA cases": [],
+    "TRACK0-06 my itinerary QA cases": []
+  },
+  "placeholders_by_file": {
+    "TRACK0-04 richmenu v1": [
+      "LIFF_ID"
+    ],
+    "TRACK0-04 ready flex": [
+      "ITINERARY_ID",
+      "LIFF_ID"
+    ],
+    "TRACK0-04 error/retry flex": [
+      "ITINERARY_ID",
+      "LIFF_ID"
+    ],
+    "TRACK0-06 richmenu v2": [
+      "LIFF_ID",
+      "{{LIFF_ID}}"
+    ],
+    "TRACK0-06 no itinerary": [
+      "LIFF_ID",
+      "{{LIFF_ID}}"
+    ],
+    "TRACK0-06 generating": [
+      "{{JOB_STATUS_TEXT}}",
+      "{{PROGRESS_URL}}",
+      "{{TRIP_TITLE}}"
+    ],
+    "TRACK0-06 my itinerary": [
+      "{{DAYS}}",
+      "{{DESTINATION}}",
+      "{{HERO_IMAGE_URL}}",
+      "{{ITINERARY_URL}}",
+      "{{TAG_1}}",
+      "{{TAG_2}}",
+      "{{TRIP_TITLE}}"
+    ],
+    "TRACK0-06 welcome": [
+      "LIFF_ID",
+      "{{LIFF_ID}}"
+    ],
+    "TRACK0-06 help menu": [],
+    "TRACK0-06 help topics": [
+      "LIFF_ID",
+      "{{LIFF_ID}}"
+    ],
+    "TRACK0-06 my itinerary conditional contract": [
+      "LIFF_ID",
+      "{{DAYS}}",
+      "{{DESTINATION}}",
+      "{{HERO_IMAGE_URL}}",
+      "{{ITINERARY_URL}}",
+      "{{LIFF_ID}}",
+      "{{TAG_1}}",
+      "{{TAG_2}}",
+      "{{TRIP_TITLE}}"
+    ],
+    "TRACK0-06 generating QA cases": [],
+    "TRACK0-06 my itinerary QA cases": []
+  },
+  "placeholder_uri_actions": [
+    {
+      "file": "TRACK0-04 richmenu v1",
+      "path": "$.areas[0].action",
+      "type": "uri",
+      "label": "Atrip 智慧自由行",
+      "uri": "https://liff.line.me/LIFF_ID/wizard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-04 richmenu v1",
+      "path": "$.areas[1].action",
+      "type": "uri",
+      "label": "我的行程",
+      "uri": "https://liff.line.me/LIFF_ID/dashboard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-04 richmenu v1",
+      "path": "$.areas[2].action",
+      "type": "uri",
+      "label": "使用說明",
+      "uri": "https://liff.line.me/LIFF_ID/help",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-04 ready flex",
+      "path": "$.contents.hero.action",
+      "type": "uri",
+      "label": "查看專屬行程",
+      "uri": "https://liff.line.me/LIFF_ID/canvas/ITINERARY_ID",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-04 ready flex",
+      "path": "$.contents.footer.contents[0].action",
+      "type": "uri",
+      "label": "開啟 Atrip 專屬行程",
+      "uri": "https://liff.line.me/LIFF_ID/canvas/ITINERARY_ID",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-04 error/retry flex",
+      "path": "$.contents.footer.contents[1].action",
+      "type": "uri",
+      "label": "返回我的行程",
+      "uri": "https://liff.line.me/LIFF_ID/dashboard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 richmenu v2",
+      "path": "$.areas[0].action",
+      "type": "uri",
+      "label": "Atrip 智慧自由行",
+      "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 no itinerary",
+      "path": "$.contents.footer.contents[0].action",
+      "type": "uri",
+      "label": "開始規劃",
+      "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 generating",
+      "path": "$.contents.footer.contents[0].action",
+      "type": "uri",
+      "label": "查看處理進度",
+      "uri": "{{PROGRESS_URL}}",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 my itinerary",
+      "path": "$.contents.hero.action",
+      "type": "uri",
+      "label": "開啟完整行程",
+      "uri": "{{ITINERARY_URL}}",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 my itinerary",
+      "path": "$.contents.footer.contents[0].action",
+      "type": "uri",
+      "label": "開啟完整行程",
+      "uri": "{{ITINERARY_URL}}",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 welcome",
+      "path": "$.quickReply.items[0].action",
+      "type": "uri",
+      "label": "開始規劃",
+      "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 help topics",
+      "path": "$.create.message.quickReply.items[0].action",
+      "type": "uri",
+      "label": "開始規劃",
+      "uri": "https://liff.line.me/{{LIFF_ID}}/wizard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 help topics",
+      "path": "$.edit.message.quickReply.items[0].action",
+      "type": "uri",
+      "label": "開啟我的行程",
+      "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 help topics",
+      "path": "$.share.message.quickReply.items[0].action",
+      "type": "uri",
+      "label": "查看我的行程",
+      "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard",
+      "data": null,
+      "displayText": null
+    },
+    {
+      "file": "TRACK0-06 help topics",
+      "path": "$.retry.message.quickReply.items[0].action",
+      "type": "uri",
+      "label": "查看我的行程",
+      "uri": "https://liff.line.me/{{LIFF_ID}}/dashboard",
+      "data": null,
+      "displayText": null
+    }
+  ],
+  "summary": {
+    "json_parse_failures": {},
+    "geometry_passed": 8,
+    "geometry_total": 8,
+    "integration_passed": 17,
+    "integration_total": 20,
+    "blocking_failures": [],
+    "route_confirmations": [
+      {
+        "check": "legacy_ready_route_matches_TRACK0_06_route_contract",
+        "pass": false,
+        "severity": "route_confirmation",
+        "detail": "TRACK0-04 Ready Flex still uses /canvas/ITINERARY_ID; TRACK0-06 defines /trips/{ITINERARY_ID}. Do not silently change until TRACK3-01 confirms canonical route."
+      }
+    ],
+    "engineering_required": [
+      {
+        "check": "legacy_TRACK0_04_placeholder_syntax_normalized",
+        "pass": false,
+        "severity": "handoff_note",
+        "detail": "TRACK0-04 uses LIFF_ID / ITINERARY_ID without {{ }}. New TRACK0-06 templates use {{...}}. Engineering substitution must support both or normalize before final delivery."
+      },
+      {
+        "check": "design_placeholders_are_resolved_before_API_send",
+        "pass": false,
+        "severity": "engineering_required",
+        "detail": "16 URI/action values still contain design placeholders by design; TRACK3-01 must substitute them before sending/creating LINE resources."
+      }
+    ]
+  }
+}

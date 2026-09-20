@@ -1,0 +1,6 @@
+{
+  "terminal.integrated.env.osx": {
+    "GOOGLE_APPLICATION_CREDENTIALS": "${env:HOME}/.config/gcloud_student_b/application_default_credentials.json",
+    "CLOUDSDK_CONFIG": "${env:HOME}/.config/gcloud_student_b"
+  }
+}

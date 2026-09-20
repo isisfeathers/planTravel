@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { ItineraryEntity } from '@/types/itinerary';
 
 interface TripCardProps {
@@ -16,6 +17,7 @@ export const TripCard: React.FC<TripCardProps> = ({
   onArchive,
   onDelete,
 }) => {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -30,12 +32,17 @@ export const TripCard: React.FC<TripCardProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsMenuOpen(false);
     setIsExiting(true);
     setTimeout(() => {
       onDelete(itinerary.id);
     }, 250);
+  };
+
+  const handleCardClick = () => {
+    router.push(`/canvas/${itinerary.id}`);
   };
 
   const { title, destination, status, preference_snapshot, is_archived } = itinerary;
@@ -59,14 +66,15 @@ export const TripCard: React.FC<TripCardProps> = ({
 
   return (
     <div
-      className={`relative bg-white rounded-2xl border transition-all duration-250 ease-in-out shadow-sm hover:shadow-md overflow-hidden ${
+      onClick={handleCardClick}
+      className={`relative bg-white rounded-2xl border transition-all duration-200 ease-in-out shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer overflow-hidden group ${
         isActive ? 'border-brand-primary ring-2 ring-brand-primary/20' : 'border-slate-200'
       } ${isExiting ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
     >
-      <div className="h-32 bg-slate-100 relative p-4 flex flex-col justify-between">
+      <div className="h-32 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 relative p-4 flex flex-col justify-between text-white">
         <div className="flex justify-between items-start">
           {isActive ? (
-            <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-brand-primary text-slate-900 font-bold shadow-sm">
+            <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-brand-primary text-slate-900 shadow-sm">
               ★ 當前關注
             </span>
           ) : (
@@ -76,8 +84,11 @@ export const TripCard: React.FC<TripCardProps> = ({
           <div className="relative" ref={menuRef}>
             <button
               type="button"
-              onClick={() => setIsMenuOpen((prev) => !prev)}
-              className="p-1.5 rounded-full bg-white/80 hover:bg-white text-slate-600 transition-colors shadow-sm focus:outline-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsMenuOpen((prev) => !prev);
+              }}
+              className="p-1.5 rounded-full bg-black/30 hover:bg-black/50 text-white transition-colors shadow-sm focus:outline-none"
               aria-label="更多操作"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,11 +99,15 @@ export const TripCard: React.FC<TripCardProps> = ({
             </button>
 
             {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-20">
+              <div
+                className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-30"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {!isActive && (
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setIsMenuOpen(false);
                       onSetActive(itinerary.id);
                     }}
@@ -104,7 +119,8 @@ export const TripCard: React.FC<TripCardProps> = ({
                 {!is_archived && (
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setIsMenuOpen(false);
                       onArchive(itinerary.id);
                     }}
@@ -126,29 +142,34 @@ export const TripCard: React.FC<TripCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white/90 text-slate-800 shadow-sm">
-            {destination || '目的地待定'}
+          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/20 backdrop-blur-sm text-white shadow-sm">
+            📍 {destination || '目的地待定'}
           </span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white/90 text-slate-800 shadow-sm">
-            {totalDays} 天
+          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/20 backdrop-blur-sm text-white shadow-sm">
+            🗓️ {totalDays} 天
           </span>
         </div>
       </div>
 
       <div className="p-4 flex flex-col gap-2">
         <div className="flex justify-between items-center gap-2">
-          <h3 className="font-bold text-slate-900 text-base truncate" title={title}>
+          <h3 className="font-bold text-slate-900 text-base truncate group-hover:text-brand-primary transition-colors" title={title}>
             {title}
           </h3>
           {getStatusBadge()}
         </div>
 
-        <p className="text-xs text-slate-500 flex items-center gap-1.5">
-          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          {dateRangeText}
-        </p>
+        <div className="flex justify-between items-center text-xs text-slate-500 pt-1 border-t border-slate-100">
+          <span className="flex items-center gap-1">
+            <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {dateRangeText}
+          </span>
+          <span className="text-brand-primary font-bold inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+            進入畫布 →
+          </span>
+        </div>
       </div>
     </div>
   );

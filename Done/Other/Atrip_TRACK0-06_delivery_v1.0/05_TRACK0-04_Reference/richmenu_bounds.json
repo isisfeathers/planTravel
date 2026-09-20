@@ -1,0 +1,50 @@
+{
+  "size": {
+    "width": 2500,
+    "height": 843
+  },
+  "selected": true,
+  "name": "Atrip 主選單 2500x843",
+  "chatBarText": "開啟 Atrip 選單",
+  "areas": [
+    {
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 834,
+        "height": 843
+      },
+      "action": {
+        "type": "uri",
+        "label": "Atrip 智慧自由行",
+        "uri": "https://liff.line.me/LIFF_ID/wizard"
+      }
+    },
+    {
+      "bounds": {
+        "x": 834,
+        "y": 0,
+        "width": 833,
+        "height": 843
+      },
+      "action": {
+        "type": "uri",
+        "label": "我的行程",
+        "uri": "https://liff.line.me/LIFF_ID/dashboard"
+      }
+    },
+    {
+      "bounds": {
+        "x": 1667,
+        "y": 0,
+        "width": 833,
+        "height": 843
+      },
+      "action": {
+        "type": "uri",
+        "label": "使用說明",
+        "uri": "https://liff.line.me/LIFF_ID/help"
+      }
+    }
+  ]
+}

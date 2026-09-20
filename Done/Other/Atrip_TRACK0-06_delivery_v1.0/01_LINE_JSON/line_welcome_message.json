@@ -1,0 +1,24 @@
+{
+  "type": "text",
+  "text": "歡迎使用 Atrip 👋\n選擇目的地、旅行天數與喜好，就能快速產生你的專屬自由行行程。你也可以從下方選單隨時查看目前行程。",
+  "quickReply": {
+    "items": [
+      {
+        "type": "action",
+        "action": {
+          "type": "uri",
+          "label": "開始規劃",
+          "uri": "https://liff.line.me/{{LIFF_ID}}/wizard"
+        }
+      },
+      {
+        "type": "action",
+        "action": {
+          "type": "postback",
+          "label": "查看使用說明",
+          "data": "action=help_menu"
+        }
+      }
+    ]
+  }
+}

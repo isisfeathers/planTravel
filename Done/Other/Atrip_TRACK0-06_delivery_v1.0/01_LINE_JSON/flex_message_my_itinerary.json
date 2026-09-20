@@ -1,0 +1,172 @@
+{
+  "type": "flex",
+  "altText": "查看你的 Atrip 目前行程。",
+  "contents": {
+    "type": "bubble",
+    "size": "mega",
+    "header": {
+      "type": "box",
+      "layout": "vertical",
+      "backgroundColor": "#FFFFFF",
+      "paddingAll": "18px",
+      "contents": [
+        {
+          "type": "text",
+          "text": "當前關注行程",
+          "color": "#182B36",
+          "weight": "bold",
+          "size": "lg",
+          "wrap": true
+        }
+      ]
+    },
+    "hero": {
+      "type": "image",
+      "url": "{{HERO_IMAGE_URL}}",
+      "size": "full",
+      "aspectRatio": "20:13",
+      "aspectMode": "cover",
+      "action": {
+        "type": "uri",
+        "label": "開啟完整行程",
+        "uri": "{{ITINERARY_URL}}"
+      }
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "paddingAll": "20px",
+      "spacing": "md",
+      "contents": [
+        {
+          "type": "text",
+          "text": "{{TRIP_TITLE}}",
+          "color": "#182B36",
+          "weight": "bold",
+          "size": "xl",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
+          "type": "box",
+          "layout": "horizontal",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "text",
+              "text": "📍 {{DESTINATION}}",
+              "color": "#52616B",
+              "size": "sm",
+              "wrap": true,
+              "maxLines": 2,
+              "flex": 1
+            },
+            {
+              "type": "text",
+              "text": "🗓 {{DAYS}}",
+              "color": "#52616B",
+              "size": "sm",
+              "align": "end",
+              "wrap": true,
+              "maxLines": 2,
+              "flex": 1
+            }
+          ]
+        },
+        {
+          "type": "separator",
+          "color": "#E4E8E0",
+          "margin": "sm"
+        },
+        {
+          "type": "box",
+          "layout": "horizontal",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "vertical",
+              "backgroundColor": "#F2ECE5",
+              "cornerRadius": "16px",
+              "paddingStart": "12px",
+              "paddingEnd": "12px",
+              "paddingTop": "6px",
+              "paddingBottom": "6px",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "#{{TAG_1}}",
+                  "color": "#72604F",
+                  "size": "xs",
+                  "weight": "bold",
+                  "align": "center",
+                  "wrap": true,
+                  "maxLines": 1
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "backgroundColor": "#F0F2EC",
+              "cornerRadius": "16px",
+              "paddingStart": "12px",
+              "paddingEnd": "12px",
+              "paddingTop": "6px",
+              "paddingBottom": "6px",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "#{{TAG_2}}",
+                  "color": "#52616B",
+                  "size": "xs",
+                  "weight": "bold",
+                  "align": "center",
+                  "wrap": true,
+                  "maxLines": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "paddingStart": "20px",
+      "paddingEnd": "20px",
+      "paddingTop": "0px",
+      "paddingBottom": "20px",
+      "contents": [
+        {
+          "type": "box",
+          "layout": "vertical",
+          "backgroundColor": "#B9E85A",
+          "cornerRadius": "14px",
+          "paddingAll": "14px",
+          "action": {
+            "type": "uri",
+            "label": "開啟完整行程",
+            "uri": "{{ITINERARY_URL}}"
+          },
+          "contents": [
+            {
+              "type": "text",
+              "text": "開啟完整行程",
+              "color": "#182B36",
+              "weight": "bold",
+              "size": "md",
+              "align": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "styles": {
+      "footer": {
+        "separator": false
+      }
+    }
+  }
+}

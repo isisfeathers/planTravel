@@ -1,0 +1,40 @@
+{
+  "type": "text",
+  "text": "嗨！想了解哪一項功能呢？請選擇下方項目 👇",
+  "quickReply": {
+    "items": [
+      {
+        "type": "action",
+        "action": {
+          "type": "postback",
+          "label": "開始規劃",
+          "data": "action=help&topic=create"
+        }
+      },
+      {
+        "type": "action",
+        "action": {
+          "type": "postback",
+          "label": "調整行程",
+          "data": "action=help&topic=edit"
+        }
+      },
+      {
+        "type": "action",
+        "action": {
+          "type": "postback",
+          "label": "分享行程",
+          "data": "action=help&topic=share"
+        }
+      },
+      {
+        "type": "action",
+        "action": {
+          "type": "postback",
+          "label": "生成失敗",
+          "data": "action=help&topic=retry"
+        }
+      }
+    ]
+  }
+}

@@ -7,7 +7,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { ItineraryStatus } from "@/contracts/atrip";
 
-const POLL_INTERVAL_MS = 5_000;
+const POLL_INTERVAL_MS = 2_000;
 
 type SubscriptionStatus = Extract<ItineraryStatus, "draft" | "generating" | "completed" | "failed">;
 
@@ -44,10 +44,10 @@ export function useRealtimeSubscription(itineraryId: string) {
     let channel: RealtimeChannel | null = null;
     let pollTimer: ReturnType<typeof setInterval> | null = null;
 
-    const handleStatus = (statusValue: unknown, errorCodeValue?: unknown) => {
+    const handleStatus = (statusValue: unknown, errorMessageValue?: unknown) => {
       if (cancelled) return;
       const status = normalizeStatus(statusValue);
-      const errorCode = typeof errorCodeValue === "string" ? errorCodeValue : null;
+      const errorCode = typeof errorMessageValue === "string" ? errorMessageValue : null;
       setState((current) => ({ ...current, status, errorCode }));
 
       if (status === "completed" && !routedRef.current) {
@@ -61,13 +61,13 @@ export function useRealtimeSubscription(itineraryId: string) {
         const supabase = getSupabaseBrowserClient();
         const { data, error } = await supabase
           .from("itineraries")
-          .select("status, error_code")
+          .select("status, error_message")
           .eq("id", itineraryId)
           .maybeSingle();
 
         if (error) throw error;
-        const row = data as { status?: unknown; error_code?: unknown } | null;
-        if (row) handleStatus(row.status, row.error_code);
+        const row = data as { status?: unknown; error_message?: unknown } | null;
+        if (row) handleStatus(row.status, row.error_message);
       } catch {
         if (!cancelled) {
           setState((current) => ({
@@ -95,8 +95,8 @@ export function useRealtimeSubscription(itineraryId: string) {
               filter: `id=eq.${itineraryId}`,
             },
             (payload) => {
-              const next = payload.new as { status?: unknown; error_code?: unknown };
-              handleStatus(next.status, next.error_code);
+              const next = payload.new as { status?: unknown; error_message?: unknown };
+              handleStatus(next.status, next.error_message);
             },
           )
           .subscribe((subscriptionStatus) => {
