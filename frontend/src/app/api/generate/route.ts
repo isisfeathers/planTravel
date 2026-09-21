@@ -53,20 +53,22 @@ export async function POST(req: Request) {
 
     const createdId = insertData.id;
 
-    // 觸發雲端 n8n
-    fetch(N8N_WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        itineraryId: createdId,
-        userId: targetUserId,
-        destination: dest,
-        days,
-        preference_snapshot: preferenceSnapshot || {}
-      })
-    }).then(r => console.log(`[n8n Webhook] ${r.status}`)).catch(e => console.warn(`[n8n Webhook]`, e.message));
+    // 觸發雲端 n8n (非同步通知與外部管線，不覆寫主表資料)
+    if (process.env.ENABLE_N8N_WEBHOOK === "true") {
+      fetch(N8N_WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itineraryId: createdId,
+          userId: targetUserId,
+          destination: dest,
+          days,
+          preference_snapshot: preferenceSnapshot || {}
+        })
+      }).then(r => console.log(`[n8n Webhook] ${r.status}`)).catch(e => console.warn(`[n8n Webhook]`, e.message));
+    }
 
-    // 非同步 AI 旅遊管家管線 (含 4 大類行李清單)
+    // 非同步 AI 旅遊管家管線 (含精準早去晚回班機、精選飯店 Basecamp 與 4 大類國別客製行李清單)
     (async () => {
       try {
         console.log(`[Pipeline] 行程 ${createdId} (${dest}) 開始規劃與生成 4 大類行李清單...`);
@@ -84,7 +86,7 @@ export async function POST(req: Request) {
         } catch (e) {}
 
         const systemPrompt = buildSystemPrompt(dest, days, startDate, endDate);
-        const userPrompt = `目的地：${dest}，天數：${days} 天，出發日期：${startDate || 'AI 近期最佳推薦'}。請產生結合真實早去晚回航班時間的完整 ${days} 天真實具體景點，以及包含全部 4 大類的行李打包清單 JSON。`;
+        const userPrompt = `目的地：${dest}，天數：${days} 天，出發日期：${startDate || 'AI 近期最佳推薦'}。請規劃真實具體的每日自由行行程（包含精選推薦住宿 Basecamp、早去晚回班機時間銜接）。特別重要：行李打包清單 (packing_list) 必須 100% 針對「${dest}」當地的入境簽證與申報要求、貨幣與支付換匯習慣、電壓插座規格、當地氣候與文化著裝禮節提供精準具體的物品名稱與實用避坑筆記，絕對嚴禁出現非「${dest}」的他國專屬名詞（例如前往烏茲別克時必須寫出烏茲別克 e-Visa、索姆/美金換匯、歐規雙圓插頭等，嚴禁出現日本或韓國專屬項目）！`;
 
         const llmRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",

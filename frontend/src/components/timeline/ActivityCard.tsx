@@ -9,6 +9,8 @@ interface ActivityCardProps {
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index }) => {
+  const isHotelCheckin = activity.category === 'accommodation_checkin' || activity.location_name.includes('飯店') || activity.location_name.includes('Check-in');
+
   return (
     <Draggable draggableId={activity.id} index={index}>
       {(provided, snapshot) => (
@@ -18,12 +20,16 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index }) =
           {...provided.dragHandleProps}
           className="relative select-none"
         >
-          {/* 景點主卡片 */}
+          {/* 景點/住宿主卡片 */}
           <div
-            className={`p-4 rounded-2xl bg-white border transition-shadow duration-200 ${
+            className={`p-4 rounded-2xl border transition-shadow duration-200 ${
+              isHotelCheckin
+                ? 'bg-gradient-to-r from-indigo-50/70 via-white to-white border-indigo-200/80'
+                : 'bg-white border-slate-200'
+            } ${
               snapshot.isDragging
                 ? 'shadow-xl ring-2 ring-brand-primary/40 border-brand-primary scale-[1.02] z-50'
-                : 'shadow-sm hover:shadow-md border-slate-200'
+                : 'shadow-sm hover:shadow-md'
             }`}
           >
             <div className="flex items-start justify-between gap-3">
@@ -36,9 +42,16 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index }) =
                 </div>
 
                 <div>
-                  <span className="text-xs font-bold text-brand-primary tracking-wide">
-                    {activity.time_slot}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-brand-primary tracking-wide">
+                      {activity.time_slot}
+                    </span>
+                    {isHotelCheckin && (
+                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex items-center gap-1">
+                        🏨 住宿基地
+                      </span>
+                    )}
+                  </div>
                   <h4 className="text-base font-bold text-slate-900 mt-0.5">
                     {activity.location_name}
                   </h4>
@@ -46,11 +59,15 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index }) =
               </div>
 
               {/* 預估費用標籤 */}
-              {activity.cost_estimate > 0 && (
+              {activity.cost_estimate > 0 ? (
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
                   約 ${activity.cost_estimate}
                 </span>
-              )}
+              ) : isHotelCheckin ? (
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">
+                  已預訂 Basecamp
+                </span>
+              ) : null}
             </div>
 
             {/* 景點描述 */}

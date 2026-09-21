@@ -36,57 +36,15 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
         } catch (e) {}
       }
 
-      let activeId = null;
-      let userItineraries: ItineraryEntity[] = [];
-
-      if (effectiveUserId) {
-        try {
-          const { data: pData } = await supabase
-            .from('profiles')
-            .select('active_itinerary_id')
-            .eq('id', effectiveUserId)
-            .maybeSingle();
-          if (pData) activeId = pData.active_itinerary_id;
-        } catch (e) {
-          console.warn('Profiles 讀取跳過:', e);
-        }
-
-        try {
-          const { data: iData, error: iErr } = await supabase
-            .from('itineraries')
-            .select('*')
-            .eq('user_id', effectiveUserId)
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false });
-
-          if (!iErr && iData && iData.length > 0) {
-            userItineraries = iData;
-          }
-        } catch (e) {
-          console.warn('Itineraries 依 userId 讀取跳過:', e);
-        }
+      const q = effectiveUserId ? `?userId=${encodeURIComponent(effectiveUserId)}` : '';
+      const res = await fetch(`/api/itineraries${q}`);
+      if (!res.ok) {
+        throw new Error('無法取得行程列表');
       }
 
-      // 如果依特定 userId 沒找到或尚未登入，讀取資料庫最近未刪除的行程
-      if (userItineraries.length === 0) {
-        try {
-          const { data: allData, error: allErr } = await supabase
-            .from('itineraries')
-            .select('*')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(30);
-
-          if (!allErr && allData) {
-            userItineraries = allData;
-          }
-        } catch (e) {
-          console.warn('Fallback 行程讀取跳過:', e);
-        }
-      }
-
-      setActiveItineraryId(activeId);
-      setItineraries(userItineraries);
+      const json = await res.json();
+      setActiveItineraryId(json.activeItineraryId || null);
+      setItineraries(json.data || []);
 
     } catch (err: any) {
       setError(err.message || '資料讀取異常');
@@ -129,15 +87,16 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
     );
 
     try {
-      const { error: updateError } = await supabase
-        .from('itineraries')
-        .update({
-          is_archived: true,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
+      const res = await fetch(`/api/itineraries/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_archived: true }),
+      });
 
-      if (updateError) throw updateError;
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || '封存失敗');
+      }
       return true;
     } catch (err: any) {
       setItineraries(previousList);
@@ -156,15 +115,14 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
     }
 
     try {
-      const { error: deleteError } = await supabase
-        .from('itineraries')
-        .update({
-          deleted_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
+      const res = await fetch(`/api/itineraries/${id}`, {
+        method: 'DELETE',
+      });
 
-      if (deleteError) throw deleteError;
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || '刪除失敗');
+      }
       return true;
     } catch (err: any) {
       setItineraries(previousList);

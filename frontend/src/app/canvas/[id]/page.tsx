@@ -9,7 +9,9 @@ import { DayTabs } from '@/components/timeline/DayTabs';
 import { ActivityCard } from '@/components/timeline/ActivityCard';
 import { PackingListTab } from '@/components/packing/PackingListTab';
 import { FlightTab } from '@/components/flights/FlightTab';
+import { DateAdjustmentModal } from '@/components/timeline/DateAdjustmentModal';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { Calendar } from 'lucide-react';
 import mockItinerary from '@/mocks/mock_itinerary.json';
 
 interface CanvasPageProps {
@@ -19,6 +21,7 @@ interface CanvasPageProps {
 export default function CanvasPage({ params }: CanvasPageProps) {
   const itineraryId = params?.id || 'mock-itinerary-id';
   const [currentTab, setCurrentTab] = useState<'timeline' | 'packing' | 'flights'>('timeline');
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
 
   const {
     itineraryData,
@@ -30,6 +33,7 @@ export default function CanvasPage({ params }: CanvasPageProps) {
     initialize: initTimeline,
     setSelectedDay,
     reorderActivities,
+    updateTripDates,
   } = useTimelineStore();
 
   const { initialize: initPacking } = usePackingListStore();
@@ -116,6 +120,25 @@ export default function CanvasPage({ params }: CanvasPageProps) {
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">
             {itineraryData.meta.trip_title}
           </h1>
+
+          {/* 出發日期與調整按鈕 */}
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
+              <Calendar size={13} className="text-slate-500" />
+              <span>
+                {itineraryData.meta.start_date && itineraryData.meta.end_date
+                  ? `${itineraryData.meta.start_date} ~ ${itineraryData.meta.end_date}`
+                  : `尚未指定出發日期`}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsDateModalOpen(true)}
+              className="text-xs font-bold px-3 py-1 rounded-lg bg-brand-primary/15 text-brand-primary hover:bg-brand-primary hover:text-slate-900 transition-all flex items-center gap-1 shadow-2xs"
+            >
+              <span>📅 調整出發日期</span>
+            </button>
+          </div>
         </div>
 
         {/* 狀態指示 */}
@@ -176,7 +199,47 @@ export default function CanvasPage({ params }: CanvasPageProps) {
 
       {/* 分頁內容展示 */}
       {currentTab === 'timeline' ? (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-5">
+          {/* AI 精選住宿基地 (Basecamp) */}
+          {itineraryData.recommendations?.accommodations?.[0] && (
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-800 text-white shadow-md border border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-brand-primary text-slate-900">
+                    🏨 AI 推薦住宿基地 (Basecamp)
+                  </span>
+                  <span className="text-xs text-amber-300 font-bold">
+                    ★ {itineraryData.recommendations.accommodations[0].rating || 4.6}
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    · {itineraryData.recommendations.accommodations[0].type || '設計型景觀飯店'}
+                  </span>
+                </div>
+                <h3 className="text-base font-black text-white mt-1">
+                  {itineraryData.recommendations.accommodations[0].name}
+                </h3>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  {itineraryData.recommendations.accommodations[0].reason || '鄰近交通大站，適合作為每日出發與返回之固定基地。'}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    itineraryData.recommendations.accommodations[0].google_map_query ||
+                      itineraryData.recommendations.accommodations[0].name
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-sm transition-all"
+                >
+                  <span>地圖導航</span>
+                  <span>↗</span>
+                </a>
+              </div>
+            </div>
+          )}
+
           <DayTabs
             days={itineraryData.daily_itinerary || []}
             selectedDay={selectedDay}
@@ -216,6 +279,18 @@ export default function CanvasPage({ params }: CanvasPageProps) {
           endDate={itineraryData.meta.end_date}
         />
       )}
+
+      {/* 日期調整彈窗 */}
+      <DateAdjustmentModal
+        isOpen={isDateModalOpen}
+        onClose={() => setIsDateModalOpen(false)}
+        currentStartDate={itineraryData.meta.start_date}
+        totalDays={itineraryData.meta.total_days || 1}
+        destination={itineraryData.meta.destination || '旅遊目的地'}
+        onConfirm={async (newStartDate) => {
+          await updateTripDates(newStartDate);
+        }}
+      />
     </main>
   );
 }

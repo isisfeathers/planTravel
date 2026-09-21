@@ -34,18 +34,11 @@ function formatMinutesToTime(totalMinutes: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-// 核心演算法：行程重排後重新推算當日活動的時間區間與交通銜接
-function recalculateDayTimeSlots(activities: ActivityItem[]): ActivityItem[] {
+// 核心演算法：行程重排後重新推算當日活動的時間區間與交通銜接（重置回當日 AI 推薦出發時間）
+function recalculateDayTimeSlots(activities: ActivityItem[], dayNumber: number = 1): ActivityItem[] {
   if (!activities || activities.length === 0) return [];
 
-  let currentStartMinutes = 570; // 09:30
-  const firstSlot = activities[0]?.time_slot;
-  if (firstSlot && firstSlot.includes('-')) {
-    const rawStart = firstSlot.split('-')[0].trim();
-    if (/^\d{1,2}:\d{2}$/.test(rawStart)) {
-      currentStartMinutes = parseTimeToMinutes(rawStart);
-    }
-  }
+  let currentStartMinutes = dayNumber === 1 ? 780 : 570;
 
   return activities.map((act, idx) => {
     const duration = Number(act.duration_minutes) || 90;
@@ -119,8 +112,9 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
     const [movedItem] = reorderedList.splice(startIndex, 1);
     reorderedList.splice(endIndex, 0, movedItem);
 
+    const dayNumber = targetDay.day_number || dayIndex + 1;
     // 重新推算時間軸與交通指引
-    const timeCalculatedActivities = recalculateDayTimeSlots(reorderedList);
+    const timeCalculatedActivities = recalculateDayTimeSlots(reorderedList, dayNumber);
 
     updatedDaily[dayIndex] = { ...targetDay, activities: timeCalculatedActivities };
     const newItineraryData: ItineraryPayload = { ...itineraryData, daily_itinerary: updatedDaily };

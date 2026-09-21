@@ -94,10 +94,19 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
             type="button"
             onClick={() => onBook(flight)}
             disabled={verifyingId === flight.id}
-            className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-brand-primary text-slate-900 font-black text-xs shadow-sm hover:opacity-90 active:scale-98 transition-all"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-primary text-slate-900 font-black text-xs shadow-sm hover:opacity-90 active:scale-98 transition-all disabled:opacity-50"
           >
-            {verifyingId === flight.id ? '驗價中…' : '前往訂票'}
-            <ExternalLink size={12} />
+            {verifyingId === flight.id ? (
+              <>
+                <div className="w-3 h-3 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+                <span>驗價中…</span>
+              </>
+            ) : (
+              <>
+                <span>前往 {flight.provider === 'Skyscanner-Direct' ? 'Skyscanner' : '官方平台'} 訂票</span>
+                <ExternalLink size={12} />
+              </>
+            )}
           </button>
         </div>
       </div>
