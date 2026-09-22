@@ -1,0 +1,52 @@
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+.print-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 12mm 15mm 11mm;
+  background-color: #FFFDFA;
+  box-sizing: border-box;
+}
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  nav,
+  header,
+  footer,
+  button,
+  .no-print,
+  .interactive-only,
+  .drag-handle,
+  [data-no-print="true"] {
+    display: none !important;
+  }
+
+  .day-summary,
+  .map-preview,
+  .activity-card,
+  .time-anchor-card,
+  .break-inside-avoid,
+  .segment-with-destination {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  body,
+  main,
+  #root,
+  .overflow-y-auto,
+  .overflow-hidden {
+    overflow: visible !important;
+    height: auto !important;
+    background: transparent !important;
+  }
+}

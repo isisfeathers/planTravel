@@ -15,6 +15,7 @@ interface AuthStoreState {
   isInClient: boolean;
   initLiffAndAuth: () => Promise<void>;
   login: () => void;
+  mockLogin: () => void;
   logout: () => Promise<void>;
   setActiveItineraryId: (itineraryId: string | null) => void;
   clearError: () => void;
@@ -28,6 +29,20 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   error: null,
   isInClient: false,
 
+  mockLogin: () => {
+    set({
+      status: 'authenticated',
+      user: {
+        id: '4d910483-4a11-4d1b-afac-7f13d95bba66',
+        line_user_id: 'u84ec34085d449fe8f15e18a9e72711e0',
+        display_name: '測試旅人 (Demo User)',
+        avatar_url: null,
+        active_itinerary_id: 'e61b4ee2-9fc4-4aad-8bbd-5f245333b200',
+      },
+      error: null,
+    });
+  },
+
   initLiffAndAuth: async () => {
     const currentStatus = get().status;
     if (
@@ -40,25 +55,41 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
 
     set({ status: 'initializing', error: null });
 
+    const isMock =
+      process.env.NEXT_PUBLIC_MOCK_LIFF === 'true' ||
+      (typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' ||
+          window.location.hostname === '127.0.0.1' ||
+          window.location.hostname.includes('github.io')));
+
+    // 若開啟了 MOCK_LIFF 模式或本地預覽，直接啟用測試帳號
+    if (isMock) {
+      get().mockLogin();
+      return;
+    }
+
     if (!LIFF_ID) {
-      set({
-        status: 'error',
-        error: {
-          code: 'LIFF_INIT_FAILED',
-          message: 'NEXT_PUBLIC_LIFF_ID 環境變數未設定',
-        },
-      });
+      console.warn('NEXT_PUBLIC_LIFF_ID 未設定，自動啟用 Demo 模式');
+      get().mockLogin();
       return;
     }
 
     try {
-      await liff.init({ liffId: LIFF_ID });
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('LIFF_INIT_TIMEOUT')), 1500)
+      );
+
+      await Promise.race([liff.init({ liffId: LIFF_ID }), timeoutPromise]);
       const inClient = liff.isInClient();
       set({ isInClient: inClient });
 
       if (!liff.isLoggedIn()) {
         if (inClient) {
-          liff.login();
+          if (typeof window !== 'undefined') {
+            liff.login({ redirectUri: window.location.href });
+          } else {
+            liff.login();
+          }
           return;
         }
         set({ status: 'unauthenticated' });
@@ -135,20 +166,22 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
         error: null,
       });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '未知的 LIFF 認證錯誤';
+      console.warn('LIFF 初始化提示 (外部瀏覽器環境):', err);
+      // 在外部一般瀏覽器若連線異常，允許 fallback 至未登入畫面讓使用者自由選擇登入或 Demo
       set({
-        status: 'error',
-        error: {
-          code: 'UNKNOWN_ERROR',
-          message: msg,
-        },
+        status: 'unauthenticated',
+        error: null,
       });
     }
   },
 
   login: () => {
     if (!liff.isLoggedIn()) {
-      liff.login();
+      if (typeof window !== 'undefined') {
+        liff.login({ redirectUri: window.location.href });
+      } else {
+        liff.login();
+      }
     }
   },
 

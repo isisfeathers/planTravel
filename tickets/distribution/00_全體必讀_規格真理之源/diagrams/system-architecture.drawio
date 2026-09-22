@@ -1,0 +1,161 @@
+<mxfile host="app.diagrams.net" modified="2026-09-14T00:00:00.000Z" agent="Mozilla/5.0" version="21.6.8" type="device">
+  <diagram id="atrip-system-architecture" name="Atrip 系統總體架構圖">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 頂部標題列 -->
+        <mxCell id="title_banner" value="Atrip (你的 AI 自由行規劃夥伴) - 系統總體架構與資料流拓撲圖" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontColor=#ffffff;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1540" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- 1. LINE 生態系 -->
+        <mxCell id="grp_line" value="LINE 生態系 (LINE Ecosystem)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="300" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="line_bot" value="LINE 官方帳號 / Chatbot&#xa;(自然語言對話 + 綁定 Active 行程)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=12;" vertex="1" parent="grp_line">
+          <mxGeometry x="30" y="50" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="rich_menu" value="Rich Menu 圖文選單&#xa;「Atrip 智慧自由行」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=12;" vertex="1" parent="grp_line">
+          <mxGeometry x="30" y="150" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="liff_app" value="Atrip LIFF RWD Web App&#xa;(免密登入、即時渲染、離線隨身行)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontColor=#ffffff;fontStyle=1;fontSize=12;" vertex="1" parent="grp_line">
+          <mxGeometry x="30" y="240" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="line_push_api" value="LINE Messaging API&#xa;(Flex Message 完成推播與重試喚回)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=12;" vertex="1" parent="grp_line">
+          <mxGeometry x="30" y="340" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- 2. 前端應用層 (Next.js) -->
+        <mxCell id="grp_fe" value="Atrip 前端應用層 (Next.js + Tailwind + Zustand)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="380" y="80" width="350" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_auth" value="LIFF Auth Client 模組&#xa;獲取 id_token 並換取 Session" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="grp_fe">
+          <mxGeometry x="30" y="50" width="290" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_dash" value="我的行程儀表板 (Dashboard)&#xa;活躍中 / 歷史封存 / 切換 Active 行程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="grp_fe">
+          <mxGeometry x="30" y="120" width="290" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_wizard" value="雙層標籤精靈 (Chip Selector)&#xa;1層: 懶人套版 (🏆推薦[預選]/購物/球賽)&#xa;2層: 自選矩陣 (連住/換宿/捷運/自駕/興趣)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="grp_fe">
+          <mxGeometry x="30" y="195" width="290" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_canvas" value="動態行程主畫布 (Interactive Canvas)&#xa;時間軸卡片 / Dnd 拖曳 / Leaflet 地圖 / 行李清單" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="grp_fe">
+          <mxGeometry x="30" y="280" width="290" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_share" value="分享、Fork 副本與離線 PDF 模組&#xa;去個資外連瀏覽 / 一鍵 Fork 複製 / 聊天室送 PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="grp_fe">
+          <mxGeometry x="30" y="360" width="290" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- 3. 資料中台層 (Supabase) -->
+        <mxCell id="grp_supabase" value="資料中台層 (Supabase PostgreSQL 15+ &amp; Auth)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="770" y="80" width="370" height="550" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_edge" value="Supabase Edge Function: auth-line&#xa;驗證 LINE Token，簽發標準 JWT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3ecf8e;strokeColor=#2bb375;fontColor=#ffffff;fontStyle=1;fontSize=12;" vertex="1" parent="grp_supabase">
+          <mxGeometry x="30" y="50" width="310" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_db" value="PostgreSQL 15+ 資料庫 (JSON-First)&#xa;- profiles (LINE UID 映射 &amp; active_itinerary_id)&#xa;- itineraries (核心 JSONB 行程 &amp; 軟刪除)&#xa;- itinerary_jobs (非同步任務、冪等性、重試)&#xa;- prompt_templates (動態提示詞範本與預設值)&#xa;- itinerary_shares (去個資分享與過期撤回)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="grp_supabase">
+          <mxGeometry x="30" y="120" width="310" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_realtime" value="Supabase Realtime (WebSocket 廣播)&#xa;監聽 itineraries &amp; itinerary_jobs 狀態完成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="grp_supabase">
+          <mxGeometry x="30" y="290" width="310" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sb_rls" value="Row Level Security (RLS) 安全防護&#xa;個人讀寫隔離 / 未登入去個資唯讀" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="grp_supabase">
+          <mxGeometry x="30" y="360" width="310" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- 4. 自動化中台與 AI (n8n & LLM) -->
+        <mxCell id="grp_automation" value="自動化中台與 AI 引擎 (n8n + LLM)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffcc99;strokeColor=#d79b00;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="80" width="400" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="n8n_core" value="n8n Workflow Engine&#xa;- Webhook 驗證 &amp; 每日 3 次防刷檢查&#xa;- 查詢 prompt_templates 動態拼裝 Prompt&#xa;- 平行調用 LLM 與機票取得服務&#xa;- 資料清洗、注入唯一 ID、狀態更新" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ea580c;strokeColor=#c2410c;fontColor=#ffffff;fontStyle=1;fontSize=11;" vertex="1" parent="grp_automation">
+          <mxGeometry x="30" y="50" width="340" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_service" value="OpenAI gpt-4o / Claude API&#xa;強制 JSON Schema 結構化輸出&#xa;(每日時間軸 + 交通指引 + 推薦 + 行李清單)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="grp_automation">
+          <mxGeometry x="30" y="180" width="340" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- 5. 機票資料取得服務 (AFS - Lucas 提案) -->
+        <mxCell id="grp_flight" value="機票資料取得服務 (Flight Data Acquisition Service - AFS)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="450" width="400" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="flight_orchestrator" value="Search Orchestrator (搜尋調度器)&#xa;IATA 代碼解析 / 4.5s 超時控制 / 熔斷器 (Circuit Breaker)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="grp_flight">
+          <mxGeometry x="30" y="45" width="340" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="flight_adapters" value="供應商連接層 (Provider Adapters)&#xa;- Adapter A: Amadeus Flight Shopping API&#xa;- Adapter B: Skyscanner Metasearch API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="grp_flight">
+          <mxGeometry x="30" y="115" width="340" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="flight_processing" value="資料正規化、去重與加權評分演算法&#xa;總價 (40%) + 耗時 (35%) + 轉機 (15%) + 行李 (10%)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="grp_flight">
+          <mxGeometry x="30" y="185" width="340" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="flight_cache_deeplink" value="短期快取 (TTL 20分) ＋ 驗價與授權 Deep Link 轉址&#xa;Price Refresh 檢查可用性，安全導流至航司/OTA 結帳頁" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="grp_flight">
+          <mxGeometry x="30" y="255" width="340" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- 關鍵連線 -->
+        <mxCell id="c1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="rich_menu" target="liff_app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="liff_app" target="fe_auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fe_auth" target="sb_edge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fe_wizard" target="sb_db">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="310" />
+              <mxPoint x="750" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c4_lbl" value="建立行程 (status: queued)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="c4">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="sb_db" target="n8n_core">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1150" y="235" />
+              <mxPoint x="1150" y="165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c5_lbl" value="Database Webhook 觸發" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="c5">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n8n_core" target="llm_service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n8n_core" target="flight_orchestrator">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="n8n_core" target="line_push_api">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1160" y="180" />
+              <mxPoint x="1160" y="60" />
+              <mxPoint x="360" y="60" />
+              <mxPoint x="360" y="445" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c8_lbl" value="發送完成 Flex Message" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="c8">
+          <mxGeometry x="0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="c9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="sb_realtime" target="fe_canvas">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="395" />
+              <mxPoint x="750" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c9_lbl" value="Realtime 廣播 completed" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="c9">
+          <mxGeometry x="0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

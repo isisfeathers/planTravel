@@ -3,6 +3,10 @@
 		"n8n": {
 			"type": "http",
 			"url": "https://n8n-210083939307.asia-east1.run.app/mcp-server/http"
+		},
+		"supabase": {
+			"type": "http",
+			"url": "https://mcp.supabase.com/mcp?project_ref=fvnxaksfcftatvxddhpx&features=docs,account,database,debugging,development,functions,branching"
 		}
 	},
 	"inputs": []

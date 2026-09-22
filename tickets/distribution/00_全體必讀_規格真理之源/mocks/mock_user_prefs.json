@@ -1,0 +1,17 @@
+{
+  "destination": "東京",
+  "total_days": 5,
+  "start_date": "2026-10-15",
+  "end_date": "2026-10-19",
+  "pace": "relaxed",
+  "budget_level": "standard",
+  "accommodation_strategy": "single_hotel",
+  "transit_mode": "public_transit",
+  "interests": [
+    "gourmet",
+    "cultural",
+    "sports"
+  ],
+  "event_note": "週五晚間 18:00 東京巨蛋棒球賽 (讀賣巨人 vs 阪神虎)",
+  "selected_bundle": "classic_bundle"
+}

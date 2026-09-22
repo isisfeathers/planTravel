@@ -1,0 +1,237 @@
+<mxfile host="app.diagrams.net" modified="2026-09-14T00:00:00.000Z" agent="Mozilla/5.0" version="21.6.8" type="device">
+  <diagram id="atrip-user-flow" name="Atrip UI/UX 使用者流程圖">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 頂部標題 -->
+        <mxCell id="title_uf" value="Atrip (你的 AI 自由行規劃夥伴) - 端到端使用者體驗流程圖 (User Flow)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontColor=#ffffff;fontStyle=1;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1540" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- 1. LINE 入口節點 -->
+        <mxCell id="node_start" value="用戶進入 LINE 官方帳號" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="200" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_rich_menu" value="點擊 Rich Menu 圖文選單&#xa;「Atrip 智慧自由行」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="200" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_liff" value="開啟 Atrip LIFF Web App&#xa;初始化 LINE SDK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="200" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_auth" value="檢查本地是否已有&#xa;有效 Supabase JWT?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="320" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_auth_edge" value="呼叫 Edge Function: auth-line&#xa;(驗證 LINE id_token 並簽發 JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="280" y="335" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- 2. 我的行程儀表板 (Dashboard) -->
+        <mxCell id="node_dashboard" value="Atrip 我的行程儀表板 (Dashboard / List View)&#xa;- 活躍中 / 即將出發卡片 (標記 ★ 當前關注)&#xa;- 歷史封存行程 (Archived)&#xa;- 頂部常駐「＋ 規劃新旅程」主按鈕" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="460" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 3. 雙層式標籤精靈 (Chip Selector) -->
+        <mxCell id="grp_wizard" value="雙層式標籤精靈 (Quick-Choice Chip / Pill Selector)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="460" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="wiz_l1" value="★ 第 1 層：一鍵懶人套版膠囊 (橫向滾動)&#xa;🏆 平台推薦經典[預選點亮] | 🛍️ 都會血拚 | ⚾ 運動賽事" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontStyle=1;fontColor=#ffffff;" vertex="1" parent="grp_wizard">
+          <mxGeometry x="20" y="35" width="420" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="wiz_dest" value="目的地快捷按鈕 (東京/大阪/首爾/曼谷) &amp; 天數日期" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp_wizard">
+          <mxGeometry x="20" y="90" width="420" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wiz_hotel_transit" value="住宿策略 (連住基地[預設] vs 換宿) | 交通 (大眾捷運[預設] vs 自駕)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp_wizard">
+          <mxGeometry x="20" y="135" width="420" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wiz_pace" value="步調膠囊 (慢活 2~3 景點[預設] / 適中 / 充實滿檔 5~6 景點)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp_wizard">
+          <mxGeometry x="20" y="180" width="420" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="wiz_tags" value="主題標籤矩陣 (#在地老饕 #米其林 #購物 #運動賽事 #文青古蹟)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp_wizard">
+          <mxGeometry x="20" y="225" width="420" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="wiz_anchor" value="可選：運動賽事/時間錨點備註 (如「週五晚間東京巨蛋棒球賽」)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#9673a6;" vertex="1" parent="grp_wizard">
+          <mxGeometry x="20" y="275" width="420" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="wiz_submit" value="✨ 懶人用戶 0 點擊直接點按「一鍵開始 AI 規劃」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F97316;strokeColor=#c2410c;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="grp_wizard">
+          <mxGeometry x="40" y="315" width="380" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- 4. 任務建立與等待 -->
+        <mxCell id="node_create" value="寫入 itineraries &amp; itinerary_jobs&#xa;(status: 'queued', 帶入 idempotency_key)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="540" y="600" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_loading" value="動態等待畫布 (飛機航線微動畫 + 實用 Tips)&#xa;開啟 Supabase Realtime Channel 監聽" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="540" y="690" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_stay_choice" value="用戶當前操作狀態？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="570" y="790" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_rt_done" value="Realtime 收到 completed 訊號&#xa;即刻平滑更新介面載入畫布" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="820" y="795" width="210" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_user_leave" value="用戶暫時跳出 / 關閉 LIFF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="565" y="900" width="190" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node_push_done" value="n8n 透過 LINE Bot 推播 Flex Message&#xa;提醒「行程已生成完畢，點此查看」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="820" y="895" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- 5. 動態行程主畫布 -->
+        <mxCell id="grp_canvas" value="Atrip 動態行程主畫布 (Interactive Itinerary Canvas)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="380" width="450" height="530" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_timeline" value="每日時間軸卡片 (包含捷運出口與路線交通膠囊)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="25" y="40" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_dnd" value="景點卡片拖拉重排 (Dnd) 觸發 800ms 防抖整包覆蓋寫回" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="25" y="95" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_map" value="Mapbox / Leaflet 互動地圖 (卡片點擊平滑移動 FlyTo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="25" y="150" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_packing" value="切換「行李清單 (Packing List)」分頁查閱與打勾確認" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6F8F72;strokeColor=#526a54;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="25" y="205" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_active" value="★ 設為當前關注行程 (更新 profiles.active_itinerary_id)&#xa;LINE 官方帳號對話時自動以此為上下文主體" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="25" y="260" width="400" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_share" value="一鍵外連分享網址 (https://atrip.app/share/:token)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="25" y="325" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_pdf" value="一鍵離線 PDF (一般瀏覽器專用列印 / LINE Bot 檔案推送)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="25" y="380" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="canv_back" value="返回我的行程儀表板" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#347FA3;strokeColor=#255973;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="grp_canvas">
+          <mxGeometry x="135" y="465" width="180" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- 6. 外連分享與 Fork -->
+        <mxCell id="node_share_view" value="訪客瀏覽分享頁面 (/share/:share_token)&#xa;- 去識別化唯讀檢視時間軸與地圖 (遮蔽個資與預算)&#xa;- 專屬按鈕：「複製到我的行程 (Fork)」" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="210" width="450" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- 連線 -->
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_start" target="node_rich_menu">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_rich_menu" target="node_liff">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_liff" target="node_auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_4_no" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_auth" target="node_auth_edge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_4_no_lbl" value="首次進入" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="e_4_no">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e_4_yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_auth" target="node_dashboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_4_yes_lbl" value="已有 JWT" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="e_4_yes">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e_edge_dash" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="node_auth_edge" target="node_dashboard">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="390" y="410" /><mxPoint x="385" y="410" /></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Dashboard to Branches -->
+        <mxCell id="e_dash_to_canv" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="node_dashboard" target="canv_timeline">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="800" y="470" /><mxPoint x="800" y="430" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_dash_to_canv_lbl" value="點擊既有行程卡片" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#347FA3;" vertex="1" connectable="0" parent="e_dash_to_canv">
+          <mxGeometry x="0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_dash_to_wiz" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="node_dashboard" target="grp_wizard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dash_to_wiz_lbl" value="點擊「＋ 規劃新旅程」" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;fontColor=#6F8F72;" vertex="1" connectable="0" parent="e_dash_to_wiz">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- Submit to Create -->
+        <mxCell id="e_sub_to_cr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="wiz_submit" target="node_create">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="250" y="950" />
+              <mxPoint x="520" y="950" />
+              <mxPoint x="520" y="625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cr_to_load" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_create" target="node_loading">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_load_to_choice" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_loading" target="node_stay_choice">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_choice_stay" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_stay_choice" target="node_rt_done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_choice_leave" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_stay_choice" target="node_user_leave">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_leave_to_push" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="node_user_leave" target="node_push_done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rt_to_canvas" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="node_rt_done" target="canv_dnd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1080" y="820" />
+              <mxPoint x="1080" y="495" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_push_to_canvas" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="node_push_done" target="canv_dnd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1090" y="920" />
+              <mxPoint x="1090" y="505" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Back & Share -->
+        <mxCell id="e_back_dash" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.9;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="canv_back" target="node_dashboard">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="1245" y="970" /><mxPoint x="454" y="970" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_share_view" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="canv_share" target="node_share_view">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fork_dash" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="node_share_view" target="node_dashboard">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1080" y="250" />
+              <mxPoint x="1080" y="420" />
+              <mxPoint x="520" y="420" />
+              <mxPoint x="520" y="463" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_fork_lbl" value="Fork 複製副本寫入個人行程列表" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#82b366;" vertex="1" connectable="0" parent="e_fork_dash">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

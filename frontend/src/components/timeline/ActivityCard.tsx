@@ -6,10 +6,20 @@ import { TransitCapsule } from './TransitCapsule';
 interface ActivityCardProps {
   activity: ActivityItem;
   index: number;
+  isActive?: boolean;
+  onSelect?: (activityId: string) => void;
 }
 
-export const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index }) => {
-  const isHotelCheckin = activity.category === 'accommodation_checkin' || activity.location_name.includes('飯店') || activity.location_name.includes('Check-in');
+export const ActivityCard: React.FC<ActivityCardProps> = ({
+  activity,
+  index,
+  isActive = false,
+  onSelect,
+}) => {
+  const isHotelCheckin =
+    activity.category === 'accommodation_checkin' ||
+    activity.location_name.includes('飯店') ||
+    activity.location_name.includes('Check-in');
 
   return (
     <Draggable draggableId={activity.id} index={index}>
@@ -18,11 +28,15 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index }) =
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          data-activity-id={activity.id}
           className="relative select-none"
         >
           {/* 景點/住宿主卡片 */}
           <div
-            className={`p-4 rounded-2xl border transition-shadow duration-200 ${
+            onClick={() => onSelect?.(activity.id)}
+            className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
+              isActive ? 'ring-2 ring-brand-primary ring-offset-2' : ''
+            } ${
               isHotelCheckin
                 ? 'bg-gradient-to-r from-indigo-50/70 via-white to-white border-indigo-200/80'
                 : 'bg-white border-slate-200'
@@ -35,7 +49,10 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({ activity, index }) =
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 {/* 拖曳手把 Icon */}
-                <div className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1">
+                <div
+                  className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1"
+                  title="長按拖曳調整順序"
+                >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8h16M4 16h16" />
                   </svg>

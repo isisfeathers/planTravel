@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "build:gh-pages": "node scripts/build-gh-pages.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
