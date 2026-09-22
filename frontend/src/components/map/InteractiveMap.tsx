@@ -86,7 +86,7 @@ export default function InteractiveMap({
         <MapContainer
           center={initialCenter}
           zoom={13}
-          scrollWheelZoom
+          scrollWheelZoom={false}
           className="h-full min-h-full w-full"
           aria-label="行程互動地圖"
         >

@@ -14,7 +14,7 @@ import { DateAdjustmentModal } from '@/components/timeline/DateAdjustmentModal';
 import { InteractiveMap } from '@/components/map/InteractiveMapClient';
 import { PdfExportButton } from '@/components/export/PdfExportButton';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
-import { Calendar, Share2 } from 'lucide-react';
+import { Calendar, Share2, Map as MapIcon, List, Compass } from 'lucide-react';
 import mockItinerary from '@/mocks/mock_itinerary.json';
 
 interface CanvasClientProps {
@@ -28,7 +28,8 @@ export function CanvasClient({ params }: CanvasClientProps) {
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [activeActivityId, setActiveActivityId] = useState<string | undefined>();
   const [shareToken, setShareToken] = useState<string>('demo');
-  const [mapDisplayMode, setMapDisplayMode] = useState<'map' | 'route' | 'hide'>('map');
+  const [mobileView, setMobileView] = useState<'timeline' | 'map' | 'route'>('timeline');
+  const [desktopMapMode, setDesktopMapMode] = useState<'map' | 'route'>('map');
 
   const {
     itineraryData,
@@ -78,8 +79,11 @@ export function CanvasClient({ params }: CanvasClientProps) {
     loadItinerary();
   }, [itineraryId, initTimeline, initPacking]);
 
-  const selectActivity = (activityId: string) => {
+  const selectActivity = (activityId: string, shouldSwitchMobileView = false) => {
     setActiveActivityId(activityId);
+    if (shouldSwitchMobileView && typeof window !== 'undefined' && window.innerWidth < 768) {
+      setMobileView('map');
+    }
     window.requestAnimationFrame(() => {
       document.querySelector(`[data-activity-id="${CSS.escape(activityId)}"]`)
         ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -120,60 +124,68 @@ export function CanvasClient({ params }: CanvasClientProps) {
     [currentDayPlan]
   );
 
+  const selectedActivityData = useMemo(
+    () => (currentDayPlan?.activities || []).find((a: any) => a.id === activeActivityId),
+    [currentDayPlan, activeActivityId]
+  );
+
   if (!itineraryData) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-500 text-sm">載入行程畫布中...</p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-8 h-8 border-3 border-brand-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 text-sm font-medium">載入行程畫布中...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 py-6 px-4 sm:px-8 max-w-6xl mx-auto flex flex-col gap-6">
+    <main className="min-h-screen bg-slate-50 py-4 sm:py-6 px-3.5 sm:px-8 max-w-6xl mx-auto flex flex-col gap-4 sm:gap-6 overflow-x-hidden">
       {/* 頂部全域導航與功能按鈕 */}
-      <div className="flex flex-wrap justify-between items-center bg-white p-3 px-4 rounded-2xl border border-slate-200 shadow-sm gap-2 no-print">
-        <div className="flex items-center gap-3">
+      <header className="flex flex-wrap justify-between items-center bg-white p-2.5 sm:p-3 px-3 sm:px-4 rounded-2xl border border-slate-200 shadow-2xs gap-2 no-print">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-brand-primary transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-brand-primary transition-colors py-1 px-1.5 rounded-lg hover:bg-slate-100"
           >
             <span>←</span>
-            <span>我的行程儀表板</span>
+            <span>儀表板</span>
           </Link>
           <Link
             href="/wizard"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-primary/10 text-brand-primary text-xs font-bold hover:bg-brand-primary hover:text-slate-900 transition-all"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-brand-primary/10 text-brand-primary text-xs font-bold hover:bg-brand-primary hover:text-slate-900 transition-all"
           >
             <span>＋ 規劃新旅程</span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <Link
             href={`/share/${shareToken}`}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-all border border-slate-200"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-all border border-slate-200"
           >
-            <Share2 size={13} className="text-slate-500" />
-            <span>去個資公開分享</span>
+            <Share2 size={13} className="text-slate-500 shrink-0" />
+            <span>分享</span>
           </Link>
           <PdfExportButton itineraryId={itineraryId} />
         </div>
-      </div>
+      </header>
 
-      {/* 頂部標題與狀態 */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-200">
-        <div>
-          <span className="text-xs font-bold text-brand-primary uppercase tracking-wider">
-            {itineraryData.meta.destination} · {itineraryData.meta.total_days} 天行程
+      {/* 頂部標題與出發日期 */}
+      <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 sm:pb-4 border-b border-slate-200/80">
+        <div className="min-w-0 flex-1">
+          <span className="text-[11px] sm:text-xs font-bold text-brand-primary uppercase tracking-wider">
+            📍 {itineraryData.meta.destination} · {itineraryData.meta.total_days} 天自由行
           </span>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">
+          <h1 className="text-lg sm:text-2xl font-black text-slate-900 mt-0.5 truncate" title={itineraryData.meta.trip_title}>
             {itineraryData.meta.trip_title}
           </h1>
 
           {/* 出發日期與調整按鈕 */}
           <div className="flex flex-wrap items-center gap-2 mt-2">
-            <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
-              <Calendar size={13} className="text-slate-500" />
+            <span className="text-[11px] sm:text-xs font-bold text-slate-700 flex items-center gap-1 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs">
+              <Calendar size={12} className="text-slate-500 shrink-0" />
               <span>
                 {itineraryData.meta.start_date && itineraryData.meta.end_date
                   ? `${itineraryData.meta.start_date} ~ ${itineraryData.meta.end_date}`
@@ -183,20 +195,20 @@ export function CanvasClient({ params }: CanvasClientProps) {
             <button
               type="button"
               onClick={() => setIsDateModalOpen(true)}
-              className="no-print text-xs font-bold px-3 py-1 rounded-lg bg-brand-primary/15 text-brand-primary hover:bg-brand-primary hover:text-slate-900 transition-all flex items-center gap-1 shadow-2xs"
+              className="no-print text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-lg bg-brand-primary/15 text-brand-primary hover:bg-brand-primary hover:text-slate-900 transition-all flex items-center gap-1 shadow-2xs"
             >
-              <span>📅 調整出發日期</span>
+              <span>📅 調整日期</span>
             </button>
           </div>
         </div>
 
-        {/* 狀態指示 */}
-        <div className="flex items-center gap-2 no-print">
+        {/* 儲存狀態指示 */}
+        <div className="flex items-center gap-2 shrink-0 no-print">
           {isTimelineSaving && (
             <div className="w-3.5 h-3.5 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
           )}
           <span
-            className={`text-xs font-medium px-3 py-1 rounded-full ${
+            className={`text-[11px] sm:text-xs font-medium px-2.5 py-0.5 rounded-full ${
               saveError
                 ? 'bg-rose-100 text-rose-700'
                 : isTimelineSaving
@@ -207,14 +219,14 @@ export function CanvasClient({ params }: CanvasClientProps) {
             {saveError ? saveError : saveStatusText} (v{version})
           </span>
         </div>
-      </div>
+      </section>
 
       {/* 主分頁切換：時間軸 vs 行李清單 vs 推薦航班 */}
-      <div className="flex border-b border-slate-200 gap-4 no-print">
+      <nav className="flex border-b border-slate-200 gap-2 sm:gap-6 no-print overflow-x-auto scrollbar-none pb-0.5">
         <button
           type="button"
           onClick={() => setCurrentTab('timeline')}
-          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+          className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap transition-all ${
             currentTab === 'timeline'
               ? 'border-brand-primary text-brand-primary'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -225,7 +237,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
         <button
           type="button"
           onClick={() => setCurrentTab('packing')}
-          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+          className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap transition-all ${
             currentTab === 'packing'
               ? 'border-brand-primary text-brand-primary'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -236,7 +248,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
         <button
           type="button"
           onClick={() => setCurrentTab('flights')}
-          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+          className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap transition-all ${
             currentTab === 'flights'
               ? 'border-brand-primary text-brand-primary'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -244,35 +256,35 @@ export function CanvasClient({ params }: CanvasClientProps) {
         >
           ✈️ 推薦航班比價
         </button>
-      </div>
+      </nav>
 
       {/* 分頁內容展示 */}
       {currentTab === 'timeline' ? (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4 sm:gap-5">
           {/* AI 精選住宿基地 (Basecamp) */}
           {itineraryData.recommendations?.accommodations?.[0] && (
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-800 text-white shadow-md border border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-brand-primary text-slate-900">
-                    🏨 AI 推薦住宿基地 (Basecamp)
+            <section className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-800 text-white shadow-md border border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-primary text-slate-900">
+                    🏨 推薦住宿基地 (Basecamp)
                   </span>
                   <span className="text-xs text-amber-300 font-bold">
                     ★ {itineraryData.recommendations.accommodations[0].rating || 4.6}
                   </span>
                   <span className="text-xs text-slate-400">
-                    · {itineraryData.recommendations.accommodations[0].type || '設計型景觀飯店'}
+                    · {itineraryData.recommendations.accommodations[0].type || '優選飯店'}
                   </span>
                 </div>
-                <h3 className="text-base font-black text-white mt-1">
+                <h3 className="text-sm sm:text-base font-black text-white mt-1 truncate">
                   {itineraryData.recommendations.accommodations[0].name}
                 </h3>
-                <p className="text-xs text-slate-300 mt-0.5">
-                  {itineraryData.recommendations.accommodations[0].reason || '鄰近交通大站，適合作為每日出發與返回之固定基地。'}
+                <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 line-clamp-2">
+                  {itineraryData.recommendations.accommodations[0].reason || '鄰近核心交通節點，適合作為每日出發與返回之固定基地。'}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0 no-print">
+              <div className="flex items-center gap-2 shrink-0 no-print w-full sm:w-auto">
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                     itineraryData.recommendations.accommodations[0].google_map_query ||
@@ -280,61 +292,104 @@ export function CanvasClient({ params }: CanvasClientProps) {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-sm transition-all"
+                  className="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-sm transition-all w-full sm:w-auto"
                 >
-                  <span>地圖導航</span>
+                  <span>Google 地圖導航</span>
                   <span>↗</span>
                 </a>
+              </div>
+            </section>
+          )}
+
+          {/* 手機專用視圖切換器 (< 768px) */}
+          <div className="md:hidden flex items-center justify-center bg-slate-200/80 p-1 rounded-xl gap-1 no-print">
+            <button
+              type="button"
+              onClick={() => setMobileView('timeline')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                mobileView === 'timeline'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <List size={14} />
+              <span>時間軸</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileView('map')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                mobileView === 'map'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <MapIcon size={14} />
+              <span>互動地圖</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileView('route')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                mobileView === 'route'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Compass size={14} />
+              <span>路線簡圖</span>
+            </button>
+          </div>
+
+          {/* 每日天數標籤 */}
+          <DayTabs
+            days={itineraryData.daily_itinerary || []}
+            selectedDay={selectedDay}
+            onSelectDay={handleSelectDay}
+          />
+
+          {/* 當日主題與摘要 */}
+          {currentDayPlan && (
+            <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+              <div className="flex justify-between items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900">{currentDayPlan.date_label}</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">{currentDayPlan.summary}</p>
+                </div>
+
+                {/* 平板與桌面端地圖切換 */}
+                <div className="hidden md:flex items-center bg-slate-100 p-0.5 rounded-lg gap-1 shrink-0 no-print">
+                  <button
+                    type="button"
+                    onClick={() => setDesktopMapMode('map')}
+                    className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-all ${
+                      desktopMapMode === 'map' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    🗺️ 地圖
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDesktopMapMode('route')}
+                    className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-all ${
+                      desktopMapMode === 'route' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    🧭 簡圖
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
-          <div
-            className={`grid gap-6 items-start ${
-              mapDisplayMode === 'hide'
-                ? 'grid-cols-1 max-w-3xl mx-auto'
-                : 'lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]'
-            }`}
-          >
-            {/* 左側：天數切換與時間軸活動卡片 */}
-            <div className="flex flex-col gap-4">
-              <DayTabs
-                days={itineraryData.daily_itinerary || []}
-                selectedDay={selectedDay}
-                onSelectDay={handleSelectDay}
-              />
-
-              {currentDayPlan && (
-                <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm day-summary">
-                  <div className="flex justify-between items-start gap-2">
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-800">{currentDayPlan.date_label}</h3>
-                      <p className="text-xs text-slate-500 mt-1">{currentDayPlan.summary}</p>
-                    </div>
-
-                    <div className="flex items-center bg-slate-100 p-1 rounded-lg gap-1 shrink-0 no-print">
-                      <button
-                        type="button"
-                        onClick={() => setMapDisplayMode('map')}
-                        className={`px-2 py-1 text-[11px] font-bold rounded-md transition-all ${
-                          mapDisplayMode === 'map' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
-                        }`}
-                      >
-                        🗺️ 地圖
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMapDisplayMode('route')}
-                        className={`px-2 py-1 text-[11px] font-bold rounded-md transition-all ${
-                          mapDisplayMode === 'route' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
-                        }`}
-                      >
-                        🧭 簡圖
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+          {/* 核心雙欄佈局：平板 & 桌面端 (>= 768px) 左右並排；手機端 (< 768px) 依切換器展示 */}
+          <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] gap-5 items-start">
+            {/* 左欄：時間軸活動卡片列表 */}
+            <div className={`flex flex-col gap-2 ${mobileView !== 'timeline' ? 'hidden md:flex' : 'flex'}`}>
+              <div className="flex items-center justify-between text-[11px] font-medium text-slate-400 px-1 mb-1">
+                <span>💡 可長按左側握把拖曳排序</span>
+                <span>點擊卡片定位地圖</span>
+              </div>
 
               <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId={`day-${selectedDay}`}>
@@ -342,7 +397,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className="flex flex-col gap-2 min-h-[300px]"
+                      className="flex flex-col gap-2.5 min-h-[300px]"
                     >
                       {currentDayPlan?.activities.map((activity: any, index: number) => (
                         <ActivityCard
@@ -350,7 +405,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
                           activity={activity}
                           index={index}
                           isActive={activeActivityId === activity.id}
-                          onSelect={selectActivity}
+                          onSelect={(id) => selectActivity(id, true)}
                         />
                       ))}
                       {provided.placeholder}
@@ -360,73 +415,89 @@ export function CanvasClient({ params }: CanvasClientProps) {
               </DragDropContext>
             </div>
 
-            {/* 右側：互動地圖或動線簡圖 (Sticky) */}
-            {mapDisplayMode !== 'hide' && (
-              <aside className="sticky top-4 order-first lg:order-last no-print">
-                {mapDisplayMode === 'map' ? (
-                  <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
-                    <div className="flex justify-between items-center px-2 py-1 mb-1">
-                      <span className="text-xs font-bold text-slate-700">📍 景點地理分佈</span>
-                      <button
-                        type="button"
-                        onClick={() => setMapDisplayMode('route')}
-                        className="text-[11px] font-bold text-brand-primary hover:underline"
-                      >
-                        切換為動線簡圖 ➔
-                      </button>
-                    </div>
-                    <InteractiveMap
-                      activities={mapActivities}
-                      activeActivityId={activeActivityId}
-                      onActivitySelect={selectActivity}
-                      className="h-[300px] w-full sm:h-[400px]"
-                    />
+            {/* 右欄：互動地圖或動線簡圖 (平板與桌面端黏性置頂；手機端視圖選中時展開) */}
+            <aside className={`md:sticky md:top-4 no-print ${
+              mobileView === 'timeline' ? 'hidden md:block' : 'block'
+            }`}>
+              {/* 地圖模式 */}
+              {(desktopMapMode === 'map' || mobileView === 'map') && (
+                <div className={`${mobileView === 'route' && 'hidden md:block'} rounded-2xl border border-slate-200 bg-white p-2 sm:p-2.5 shadow-sm space-y-2`}>
+                  <div className="flex justify-between items-center px-1.5 py-0.5">
+                    <span className="text-xs font-bold text-slate-800">📍 Day {selectedDay} 景點地理分佈</span>
+                    <span className="text-[10px] text-slate-400">點擊標記平移</span>
                   </div>
-                ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
-                    <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                      <span className="text-xs font-bold text-slate-800">🧭 Day {selectedDay} 路線導航簡圖</span>
-                      <button
-                        type="button"
-                        onClick={() => setMapDisplayMode('map')}
-                        className="text-[11px] font-bold text-brand-primary hover:underline"
-                      >
-                        切換為互動地圖 ➔
-                      </button>
-                    </div>
 
-                    <div className="space-y-2 relative pl-3 border-l-2 border-brand-primary/40 ml-2">
-                      {currentDayPlan?.activities.map((act: any, idx: number) => {
-                        const isSelected = activeActivityId === act.id;
-                        return (
-                          <div
-                            key={act.id}
-                            onClick={() => selectActivity(act.id)}
-                            className={`p-2.5 rounded-xl cursor-pointer transition-all ${
-                              isSelected
-                                ? 'bg-brand-primary/15 border border-brand-primary/60 font-bold'
-                                : 'bg-slate-50 hover:bg-slate-100 border border-slate-200/60'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-brand-primary font-bold">{act.time_slot}</span>
-                              <span className="text-[10px] text-slate-400">Step {idx + 1}</span>
-                            </div>
-                            <p className="text-xs font-bold text-slate-800 mt-0.5">{act.location_name}</p>
-                            {act.transit_to_next?.instructions && (
-                              <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-                                <span>🚇</span>
-                                <span>{act.transit_to_next.instructions}</span>
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })}
+                  <InteractiveMap
+                    activities={mapActivities}
+                    activeActivityId={activeActivityId}
+                    onActivitySelect={(id) => selectActivity(id, false)}
+                    className="h-[320px] sm:h-[400px] md:h-[440px] w-full"
+                  />
+
+                  {/* 當前選中景點的即時摘要卡片 */}
+                  {selectedActivityData && (
+                    <div className="p-2.5 rounded-xl bg-sky-50/80 border border-sky-200 text-xs flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-bold text-brand-primary">{selectedActivityData.time_slot}</span>
+                        <p className="font-bold text-slate-800 truncate">{selectedActivityData.location_name}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileView('timeline');
+                          window.requestAnimationFrame(() => {
+                            document.querySelector(`[data-activity-id="${CSS.escape(selectedActivityData.id)}"]`)
+                              ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          });
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-white border border-sky-300 text-brand-primary font-bold text-[11px] hover:bg-sky-100 shrink-0"
+                      >
+                        回到卡片 ➔
+                      </button>
                     </div>
+                  )}
+                </div>
+              )}
+
+              {/* 動線簡圖模式 */}
+              {(desktopMapMode === 'route' || mobileView === 'route') && (
+                <div className={`${mobileView === 'map' && 'hidden md:block'} rounded-2xl border border-slate-200 bg-white p-3.5 sm:p-4 shadow-sm space-y-3`}>
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                    <span className="text-xs font-bold text-slate-800">🧭 Day {selectedDay} 順序動線導航</span>
+                    <span className="text-[10px] text-slate-400">{currentDayPlan?.activities.length || 0} 個行程點</span>
                   </div>
-                )}
-              </aside>
-            )}
+
+                  <div className="space-y-2 relative pl-3 border-l-2 border-brand-primary/40 ml-2">
+                    {currentDayPlan?.activities.map((act: any, idx: number) => {
+                      const isSelected = activeActivityId === act.id;
+                      return (
+                        <div
+                          key={act.id}
+                          onClick={() => selectActivity(act.id, false)}
+                          className={`p-2.5 rounded-xl cursor-pointer transition-all ${
+                            isSelected
+                              ? 'bg-brand-primary/15 border border-brand-primary/60 font-bold'
+                              : 'bg-slate-50 hover:bg-slate-100 border border-slate-200/60'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-brand-primary font-bold">{act.time_slot}</span>
+                            <span className="text-[10px] text-slate-400">Step {idx + 1}</span>
+                          </div>
+                          <p className="text-xs font-bold text-slate-800 mt-0.5 truncate">{act.location_name}</p>
+                          {act.transit_to_next?.instructions && (
+                            <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1 truncate">
+                              <span className="shrink-0">🚇</span>
+                              <span className="truncate">{act.transit_to_next.instructions}</span>
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </aside>
           </div>
         </div>
       ) : currentTab === 'packing' ? (
