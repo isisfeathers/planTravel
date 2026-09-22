@@ -19,7 +19,7 @@ async function testCity(dest, days) {
       "Authorization": `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      model: "openai/gpt-4o-mini",
+      model: "openrouter/free",
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPromp             { role: "user", content: userPrompt }
