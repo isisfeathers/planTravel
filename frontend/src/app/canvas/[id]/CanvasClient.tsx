@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { useTimelineStore } from '@/stores/useTimelineStore';
 import { usePackingListStore } from '@/stores/usePackingListStore';
@@ -17,11 +18,12 @@ import { Calendar, Share2 } from 'lucide-react';
 import mockItinerary from '@/mocks/mock_itinerary.json';
 
 interface CanvasClientProps {
-  params: { id: string };
+  params?: { id?: string };
 }
 
 export function CanvasClient({ params }: CanvasClientProps) {
-  const itineraryId = params?.id || 'mock-itinerary-id';
+  const searchParams = useSearchParams();
+  const itineraryId = params?.id || searchParams?.get('id') || 'mock-itinerary-id';
   const [currentTab, setCurrentTab] = useState<'timeline' | 'packing' | 'flights'>('timeline');
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [activeActivityId, setActiveActivityId] = useState<string | undefined>();

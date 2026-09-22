@@ -46,7 +46,7 @@ export function ForkButton({ shareToken, label = '複製到我的行程 (Fork)',
           setForkSuccess(true);
           sessionStorage.removeItem(pendingForkKey);
           setTimeout(() => {
-            router.push(`/canvas/${json.newItineraryId}`);
+            router.push(`/canvas?id=${json.newItineraryId}`);
           }, 600);
           return;
         }
@@ -89,7 +89,7 @@ export function ForkButton({ shareToken, label = '複製到我的行程 (Fork)',
       setForkSuccess(true);
       sessionStorage.removeItem(pendingForkKey);
       setTimeout(() => {
-        router.push(`/canvas/${created.new_itinerary_id}`);
+        router.push(`/canvas?id=${created.new_itinerary_id}`);
       }, 600);
     } catch (caught) {
       forkStartedRef.current = false;

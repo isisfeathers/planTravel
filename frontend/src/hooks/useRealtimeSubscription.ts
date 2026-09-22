@@ -52,7 +52,7 @@ export function useRealtimeSubscription(itineraryId: string) {
 
       if (status === "completed" && !routedRef.current) {
         routedRef.current = true;
-        router.push(`/canvas/${itineraryId}`);
+        router.push(`/canvas?id=${itineraryId}`);
       }
     };
 

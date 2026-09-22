@@ -42,7 +42,11 @@ export const TripCard: React.FC<TripCardProps> = ({
   };
 
   const handleCardClick = () => {
-    router.push(`/canvas/${itinerary.id}`);
+    if (itinerary.status === 'generating') {
+      router.push(`/waiting?id=${itinerary.id}`);
+    } else {
+      router.push(`/canvas?id=${itinerary.id}`);
+    }
   };
 
   const { title, destination, status, preference_snapshot, is_archived } = itinerary;

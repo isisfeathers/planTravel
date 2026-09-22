@@ -167,10 +167,7 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
     try {
       const { error: deleteErr } = await supabase
         .from('itineraries')
-        .update({
-          deleted_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
+        .delete()
         .eq('id', id);
 
       if (deleteErr) throw deleteErr;

@@ -220,7 +220,7 @@ export function WizardHeadlessForm() {
         throw new Error("無法取得新建行程 ID。");
       }
 
-      router.push(`/waiting/${createdId}`);
+      router.push(`/waiting?id=${createdId}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "建立行程失敗。");
     } finally {
