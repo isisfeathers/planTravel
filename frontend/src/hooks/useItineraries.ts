@@ -37,19 +37,25 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
       }
 
       let fetched = false;
+      const isStaticHost =
+        typeof window !== 'undefined' &&
+        (window.location.hostname.includes('github.io') ||
+          process.env.NEXT_PUBLIC_MOCK_LIFF === 'true');
 
-      // 1. 嘗試呼叫 API 端點
-      try {
-        const q = effectiveUserId ? `?userId=${encodeURIComponent(effectiveUserId)}` : '';
-        const res = await fetch(`/api/itineraries${q}`);
-        if (res.ok) {
-          const json = await res.json();
-          setActiveItineraryId(json.activeItineraryId || null);
-          setItineraries(json.data || []);
-          fetched = true;
+      // 1. 若非靜態主機，先嘗試呼叫 API 端點
+      if (!isStaticHost) {
+        try {
+          const q = effectiveUserId ? `?userId=${encodeURIComponent(effectiveUserId)}` : '';
+          const res = await fetch(`/api/itineraries${q}`);
+          if (res.ok) {
+            const json = await res.json();
+            setActiveItineraryId(json.activeItineraryId || null);
+            setItineraries(json.data || []);
+            fetched = true;
+          }
+        } catch (e) {
+          // API 呼叫失敗，進入 Supabase 直接查詢備援
         }
-      } catch (e) {
-        // API 呼叫失敗，進入 Supabase 直接查詢備援
       }
 
       // 2. 靜態託管 / GitHub Pages 環境備援：直接使用 Supabase Client 讀取
@@ -132,16 +138,15 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
     );
 
     try {
-      const res = await fetch(`/api/itineraries/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_archived: true }),
-      });
+      const { error: updateErr } = await supabase
+        .from('itineraries')
+        .update({
+          is_archived: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || '封存失敗');
-      }
+      if (updateErr) throw updateErr;
       return true;
     } catch (err: any) {
       setItineraries(previousList);
@@ -160,14 +165,15 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
     }
 
     try {
-      const res = await fetch(`/api/itineraries/${id}`, {
-        method: 'DELETE',
-      });
+      const { error: deleteErr } = await supabase
+        .from('itineraries')
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || '刪除失敗');
-      }
+      if (deleteErr) throw deleteErr;
       return true;
     } catch (err: any) {
       setItineraries(previousList);

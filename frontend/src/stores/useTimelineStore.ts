@@ -248,10 +248,9 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
 
     // 4. 即時寫入 Supabase 資料庫
     try {
-      const res = await fetch(`/api/itineraries/${itineraryId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const { error: updateErr } = await supabase
+        .from('itineraries')
+        .update({
           itinerary_data: newItineraryData,
           preference_snapshot: {
             destination: newItineraryData.meta.destination,
@@ -259,10 +258,12 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
             start_date: newStartDate,
             end_date: newEndDate,
           },
-        }),
-      });
+          version: version + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', itineraryId);
 
-      if (!res.ok) throw new Error('伺服器更新失敗');
+      if (updateErr) throw updateErr;
 
       set({
         version: version + 1,
@@ -273,8 +274,8 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
     } catch (e: any) {
       set({
         isSaving: false,
-        saveError: e.message || '更新失敗',
-        saveStatusText: '日期儲存異常',
+        saveError: e.message || '更新日期失敗',
+        saveStatusText: '日期更新失敗，請重試',
       });
     }
   },

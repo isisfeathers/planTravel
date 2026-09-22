@@ -29,7 +29,17 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   error: null,
   isInClient: false,
 
-  mockLogin: () => {
+  mockLogin: async () => {
+    // 登入測試帳號以取得 Supabase JWT Session
+    try {
+      await supabase.auth.signInWithPassword({
+        email: 'u84ec34085d449fe8f15e18a9e72711e0@atrip.line',
+        password: 'demo-password-123456',
+      });
+    } catch (e) {
+      console.warn('Mock Supabase signIn failed', e);
+    }
+
     set({
       status: 'authenticated',
       user: {

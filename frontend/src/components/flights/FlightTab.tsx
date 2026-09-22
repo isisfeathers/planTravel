@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, RefreshCw } from 'lucide-react';
 import { FlightCard } from './FlightCard';
+import { getFallbackFlights } from './flightMockData';
 
 export const FlightTab: React.FC<{ destination: string; startDate?: string; endDate?: string }> = ({ destination, startDate, endDate }) => {
   const [flights, setFlights] = useState<any[]>([]);
@@ -13,17 +14,37 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
 
   const fetchFlights = async () => {
     setLoading(true);
+    const now = new Date();
+    const defaultDep = new Date(now.getTime() + 14 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    const defaultRet = new Date(now.getTime() + 19 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    const depDate = startDate || defaultDep;
+    const retDate = endDate || defaultRet;
+
     try {
-      const depQ = startDate ? `&departureDate=${startDate}` : '';
-      const retQ = endDate ? `&returnDate=${endDate}` : '';
-      const res = await fetch(`/api/flights/search?destination=${encodeURIComponent(destination)}&origin=${origin}${depQ}${retQ}`);
-      const json = await res.json();
-      if (json.data) setFlights(json.data);
+      const isStaticHost =
+        typeof window !== 'undefined' &&
+        (window.location.hostname.includes('github.io') ||
+          process.env.NEXT_PUBLIC_MOCK_LIFF === 'true');
+
+      if (!isStaticHost) {
+        const depQ = startDate ? `&departureDate=${startDate}` : '';
+        const retQ = endDate ? `&returnDate=${endDate}` : '';
+        const res = await fetch(`/api/flights/search?destination=${encodeURIComponent(destination)}&origin=${origin}${depQ}${retQ}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && json.data.length > 0) {
+            setFlights(json.data);
+            setLoading(false);
+            return;
+          }
+        }
+      }
     } catch (e) {
-      console.warn('機票查詢失敗:', e);
-    } finally {
-      setLoading(false);
+      console.warn('機票 API 查詢失敗，切換為預設航班推薦:', e);
     }
+
+    setFlights(getFallbackFlights(destination, origin, depDate, retDate));
+    setLoading(false);
   };
 
   useEffect(() => {

@@ -128,31 +128,99 @@ export function WizardHeadlessForm() {
     try {
       const preferenceSnapshot = wizard.buildPreferenceSnapshot();
       const { user } = useAuthStore.getState();
-      const userId = user?.id || "11111111-1111-1111-1111-111111111111"; // Fallback to mock
+      const userId = user?.id || "4d910483-4a11-4d1b-afac-7f13d95bba66";
+      const dest = preferenceSnapshot.destination || "東京";
+      const days = preferenceSnapshot.total_days || 3;
 
-      // Bypass RLS, directly call our server API
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userId,
-          destination: preferenceSnapshot.destination,
-          total_days: preferenceSnapshot.total_days,
-          preferenceSnapshot: preferenceSnapshot
-        })
-      });
+      let createdId: string | null = null;
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || "伺服器建立行程失敗");
+      // 1. 若在支援 Node.js Server API 的環境，先嘗試呼叫 /api/generate
+      try {
+        const isStaticHost =
+          typeof window !== "undefined" &&
+          (window.location.hostname.includes("github.io") ||
+            process.env.NEXT_PUBLIC_MOCK_LIFF === "true");
+
+        if (!isStaticHost) {
+          const response = await fetch("/api/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId,
+              destination: dest,
+              total_days: days,
+              preferenceSnapshot,
+            }),
+          });
+          if (response.ok) {
+            const resData = await response.json();
+            if (resData.id) createdId = resData.id;
+          }
+        }
+      } catch (apiErr) {
+        // API 不可用時自動切換為 Supabase 直連模式
       }
 
-      const resData = await response.json();
-      if (!resData.id) {
-        throw new Error("伺服器未回傳行程 ID");
+      // 2. 純靜態 GitHub Pages 模式：前端直接透過 Supabase 建立並觸發 n8n
+      if (!createdId) {
+        const supabase = getSupabaseBrowserClient();
+
+        // 確保具有有效 Session
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData?.session) {
+          await supabase.auth.signInWithPassword({
+            email: "u84ec34085d449fe8f15e18a9e72711e0@atrip.line",
+            password: "demo-password-123456",
+          });
+        }
+
+        const { data: insertData, error: insertError } = await supabase
+          .from("itineraries")
+          .insert({
+            user_id: userId,
+            title: `${dest} ${days} 天深度自由行`,
+            destination: dest,
+            status: "generating",
+            is_public: true,
+            itinerary_data: {},
+            preference_snapshot: preferenceSnapshot,
+          })
+          .select("id")
+          .single();
+
+        if (insertError) {
+          throw new Error(`建立行程失敗：${insertError.message}`);
+        }
+
+        createdId = insertData.id;
+
+        // 呼叫 n8n Webhook 進行非同步生成
+        const n8nWebhookUrl =
+          process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
+          "https://n8n-210083939307.asia-east1.run.app/webhook/generate-itinerary";
+
+        try {
+          await fetch(n8nWebhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              itineraryId: createdId,
+              userId,
+              destination: dest,
+              days,
+              preference_snapshot: preferenceSnapshot,
+            }),
+          });
+        } catch (n8nErr) {
+          console.warn("n8n Webhook 呼叫提示:", n8nErr);
+        }
       }
 
-      router.push(`/waiting/${resData.id}`);
+      if (!createdId) {
+        throw new Error("無法取得新建行程 ID。");
+      }
+
+      router.push(`/waiting/${createdId}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "建立行程失敗。");
     } finally {
