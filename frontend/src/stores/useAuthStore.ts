@@ -103,6 +103,15 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
       const displayName = profile.displayName || 'LINE 旅行家';
       const pictureUrl = profile.pictureUrl || null;
 
+      // 清除可能殘留的舊測試帳號 Session
+      try {
+        const { data: currentSession } = await supabase.auth.getSession();
+        if (currentSession?.session?.user?.email?.includes('u84ec34085d449fe8f15e18a9e72711e0') && lineUserId !== 'u84ec34085d449fe8f15e18a9e72711e0') {
+          console.log('[Auth] 偵測到舊測試帳號殘留，自動登出重設...');
+          await supabase.auth.signOut();
+        }
+      } catch (e) {}
+
       const exchangePayload: AuthLineExchangeRequest = {
         id_token: idToken || '',
         line_user_id: lineUserId,

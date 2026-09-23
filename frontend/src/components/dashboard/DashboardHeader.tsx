@@ -1,13 +1,27 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export const DashboardHeader: React.FC = () => {
+  const { user } = useAuthStore();
+
   return (
     <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-200">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          我的行程儀表板
-        </h1>
+        <div className="flex items-center gap-2">
+          {user?.avatar_url && (
+            <img
+              src={user.avatar_url}
+              alt={user.display_name || '用戶頭像'}
+              className="w-8 h-8 rounded-full border border-slate-200 object-cover"
+            />
+          )}
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            {user?.display_name ? `${user.display_name} 的行程` : '我的行程儀表板'}
+          </h1>
+        </div>
         <p className="text-sm text-slate-500 mt-1">
           管理你的 AI 自由行計畫、關注當前旅程與歷史封存
         </p>

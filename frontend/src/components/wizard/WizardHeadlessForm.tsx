@@ -127,93 +127,67 @@ export function WizardHeadlessForm() {
 
     try {
       const preferenceSnapshot = wizard.buildPreferenceSnapshot();
-      const { user } = useAuthStore.getState();
-      const userId = user?.id || "4d910483-4a11-4d1b-afac-7f13d95bba66";
+      let { user } = useAuthStore.getState();
+
+      if (!user?.id) {
+        await useAuthStore.getState().initLiffAndAuth();
+        user = useAuthStore.getState().user;
+      }
+
+      const userId = user?.id;
+      const lineUserId = user?.line_user_id || user?.id;
+
+      if (!userId) {
+        throw new Error("請先使用 LINE 登入後再建立行程。");
+      }
+
       const dest = preferenceSnapshot.destination || "東京";
       const days = preferenceSnapshot.total_days || 3;
 
       let createdId: string | null = null;
+      const supabase = getSupabaseBrowserClient();
 
-      // 1. 若在支援 Node.js Server API 的環境，先嘗試呼叫 /api/generate
-      try {
-        const isStaticHost =
-          typeof window !== "undefined" &&
-          (window.location.hostname.includes("github.io") ||
-            process.env.NEXT_PUBLIC_MOCK_LIFF === "true");
+      // 前端直接透過 Supabase 建立私密行程 (is_public: false)
+      const { data: insertData, error: insertError } = await supabase
+        .from("itineraries")
+        .insert({
+          user_id: userId,
+          title: `${dest} ${days} 天深度自由行`,
+          destination: dest,
+          status: "generating",
+          is_public: false,
+          itinerary_data: {},
+          preference_snapshot: preferenceSnapshot,
+        })
+        .select("id")
+        .single();
 
-        if (!isStaticHost) {
-          const response = await fetch("/api/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              userId,
-              destination: dest,
-              total_days: days,
-              preferenceSnapshot,
-            }),
-          });
-          if (response.ok) {
-            const resData = await response.json();
-            if (resData.id) createdId = resData.id;
-          }
-        }
-      } catch (apiErr) {
-        // API 不可用時自動切換為 Supabase 直連模式
+      if (insertError) {
+        throw new Error(`建立行程失敗：${insertError.message}`);
       }
 
-      // 2. 純靜態 GitHub Pages 模式：前端直接透過 Supabase 建立並觸發 n8n
-      if (!createdId) {
-        const supabase = getSupabaseBrowserClient();
+      createdId = insertData.id;
 
-        // 確保具有有效 Session
-        const { data: sessionData } = await supabase.auth.getSession();
-        if (!sessionData?.session) {
-          await supabase.auth.signInWithPassword({
-            email: "u84ec34085d449fe8f15e18a9e72711e0@atrip.line",
-            password: "demo-password-123456",
-          });
-        }
+      // 呼叫 n8n Webhook 進行非同步生成
+      const n8nWebhookUrl =
+        process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
+        "https://n8n-210083939307.asia-east1.run.app/webhook/generate-itinerary";
 
-        const { data: insertData, error: insertError } = await supabase
-          .from("itineraries")
-          .insert({
-            user_id: userId,
-            title: `${dest} ${days} 天深度自由行`,
+      try {
+        await fetch(n8nWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            itineraryId: createdId,
+            userId,
+            lineUserId,
             destination: dest,
-            status: "generating",
-            is_public: true,
-            itinerary_data: {},
+            days,
             preference_snapshot: preferenceSnapshot,
-          })
-          .select("id")
-          .single();
-
-        if (insertError) {
-          throw new Error(`建立行程失敗：${insertError.message}`);
-        }
-
-        createdId = insertData.id;
-
-        // 呼叫 n8n Webhook 進行非同步生成
-        const n8nWebhookUrl =
-          process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
-          "https://n8n-210083939307.asia-east1.run.app/webhook/generate-itinerary";
-
-        try {
-          await fetch(n8nWebhookUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              itineraryId: createdId,
-              userId,
-              destination: dest,
-              days,
-              preference_snapshot: preferenceSnapshot,
-            }),
-          });
-        } catch (n8nErr) {
-          console.warn("n8n Webhook 呼叫提示:", n8nErr);
-        }
+          }),
+        });
+      } catch (n8nErr) {
+        console.warn("n8n Webhook 呼叫提示:", n8nErr);
       }
 
       if (!createdId) {
