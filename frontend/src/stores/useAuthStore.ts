@@ -6,6 +6,7 @@ import type {
   AuthStatus,
   AuthErrorState,
   AuthLineExchangeRequest,
+  AuthLineExchangeResponse,
 } from '@/types/auth';
 
 interface AuthStoreState {
@@ -21,7 +22,7 @@ interface AuthStoreState {
   clearError: () => void;
 }
 
-const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID;
+const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID || '2011659983-aQFWuWxE';
 
 export const useAuthStore = create<AuthStoreState>((set, get) => ({
   status: 'idle',
@@ -30,16 +31,6 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   isInClient: false,
 
   mockLogin: async () => {
-    // 登入測試帳號以取得 Supabase JWT Session
-    try {
-      await supabase.auth.signInWithPassword({
-        email: 'u84ec34085d449fe8f15e18a9e72711e0@atrip.line',
-        password: 'demo-password-123456',
-      });
-    } catch (e) {
-      console.warn('Mock Supabase signIn failed', e);
-    }
-
     set({
       status: 'authenticated',
       user: {
@@ -47,7 +38,7 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
         line_user_id: 'u84ec34085d449fe8f15e18a9e72711e0',
         display_name: '測試旅人 (Demo User)',
         avatar_url: null,
-        active_itinerary_id: 'e61b4ee2-9fc4-4aad-8bbd-5f245333b200',
+        active_itinerary_id: null,
       },
       error: null,
     });
@@ -65,31 +56,18 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
 
     set({ status: 'initializing', error: null });
 
-    const isMock =
-      process.env.NEXT_PUBLIC_MOCK_LIFF === 'true' ||
-      (typeof window !== 'undefined' &&
-        (window.location.hostname === 'localhost' ||
-          window.location.hostname === '127.0.0.1' ||
-          window.location.hostname.includes('github.io')));
-
-    // 若開啟了 MOCK_LIFF 模式或本地預覽，直接啟用測試帳號
-    if (isMock) {
+    if (process.env.NEXT_PUBLIC_MOCK_LIFF === 'true') {
       get().mockLogin();
       return;
     }
 
     if (!LIFF_ID) {
-      console.warn('NEXT_PUBLIC_LIFF_ID 未設定，自動啟用 Demo 模式');
-      get().mockLogin();
+      set({ status: 'unauthenticated' });
       return;
     }
 
     try {
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('LIFF_INIT_TIMEOUT')), 1500)
-      );
-
-      await Promise.race([liff.init({ liffId: LIFF_ID }), timeoutPromise]);
+      await liff.init({ liffId: LIFF_ID });
       const inClient = liff.isInClient();
       set({ isInClient: inClient });
 
@@ -110,74 +88,98 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
       const idToken = liff.getIDToken();
       const profile = await liff.getProfile();
 
-      if (!idToken) {
+      if (!profile || !profile.userId) {
         set({
           status: 'error',
           error: {
             code: 'TOKEN_NOT_FOUND',
-            message: '無法自 LIFF SDK 取得 id_token',
+            message: '無法取得 LINE 用戶個人資料',
           },
         });
         return;
       }
+
+      const lineUserId = profile.userId;
+      const displayName = profile.displayName || 'LINE 旅行家';
+      const pictureUrl = profile.pictureUrl || null;
 
       const exchangePayload: AuthLineExchangeRequest = {
-        id_token: idToken,
-        line_user_id: profile.userId,
-        display_name: profile.displayName,
-        picture_url: profile.pictureUrl || '',
+        id_token: idToken || '',
+        line_user_id: lineUserId,
+        display_name: displayName,
+        picture_url: pictureUrl || '',
       };
 
-      const res = await fetch('/api/auth/line', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(exchangePayload),
-      });
+      let authUser: AuthUser | null = null;
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        set({
-          status: 'error',
-          error: {
-            code: 'EXCHANGE_FAILED',
-            message: errJson.error || 'Token 交換失敗',
-          },
-        });
-        return;
+      try {
+        const { data: edgeData, error: edgeErr } = await supabase.functions.invoke<AuthLineExchangeResponse>(
+          'auth-line',
+          { body: exchangePayload }
+        );
+
+        if (!edgeErr && edgeData?.access_token) {
+          await supabase.auth.setSession({
+            access_token: edgeData.access_token,
+            refresh_token: edgeData.refresh_token,
+          });
+
+          authUser = {
+            id: edgeData.user.id,
+            line_user_id: edgeData.user.line_user_id,
+            display_name: edgeData.user.display_name,
+            avatar_url: edgeData.user.avatar_url ?? pictureUrl,
+            active_itinerary_id: edgeData.user.active_itinerary_id ?? null,
+          };
+        }
+      } catch (invokeErr) {
+        console.warn('Edge function auth-line fallback to profile check:', invokeErr);
       }
 
-      const data = await res.json();
+      if (!authUser) {
+        try {
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('line_user_id', lineUserId)
+            .maybeSingle();
 
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-      });
-
-      if (sessionError) {
-        set({
-          status: 'error',
-          error: {
-            code: 'SESSION_SET_FAILED',
-            message: sessionError.message,
-          },
-        });
-        return;
+          if (existingProfile) {
+            authUser = {
+              id: existingProfile.id,
+              line_user_id: existingProfile.line_user_id,
+              display_name: existingProfile.display_name || displayName,
+              avatar_url: existingProfile.avatar_url || pictureUrl,
+              active_itinerary_id: existingProfile.active_itinerary_id || null,
+            };
+          } else {
+            const newUserId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `u-${Date.now()}`;
+            authUser = {
+              id: newUserId,
+              line_user_id: lineUserId,
+              display_name: displayName,
+              avatar_url: pictureUrl,
+              active_itinerary_id: null,
+            };
+          }
+        } catch (dbErr) {
+          authUser = {
+            id: lineUserId,
+            line_user_id: lineUserId,
+            display_name: displayName,
+            avatar_url: pictureUrl,
+            active_itinerary_id: null,
+          };
+        }
       }
 
       set({
         status: 'authenticated',
-        user: {
-          id: data.user.id,
-          line_user_id: data.user.line_user_id,
-          display_name: data.user.display_name,
-          avatar_url: data.user.avatar_url ?? profile.pictureUrl ?? null,
-          active_itinerary_id: data.user.active_itinerary_id ?? null,
-        },
+        user: authUser,
         error: null,
       });
     } catch (err: unknown) {
-      console.warn('LIFF 初始化提示 (外部瀏覽器環境):', err);
-      // 在外部一般瀏覽器若連線異常，允許 fallback 至未登入畫面讓使用者自由選擇登入或 Demo
+      console.warn('LIFF 初始化 (外部瀏覽器環境):', err);
       set({
         status: 'unauthenticated',
         error: null,

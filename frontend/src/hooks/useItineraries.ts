@@ -79,21 +79,14 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
             .is('deleted_at', null)
             .order('created_at', { ascending: false });
 
-          if (!uErr && userItins && userItins.length > 0) {
-            setItineraries(userItins);
+          if (!uErr) {
+            setItineraries(userItins || []);
             fetched = true;
           }
         }
 
         if (!fetched) {
-          const { data: allData } = await supabase
-            .from('itineraries')
-            .select('*')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(30);
-
-          setItineraries(allData || []);
+          setItineraries([]);
         }
       }
 
