@@ -9,8 +9,8 @@ export const QrLoginGuide: React.FC = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-slate-50 text-slate-800">
       <div className="w-full max-w-md rounded-2xl p-8 shadow-lg bg-white border border-slate-200 text-center space-y-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-primary/10 text-[#347FA3]">
-          <span className="text-2xl font-black">A</span>
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#06C755]/10 text-[#06C755]">
+          <span className="text-3xl font-black">A</span>
         </div>
 
         <div className="space-y-2">
@@ -18,28 +18,28 @@ export const QrLoginGuide: React.FC = () => {
             歡迎使用 Atrip 自由行旅遊助理
           </h2>
           <p className="text-sm text-slate-500">
-            在一般電腦瀏覽器測試時，您可以直接點擊「免登入直接體驗」進入儀表板，或使用 LINE 帳號授權登入。
+            請使用 LINE 帳號登入，系統將為您建立專屬的旅遊行程資料庫。
           </p>
         </div>
 
         <div className="flex flex-col gap-3">
           <button
-            onClick={mockLogin}
-            className="w-full py-3.5 px-4 rounded-xl font-bold bg-[#347FA3] text-white hover:bg-[#2A6683] active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 text-base"
+            onClick={login}
+            className="w-full py-3.5 px-4 rounded-xl font-bold bg-[#06C755] text-white hover:bg-[#05b34c] active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 text-base"
           >
-            <span>🚀 免登入直接體驗 (Demo 模式)</span>
+            <span>💬 使用 LINE 帳號一鍵登入</span>
           </button>
 
           <button
-            onClick={login}
-            className="w-full py-3 px-4 rounded-xl font-semibold border border-[#06C755] bg-[#06C755] text-white hover:bg-[#05b34c] active:scale-[0.99] transition-all shadow-sm flex items-center justify-center gap-2 text-sm"
+            onClick={mockLogin}
+            className="w-full py-2.5 px-4 rounded-xl font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all text-xs"
           >
-            <span>使用 LINE 帳號登入</span>
+            <span>以臨時訪客身分體驗 ➔</span>
           </button>
         </div>
 
         <div className="pt-2 border-t border-slate-100 text-xs text-slate-400">
-          測試環境 · 支援 Supabase Realtime 與 LIFF 雙通道
+          安全加密 · 支援 LINE 免密無感登入
         </div>
       </div>
     </div>
