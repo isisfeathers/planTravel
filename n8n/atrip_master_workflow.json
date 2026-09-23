@@ -136,6 +136,39 @@
         1040,
         380
       ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.LINE_CHANNEL_ACCESS_TOKEN || 'YOUR_CHANNEL_ACCESS_TOKEN' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  to: $json.lineUserId || $json.userId,\n  messages: [{\n    type: 'flex',\n    altText: '🎉 您的【' + ($json.destination || '客製化') + '】專屬自由行行程已規劃完成！',\n    contents: {\n      type: 'bubble',\n      size: 'mega',\n      header: {\n        type: 'box',\n        layout: 'vertical',\n        backgroundColor: '#347FA3',\n        paddingAll: '18px',\n        contents: [{\n          type: 'text',\n          text: '🎉 您的專屬自由行已規劃就緒！',\n          color: '#FFFFFF',\n          weight: 'bold',\n          size: 'lg',\n          wrap: true\n        }]\n      },\n      hero: {\n        type: 'image',\n        url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80',\n        size: 'full',\n        aspectRatio: '20:13',\n        aspectMode: 'cover',\n        action: {\n          type: 'uri',\n          label: '查看專屬行程',\n          uri: 'https://liff.line.me/2011659983-aQFWuWxE/canvas/' + $json.itineraryId\n        }\n      },\n      body: {\n        type: 'box',\n        layout: 'vertical',\n        paddingAll: '20px',\n        spacing: 'md',\n        contents: [\n          {\n            type: 'text',\n            text: $json.supabaseUpdateBody?.title || ($json.destination + ' 深度自由行'),\n            color: '#1F2937',\n            weight: 'bold',\n            size: 'xl',\n            wrap: true\n          },\n          {\n            type: 'text',\n            text: '目的地：' + $json.destination + ' · 全程 ' + ($json.days || 3) + ' 天精選體驗',\n            size: 'sm',\n            color: '#6B7280'\n          }\n        ]\n      },\n      footer: {\n        type: 'box',\n        layout: 'vertical',\n        paddingAll: '16px',\n        contents: [{\n          type: 'button',\n          style: 'primary',\n          color: '#347FA3',\n          height: 'sm',\n          action: {\n            type: 'uri',\n            label: '✨ 開啟專屬行程畫布',\n            uri: 'https://liff.line.me/2011659983-aQFWuWxE/canvas/' + $json.itineraryId\n          }\n        }]\n      }\n    }\n  }]\n} }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "line-flex-push",
+      "name": "7. Push LINE Flex Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        380
+      ]
     }
   ],
   "connections": {
@@ -159,14 +192,25 @@
       "main": [
         [
           {
-            "node": "4. Google Vertex AI (gemini-3.5-flash-lite)",
+            "node": "4. Basic LLM Chain",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "4. Google Vertex AI (gemini-3.5-flash-lite)": {
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "4. Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Basic LLM Chain": {
       "main": [
         [
           {
@@ -182,6 +226,17 @@
         [
           {
             "node": "6. Update Supabase Itinerary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Update Supabase Itinerary": {
+      "main": [
+        [
+          {
+            "node": "7. Push LINE Flex Message",
             "type": "main",
             "index": 0
           }
