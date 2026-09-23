@@ -51,7 +51,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://aiplatform.googleapis.com/v1beta1/projects/{{ $env.GCP_PROJECT_ID || 'your-gcp-project-id' }}/locations/global/publishers/google/models/gemini-3.1-flash-lite:generateContent",
+        "url": "https://aiplatform.googleapis.com/v1beta1/projects/n8n-llm-509503/locations/global/publishers/google/models/gemini-3.5-flash-lite:generateContent",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googleApi",
         "sendHeaders": true,
@@ -71,13 +71,19 @@
         }
       },
       "id": "google-vertex-ai-llm",
-      "name": "4. Google Vertex AI (gemini-3.1-flash-lite)",
+      "name": "4. Google Vertex AI (gemini-3.5-flash-lite)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         560,
         380
-      ]
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "1030BMdVtk6oMFQG",
+          "name": "Google Service Account account 2"
+        }
+      }
     },
     {
       "parameters": {
