@@ -31,12 +31,22 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   isInClient: false,
 
   mockLogin: async () => {
+    // 產生專屬隨機 Guest 訪客 UUID，絕不使用寫死的個人帳號
+    const guestId =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `guest-${Date.now()}`;
+
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {}
+
     set({
       status: 'authenticated',
       user: {
-        id: '4d910483-4a11-4d1b-afac-7f13d95bba66',
-        line_user_id: 'u84ec34085d449fe8f15e18a9e72711e0',
-        display_name: '測試旅人 (Demo User)',
+        id: guestId,
+        line_user_id: `guest-${guestId.slice(0, 8)}`,
+        display_name: '訪客旅人 (Demo)',
         avatar_url: null,
         active_itinerary_id: null,
       },
@@ -121,31 +131,46 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
 
       let authUser: AuthUser | null = null;
 
+      // 1. 優先向 n8n Auth Webhook 換取該 LINE 用戶專屬的 Supabase Session
       try {
-        const { data: edgeData, error: edgeErr } = await supabase.functions.invoke<AuthLineExchangeResponse>(
-          'auth-line',
-          { body: exchangePayload }
-        );
+        const n8nAuthUrl =
+          process.env.NEXT_PUBLIC_N8N_AUTH_URL ||
+          'https://n8n-210083939307.asia-east1.run.app/webhook/auth-line';
 
-        if (!edgeErr && edgeData?.access_token) {
-          await supabase.auth.setSession({
-            access_token: edgeData.access_token,
-            refresh_token: edgeData.refresh_token,
-          });
+        const authRes = await fetch(n8nAuthUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lineUserId,
+            displayName,
+            pictureUrl,
+          }),
+        });
 
-          authUser = {
-            id: edgeData.user.id,
-            line_user_id: edgeData.user.line_user_id,
-            display_name: edgeData.user.display_name,
-            avatar_url: edgeData.user.avatar_url ?? pictureUrl,
-            active_itinerary_id: edgeData.user.active_itinerary_id ?? null,
-          };
+        if (authRes.ok) {
+          const authData = await authRes.json();
+          if (authData?.email && authData?.password) {
+            const { data: signData, error: sErr } = await supabase.auth.signInWithPassword({
+              email: authData.email,
+              password: authData.password,
+            });
+
+            if (!sErr && signData?.session) {
+              authUser = {
+                id: signData.user.id,
+                line_user_id: lineUserId,
+                display_name: displayName,
+                avatar_url: pictureUrl,
+                active_itinerary_id: null,
+              };
+            }
+          }
         }
       } catch (invokeErr) {
-        console.warn('Edge function auth-line fallback to profile check:', invokeErr);
+        console.warn('n8n auth-line fallback to profile check:', invokeErr);
       }
 
-      // 2. 備援登入方案：自動透過 profile 查找或建立
+      // 2. 備援登入方案：若尚未拿到 Session，以專屬 profile 建立
       if (!authUser) {
         try {
           const { data: existingProfile } = await supabase
@@ -163,39 +188,25 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
               active_itinerary_id: existingProfile.active_itinerary_id || null,
             };
           } else {
-            // 新用戶首次進站，以 line_user_id 為基礎建立專屬 profile
-            const { data: newProfile, error: insErr } = await supabase
-              .from('profiles')
-              .upsert({
-                line_user_id: lineUserId,
-                display_name: displayName,
-                avatar_url: pictureUrl,
-                updated_at: new Date().toISOString(),
-              })
-              .select('*')
-              .maybeSingle();
-
-            if (newProfile && !insErr) {
-              authUser = {
-                id: newProfile.id,
-                line_user_id: newProfile.line_user_id,
-                display_name: newProfile.display_name || displayName,
-                avatar_url: newProfile.avatar_url || pictureUrl,
-                active_itinerary_id: null,
-              };
-            } else {
-              authUser = {
-                id: lineUserId,
-                line_user_id: lineUserId,
-                display_name: displayName,
-                avatar_url: pictureUrl,
-                active_itinerary_id: null,
-              };
-            }
+            const newUserId =
+              typeof crypto !== 'undefined' && crypto.randomUUID
+                ? crypto.randomUUID()
+                : `u-${Date.now()}`;
+            authUser = {
+              id: newUserId,
+              line_user_id: lineUserId,
+              display_name: displayName,
+              avatar_url: pictureUrl,
+              active_itinerary_id: null,
+            };
           }
         } catch (dbErr) {
+          const newUserId =
+            typeof crypto !== 'undefined' && crypto.randomUUID
+              ? crypto.randomUUID()
+              : `u-${Date.now()}`;
           authUser = {
-            id: lineUserId,
+            id: newUserId,
             line_user_id: lineUserId,
             display_name: displayName,
             avatar_url: pictureUrl,

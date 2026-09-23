@@ -169,6 +169,124 @@
         1280,
         380
       ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "auth-line",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "auth-webhook-ingress",
+      "name": "Auth: Webhook Ingress",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        100,
+        600
+      ],
+      "webhookId": "auth-line"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvnxaksfcftatvxddhpx.supabase.co/auth/v1/admin/users",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  email: ($json.body.lineUserId || 'user').toLowerCase() + '@atrip.line',\n  password: 'line-user-' + ($json.body.lineUserId || 'user') + '-atrip2026',\n  email_confirm: true,\n  user_metadata: {\n    line_user_id: $json.body.lineUserId,\n    display_name: $json.body.displayName || 'LINE 旅行家',\n    avatar_url: $json.body.pictureUrl || null\n  }\n} }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "auth-create-user",
+      "name": "Auth: Create or Check User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        340,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvnxaksfcftatvxddhpx.supabase.co/rest/v1/profiles",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  id: $json.id || $json.user?.id || $('Auth: Webhook Ingress').first().json.body.lineUserId,\n  line_user_id: $('Auth: Webhook Ingress').first().json.body.lineUserId,\n  display_name: $('Auth: Webhook Ingress').first().json.body.displayName || 'LINE 旅行家',\n  avatar_url: $('Auth: Webhook Ingress').first().json.body.pictureUrl || null,\n  updated_at: new Date().toISOString()\n} }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "auth-sync-profile",
+      "name": "Auth: Sync Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  success: true,\n  email: ($('Auth: Webhook Ingress').first().json.body.lineUserId || 'user').toLowerCase() + '@atrip.line',\n  password: 'line-user-' + ($('Auth: Webhook Ingress').first().json.body.lineUserId || 'user') + '-atrip2026',\n  userId: $json[0]?.id || $('Auth: Create or Check User').first().json.id || $('Auth: Create or Check User').first().json.user?.id\n} }}",
+        "options": {}
+      },
+      "id": "auth-respond-webhook",
+      "name": "Auth: Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        820,
+        600
+      ]
     }
   ],
   "connections": {
@@ -237,6 +355,39 @@
         [
           {
             "node": "7. Push LINE Flex Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth: Webhook Ingress": {
+      "main": [
+        [
+          {
+            "node": "Auth: Create or Check User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth: Create or Check User": {
+      "main": [
+        [
+          {
+            "node": "Auth: Sync Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth: Sync Profile": {
+      "main": [
+        [
+          {
+            "node": "Auth: Respond to Webhook",
             "type": "main",
             "index": 0
           }
