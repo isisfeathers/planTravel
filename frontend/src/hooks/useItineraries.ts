@@ -22,76 +22,46 @@ export function useItineraries(userId: string | undefined): UseItinerariesReturn
   const [error, setError] = useState<string | null>(null);
 
   const fetchDashboardData = useCallback(async () => {
+    if (!userId) {
+      setItineraries([]);
+      setActiveItineraryId(null);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
 
-      let effectiveUserId = userId;
-      if (!effectiveUserId) {
-        try {
-          const { data: authData } = await supabase.auth.getUser();
-          if (authData?.user?.id) {
-            effectiveUserId = authData.user.id;
-          }
-        } catch (e) {}
+      // 1. 查詢用戶的 active_itinerary_id
+      try {
+        const { data: pData } = await supabase
+          .from('profiles')
+          .select('active_itinerary_id')
+          .eq('id', userId)
+          .maybeSingle();
+        if (pData?.active_itinerary_id) {
+          setActiveItineraryId(pData.active_itinerary_id);
+        }
+      } catch (e) {}
+
+      // 2. 嚴格只查詢該用戶名下的行程 (未軟刪除)
+      const { data: userItins, error: uErr } = await supabase
+        .from('itineraries')
+        .select('*')
+        .eq('user_id', userId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
+
+      if (uErr) {
+        throw uErr;
       }
 
-      let fetched = false;
-      const isStaticHost =
-        typeof window !== 'undefined' &&
-        (window.location.hostname.includes('github.io') ||
-          process.env.NEXT_PUBLIC_MOCK_LIFF === 'true');
-
-      // 1. 若非靜態主機，先嘗試呼叫 API 端點
-      if (!isStaticHost) {
-        try {
-          const q = effectiveUserId ? `?userId=${encodeURIComponent(effectiveUserId)}` : '';
-          const res = await fetch(`/api/itineraries${q}`);
-          if (res.ok) {
-            const json = await res.json();
-            setActiveItineraryId(json.activeItineraryId || null);
-            setItineraries(json.data || []);
-            fetched = true;
-          }
-        } catch (e) {
-          // API 呼叫失敗，進入 Supabase 直接查詢備援
-        }
-      }
-
-      // 2. 靜態託管 / GitHub Pages 環境備援：直接使用 Supabase Client 讀取
-      if (!fetched) {
-        if (effectiveUserId) {
-          try {
-            const { data: pData } = await supabase
-              .from('profiles')
-              .select('active_itinerary_id')
-              .eq('id', effectiveUserId)
-              .maybeSingle();
-            if (pData?.active_itinerary_id) {
-              setActiveItineraryId(pData.active_itinerary_id);
-            }
-          } catch (e) {}
-
-          const { data: userItins, error: uErr } = await supabase
-            .from('itineraries')
-            .select('*')
-            .eq('user_id', effectiveUserId)
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false });
-
-          if (!uErr) {
-            setItineraries(userItins || []);
-            fetched = true;
-          }
-        }
-
-        if (!fetched) {
-          setItineraries([]);
-        }
-      }
+      setItineraries(userItins || []);
 
     } catch (err: any) {
       setError(err.message || '資料讀取異常');
+      setItineraries([]);
     } finally {
       setIsLoading(false);
     }

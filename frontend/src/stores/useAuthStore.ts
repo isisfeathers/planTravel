@@ -136,6 +136,7 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
         console.warn('Edge function auth-line fallback to profile check:', invokeErr);
       }
 
+      // 2. 備援登入方案：自動透過 profile 查找或建立
       if (!authUser) {
         try {
           const { data: existingProfile } = await supabase
@@ -153,14 +154,35 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
               active_itinerary_id: existingProfile.active_itinerary_id || null,
             };
           } else {
-            const newUserId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `u-${Date.now()}`;
-            authUser = {
-              id: newUserId,
-              line_user_id: lineUserId,
-              display_name: displayName,
-              avatar_url: pictureUrl,
-              active_itinerary_id: null,
-            };
+            // 新用戶首次進站，以 line_user_id 為基礎建立專屬 profile
+            const { data: newProfile, error: insErr } = await supabase
+              .from('profiles')
+              .upsert({
+                line_user_id: lineUserId,
+                display_name: displayName,
+                avatar_url: pictureUrl,
+                updated_at: new Date().toISOString(),
+              })
+              .select('*')
+              .maybeSingle();
+
+            if (newProfile && !insErr) {
+              authUser = {
+                id: newProfile.id,
+                line_user_id: newProfile.line_user_id,
+                display_name: newProfile.display_name || displayName,
+                avatar_url: newProfile.avatar_url || pictureUrl,
+                active_itinerary_id: null,
+              };
+            } else {
+              authUser = {
+                id: lineUserId,
+                line_user_id: lineUserId,
+                display_name: displayName,
+                avatar_url: pictureUrl,
+                active_itinerary_id: null,
+              };
+            }
           }
         } catch (dbErr) {
           authUser = {
