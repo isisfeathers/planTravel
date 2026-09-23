@@ -51,7 +51,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://aiplatform.googleapis.com/v1beta1/projects/clever-basis-506002-r6/locations/global/publishers/google/models/gemini-3.1-flash-lite:generateContent",
+        "url": "=https://aiplatform.googleapis.com/v1beta1/projects/{{ $env.GCP_PROJECT_ID || 'your-gcp-project-id' }}/locations/global/publishers/google/models/gemini-3.1-flash-lite:generateContent",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googleApi",
         "sendHeaders": true,
@@ -77,13 +77,7 @@
       "position": [
         560,
         380
-      ],
-      "credentials": {
-        "googleApi": {
-          "id": "ImjsO7YriiG0teIA",
-          "name": "Google Service Account account"
-        }
-      }
+      ]
     },
     {
       "parameters": {
