@@ -13,6 +13,8 @@ import { FlightTab } from '@/components/flights/FlightTab';
 import { DateAdjustmentModal } from '@/components/timeline/DateAdjustmentModal';
 import { InteractiveMap } from '@/components/map/InteractiveMapClient';
 import { PdfExportButton } from '@/components/export/PdfExportButton';
+import { PdfPrintView } from '@/components/export/PdfPrintView';
+import { ShareModal } from '@/components/share/ShareModal';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { Calendar, Share2, Map as MapIcon, List, Compass } from 'lucide-react';
 import mockItinerary from '@/mocks/mock_itinerary.json';
@@ -26,6 +28,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
   const itineraryId = params?.id || searchParams?.get('id') || 'mock-itinerary-id';
   const [currentTab, setCurrentTab] = useState<'timeline' | 'packing' | 'flights'>('timeline');
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeActivityId, setActiveActivityId] = useState<string | undefined>();
   const [shareToken, setShareToken] = useState<string>('demo');
   const [mobileView, setMobileView] = useState<'timeline' | 'map' | 'route'>('timeline');
@@ -161,13 +164,14 @@ export function CanvasClient({ params }: CanvasClientProps) {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <Link
-            href={`/share/${shareToken}`}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-all border border-slate-200"
+          <button
+            type="button"
+            onClick={() => setIsShareModalOpen(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-all border border-slate-200 shadow-2xs"
           >
             <Share2 size={13} className="text-slate-500 shrink-0" />
-            <span>分享</span>
-          </Link>
+            <span>分享行程</span>
+          </button>
           <PdfExportButton itineraryId={itineraryId} />
         </div>
       </header>
@@ -521,6 +525,19 @@ export function CanvasClient({ params }: CanvasClientProps) {
           await updateTripDates(newStartDate);
         }}
       />
+
+      {/* 行程分享彈窗 */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        itineraryId={itineraryId}
+        shareToken={shareToken}
+        tripTitle={itineraryData.meta.trip_title}
+        destination={itineraryData.meta.destination}
+      />
+
+      {/* A4 完整列印專屬手冊視圖 (平時隱藏，@media print 時自動展開全行程) */}
+      <PdfPrintView itinerary={itineraryData} />
     </main>
   );
 }

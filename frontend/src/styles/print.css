@@ -1,14 +1,12 @@
 @page {
   size: A4 portrait;
-  margin: 0;
+  margin: 12mm 15mm 12mm 15mm;
 }
 
-.print-sheet {
-  width: 210mm;
-  min-height: 297mm;
-  padding: 12mm 15mm 11mm;
-  background-color: #FFFDFA;
-  box-sizing: border-box;
+@media screen {
+  .print-document {
+    display: none !important;
+  }
 }
 
 @media print {
@@ -19,15 +17,27 @@
     print-color-adjust: exact !important;
   }
 
+  /* 隱藏網頁互動元素 */
   nav,
-  header,
-  footer,
+  header.no-print,
+  footer.no-print,
   button,
   .no-print,
   .interactive-only,
   .drag-handle,
-  [data-no-print="true"] {
+  [data-no-print="true"],
+  .leaflet-container,
+  aside,
+  .date-adjustment-modal {
     display: none !important;
+  }
+
+  /* 顯示完整列印手冊文件 */
+  .print-document {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .day-summary,
@@ -47,6 +57,9 @@
   .overflow-hidden {
     overflow: visible !important;
     height: auto !important;
-    background: transparent !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 }
+
