@@ -140,13 +140,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.line.me/v2/bot/message/push",
+        "url": "https://fvnxaksfcftatvxddhpx.supabase.co/functions/v1/send-flex-message",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
-              "name": "Authorization",
-              "value": "Bearer YOUR_LINE_CHANNEL_ACCESS_TOKEN"
+              "name": "apikey",
+              "value": "YOUR_SUPABASE_EDGE_FUNCTION_KEY"
             },
             {
               "name": "Content-Type",
@@ -156,18 +156,18 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($('5. Clean & Format Itinerary').first().json.linePushPayload) }}",
+        "jsonBody": "={\n  \"itineraryId\": \"{{ $('6. Update Supabase Itinerary').first()?.json?.id || $('6. Update Supabase Itinerary').first()?.json?.itineraryId || $('5. Clean & Format Itinerary').first()?.json?.itineraryId || $('3. Prompt Assembler').first()?.json?.itineraryId || $('1. Webhook Ingress').first()?.json?.body?.itineraryId }}\"\n}",
         "options": {
           "timeout": 30000
         }
       },
-      "id": "line-flex-push",
-      "name": "7. Push LINE Flex Message",
+      "id": "b204bef2-da62-48d2-af84-ae5b36613543",
+      "name": "7. Push LINE Flex Message1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1280,
-        380
+        4640,
+        2496
       ]
     },
     {
@@ -354,7 +354,7 @@
       "main": [
         [
           {
-            "node": "7. Push LINE Flex Message",
+            "node": "7. Push LINE Flex Message1",
             "type": "main",
             "index": 0
           }
