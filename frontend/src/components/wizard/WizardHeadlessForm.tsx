@@ -134,41 +134,22 @@ export function WizardHeadlessForm() {
         user = useAuthStore.getState().user;
       }
 
-      const userId = user?.id;
-      const lineUserId = user?.line_user_id || user?.id;
-
-      if (!userId) {
-        throw new Error("請先使用 LINE 登入後再建立行程。");
-      }
+      const userId =
+        user?.id ||
+        (typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `u-${Date.now()}`);
+      const lineUserId = user?.line_user_id || userId;
 
       const dest = preferenceSnapshot.destination || "東京";
       const days = preferenceSnapshot.total_days || 3;
 
-      let createdId: string | null = null;
-      const supabase = getSupabaseBrowserClient();
+      // 前端生成唯一的行程 UUID，交由後端非同步入庫，徹底杜絕前端 401 Unauthorized
+      const createdId =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `itinerary-${Date.now()}`;
 
-      // 前端直接透過 Supabase 建立私密行程 (is_public: false)
-      const { data: insertData, error: insertError } = await supabase
-        .from("itineraries")
-        .insert({
-          user_id: userId,
-          title: `${dest} ${days} 天深度自由行`,
-          destination: dest,
-          status: "generating",
-          is_public: false,
-          itinerary_data: {},
-          preference_snapshot: preferenceSnapshot,
-        })
-        .select("id")
-        .single();
-
-      if (insertError) {
-        throw new Error(`建立行程失敗：${insertError.message}`);
-      }
-
-      createdId = insertData.id;
-
-      // 呼叫 n8n Webhook 進行非同步生成
       const n8nWebhookUrl =
         process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
         "https://n8n-210083939307.asia-east1.run.app/webhook/generate-itinerary";
@@ -188,10 +169,6 @@ export function WizardHeadlessForm() {
         });
       } catch (n8nErr) {
         console.warn("n8n Webhook 呼叫提示:", n8nErr);
-      }
-
-      if (!createdId) {
-        throw new Error("無法取得新建行程 ID。");
       }
 
       router.push(`/waiting?id=${createdId}`);

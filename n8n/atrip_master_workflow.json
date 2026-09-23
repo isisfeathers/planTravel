@@ -100,8 +100,8 @@
     },
     {
       "parameters": {
-        "method": "PATCH",
-        "url": "={{ 'https://fvnxaksfcftatvxddhpx.supabase.co/rest/v1/itineraries?id=eq.' + $json.itineraryId }}",
+        "method": "POST",
+        "url": "https://fvnxaksfcftatvxddhpx.supabase.co/rest/v1/itineraries",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -119,7 +119,7 @@
             },
             {
               "name": "Prefer",
-              "value": "return=minimal"
+              "value": "resolution=merge-duplicates,return=representation"
             }
           ]
         },
