@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ItineraryEntity } from '@/types/itinerary';
+import { getDestinationCoverImage } from '@/lib/destinationImages';
 
 interface TripCardProps {
   itinerary: ItineraryEntity;
@@ -21,6 +22,13 @@ export const TripCard: React.FC<TripCardProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const { title, destination, status, preference_snapshot, is_archived } = itinerary;
+  const [imgSrc, setImgSrc] = useState(() => getDestinationCoverImage(destination, itinerary.id));
+
+  useEffect(() => {
+    setImgSrc(getDestinationCoverImage(destination, itinerary.id));
+  }, [destination, itinerary.id]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,7 +57,6 @@ export const TripCard: React.FC<TripCardProps> = ({
     }
   };
 
-  const { title, destination, status, preference_snapshot, is_archived } = itinerary;
   const totalDays = preference_snapshot?.total_days || 1;
   const startDate = preference_snapshot?.start_date;
   const endDate = preference_snapshot?.end_date;
@@ -75,8 +82,20 @@ export const TripCard: React.FC<TripCardProps> = ({
         isActive ? 'border-brand-primary ring-2 ring-brand-primary/20' : 'border-slate-200'
       } ${isExiting ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
     >
-      <div className="h-32 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 relative p-4 flex flex-col justify-between text-white">
-        <div className="flex justify-between items-start">
+      <div className="h-36 relative p-4 flex flex-col justify-between text-white overflow-hidden bg-slate-900">
+        {/* 背景景點照片與暗色微漸層遮罩 */}
+        <img
+          src={imgSrc}
+          alt={destination || '行程封面'}
+          onError={() => {
+            setImgSrc(getDestinationCoverImage('default', `${itinerary.id}-fallback`));
+          }}
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/40 to-slate-900/30" />
+
+        <div className="relative z-10 flex justify-between items-start">
           {isActive ? (
             <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-brand-primary text-slate-900 shadow-sm">
               ★ 當前關注
@@ -92,7 +111,7 @@ export const TripCard: React.FC<TripCardProps> = ({
                 e.stopPropagation();
                 setIsMenuOpen((prev) => !prev);
               }}
-              className="p-1.5 rounded-full bg-black/30 hover:bg-black/50 text-white transition-colors shadow-sm focus:outline-none"
+              className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors shadow-sm focus:outline-none"
               aria-label="更多操作"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,11 +164,11 @@ export const TripCard: React.FC<TripCardProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/20 backdrop-blur-sm text-white shadow-sm">
+        <div className="relative z-10 flex items-center gap-2">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-black/40 backdrop-blur-md text-white shadow-sm border border-white/15">
             📍 {destination || '目的地待定'}
           </span>
-          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white/20 backdrop-blur-sm text-white shadow-sm">
+          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-black/40 backdrop-blur-md text-white shadow-sm border border-white/15">
             🗓️ {totalDays} 天
           </span>
         </div>
