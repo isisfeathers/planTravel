@@ -43,28 +43,41 @@ export const PdfExportButton: React.FC<PdfExportButtonProps> = ({
 
       {isConfirmDialogOpen && (
         <div className="interactive-only no-print fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl border border-slate-200">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4">
             <h3 className="text-base font-bold text-slate-900">
-              傳送 PDF 到 LINE 聊天室
+              選擇 PDF 匯出方式
             </h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-600">
-              因 LINE 內建瀏覽器限制，系統將透過 LINE 官方帳號直接把完整的行程 PDF 檔案傳送到您的對話框中。
+            <p className="text-xs leading-relaxed text-slate-600">
+              您可以直接使用裝置的原生列印（儲存為完整手冊 PDF），或透過 LINE 官方帳號接收排版檔案。
             </p>
 
-            <div className="mt-6 flex justify-end space-x-2">
+            <div className="flex flex-col gap-2 pt-2">
               <button
                 type="button"
-                onClick={() => setConfirmDialogOpen(false)}
-                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200"
+                onClick={() => {
+                  setConfirmDialogOpen(false);
+                  setTimeout(() => window.print(), 100);
+                }}
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center gap-2"
               >
-                取消
+                🖨️ 瀏覽器直接列印 / 儲存為 PDF
               </button>
               <button
                 type="button"
                 onClick={() => confirmLineExport(itineraryId, accessToken)}
-                className="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-brand-primary text-slate-900 hover:brightness-95"
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-brand-primary text-slate-900 hover:brightness-95 flex items-center justify-center gap-2"
               >
-                確認傳送
+                📲 傳送 PDF 至 LINE 聊天室
+              </button>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmDialogOpen(false)}
+                className="px-3 py-1.5 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100"
+              >
+                關閉
               </button>
             </div>
           </div>

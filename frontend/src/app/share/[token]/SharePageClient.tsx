@@ -92,8 +92,11 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
 
   const focusActivity = (activityId: string) => {
     setActiveActivityId(activityId);
-    document.querySelector(`[data-activity-id="${CSS.escape(activityId)}"]`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try {
+      const escaped = typeof CSS !== 'undefined' && typeof CSS.escape === 'function' ? CSS.escape(activityId) : activityId.replace(/["\\]/g, '\\$&');
+      document.querySelector(`[data-activity-id="${escaped}"]`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (e) {}
   };
 
   if (isLoading) {

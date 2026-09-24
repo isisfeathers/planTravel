@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { QrLoginGuide } from './QrLoginGuide';
 import { Loader2 } from 'lucide-react';
@@ -11,10 +12,17 @@ interface LiffProviderProps {
 
 export const LiffProvider: React.FC<LiffProviderProps> = ({ children }) => {
   const { status, initLiffAndAuth, mockLogin } = useAuthStore();
+  const pathname = usePathname();
 
   useEffect(() => {
     initLiffAndAuth();
   }, [initLiffAndAuth]);
+
+  // 公開分享頁面 (去識別化分享) 允許匿名訪客直接瀏覽
+  const isPublicShareRoute = pathname?.includes('/share');
+  if (isPublicShareRoute) {
+    return <>{children}</>;
+  }
 
   if (status === 'authenticated') {
     return <>{children}</>;

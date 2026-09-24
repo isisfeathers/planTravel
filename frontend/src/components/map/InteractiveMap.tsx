@@ -90,13 +90,23 @@ function MapViewportController({
 
   // 3. 點選活動時平滑聚焦
   useEffect(() => {
-    if (!activeActivityId) return;
+    if (!activeActivityId || !validPoints.length) return;
     const target = validPoints.find((p) => p.id === activeActivityId);
-    if (!target) return;
-    map.flyTo([target.coords.lat, target.coords.lng], Math.max(map.getZoom(), 15), {
-      animate: true,
-      duration: 0.8,
-    });
+    if (!target || !target.coords) return;
+
+    try {
+      map.invalidateSize();
+      const currentZoom = typeof map.getZoom === 'function' ? (map.getZoom() || 13) : 13;
+      const targetZoom = Math.max(currentZoom, 15);
+      map.flyTo([target.coords.lat, target.coords.lng], targetZoom, {
+        animate: true,
+        duration: 0.8,
+      });
+    } catch (e) {
+      try {
+        map.setView([target.coords.lat, target.coords.lng], 15);
+      } catch (e2) {}
+    }
   }, [activeActivityId, map, validPoints]);
 
   return null;

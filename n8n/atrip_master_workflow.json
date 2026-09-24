@@ -1,5 +1,5 @@
 {
-  "name": "Atrip AI Travel Itinerary Pipeline",
+  "name": "Atrip Master Workflow - Production Final",
   "nodes": [
     {
       "parameters": {
@@ -50,33 +50,24 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://aiplatform.googleapis.com/v1beta1/projects/n8n-llm-509503/locations/global/publishers/google/models/gemini-3.5-flash-lite:generateContent",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleApi",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
+        "projectId": {
+          "__rl": true,
+          "value": "n8n-llm-509503",
+          "mode": "list",
+          "cachedResultName": "n8n LLM"
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ { contents: [{ role: \"user\", parts: [{ text: $json.fullPrompt || $json.llmRequestBody?.messages?.[0]?.content || $json.assembledSystemPrompt }] }], generationConfig: { responseMimeType: \"application/json\", temperature: 0.7 } } }}",
+        "modelName": "gemini-3.6-flash",
         "options": {
-          "timeout": 90000
+          "temperature": 0.7
         }
       },
-      "id": "google-vertex-ai-llm",
-      "name": "4. Google Vertex AI (gemini-3.5-flash-lite)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "id": "937a2c09-8fc1-41ea-9dbe-93d6b6fd13b6",
+      "name": "Google Vertex Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
       "position": [
-        560,
-        380
+        540,
+        560
       ],
       "credentials": {
         "googleApi": {
@@ -87,7 +78,21 @@
     },
     {
       "parameters": {
-        "jsCode": "const rawResponse = $input.item.json;\nlet content = '';\nif (rawResponse.choices && rawResponse.choices[0] && rawResponse.choices[0].message) {\n  content = rawResponse.choices[0].message.content;\n} else if (typeof rawResponse === 'string') {\n  content = rawResponse;\n} else {\n  content = JSON.stringify(rawResponse);\n}\n\ncontent = content.replace(/^\\s*```json/i, '').replace(/```\\s*$/i, '').trim();\n\nlet parsed = {};\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  throw new Error('LLM output could not be parsed as JSON: ' + e.message);\n}\n\n// 1. 活動 UUID 注入\nif (Array.isArray(parsed.daily_itinerary)) {\n  parsed.daily_itinerary.forEach((day, dIdx) => {\n    const dNum = day.day_number || dIdx + 1;\n    if (Array.isArray(day.activities)) {\n      day.activities.forEach((act, aIdx) => {\n        if (!act.id || act.id.length < 5) {\n          const rand = Math.random().toString(16).slice(2, 8);\n          act.id = `act-d${dNum}-${aIdx + 1}-${rand}`;\n        }\n        if (act.coordinates) {\n          act.coordinates.lat = Number(act.coordinates.lat) || 0;\n          act.coordinates.lng = Number(act.coordinates.lng) || 0;\n        }\n        act.duration_minutes = Number(act.duration_minutes) || 60;\n        act.cost_estimate = Number(act.cost_estimate) || 0;\n      });\n    }\n  });\n}\n\n// 2. 4 大類智能行李清單標準化 (優先保留 LLM 客製化項目)\nconst validCategories = ['essentials', 'clothing', 'electronics', 'toiletries'];\nconst DEFAULT_FALLBACKS = {\n  essentials: [\n    { item_name: '護照正本（效期6個月以上）與入境申報單', notes: '隨身攜帶勿托運' },\n    { item_name: '海外高回饋信用卡與當地貨幣現鈔', notes: '應急金流備用' }\n  ],\n  clothing: [\n    { item_name: '舒適好走防滑健步鞋', notes: '每日萬步自由行必備' },\n    { item_name: '防風保暖外套與換洗衣物', notes: '因應早晚溫差與氣候變化' }\n  ],\n  electronics: [\n    { item_name: '大容量行動電源 (需隨身攜帶)', notes: '拍照與地圖導航必備，嚴禁托運' },\n    { item_name: '萬國通用規格轉接插頭與多孔快充線組', notes: '充電必備' }\n  ],\n  toiletries: [\n    { item_name: '個人常備藥（止痛/胃腸藥/暈車藥）', notes: '隨身備用' },\n    { item_name: '旅行分裝便攜盥洗包與保濕防曬乳', notes: '隨身液體小於100ml' }\n  ]\n};\n\nconst normalizedList = [];\nconst categoryCounts = { essentials: 0, clothing: 0, electronics: 0, toiletries: 0 };\n\nif (Array.isArray(parsed.packing_list)) {\n  parsed.packing_list.forEach((item, idx) => {\n    let cat = String(item.category || 'essentials').toLowerCase().trim();\n    if (cat === 'essential' || cat === 'documents' || cat === 'document') cat = 'essentials';\n    if (cat === 'clothes') cat = 'clothing';\n    if (cat === 'electronic' || cat === 'tech' || cat === 'digital') cat = 'electronics';\n    if (cat === 'toiletry' || cat === 'medicine' || cat === 'medical') cat = 'toiletries';\n    if (!validCategories.includes(cat)) cat = 'essentials';\n\n    const itemName = String(item.item_name || item.name || '').trim();\n    if (!itemName) return;\n\n    const rand = Math.random().toString(16).slice(2, 8);\n    normalizedList.push({\n      id: item.id || `pack-${cat}-${idx + 1}-${rand}`,\n      category: cat,\n      item_name: itemName,\n      is_checked: Boolean(item.is_checked),\n      notes: item.notes || '自由行專屬推薦'\n    });\n    categoryCounts[cat]++;\n  });\n}\n\n// 補足不足 2 項之類別\nvalidCategories.forEach(cat => {\n  if (categoryCounts[cat] < 2) {\n    const fbs = DEFAULT_FALLBACKS[cat] || [];\n    fbs.forEach((fb, fbIdx) => {\n      const isDuplicate = normalizedList.some(i => i.item_name.includes(fb.item_name.slice(0, 4)));\n      if (!isDuplicate && normalizedList.filter(i => i.category === cat).length < 3) {\n        const rand = Math.random().toString(16).slice(2, 8);\n        normalizedList.push({\n          id: `pack-${cat}-fb-${fbIdx + 1}-${rand}`,\n          category: cat,\n          item_name: fb.item_name,\n          is_checked: false,\n          notes: fb.notes\n        });\n      }\n    });\n  }\n});\n\nparsed.packing_list = normalizedList;\n\nconst meta = parsed.meta || {};\nconst title = meta.trip_title || `${meta.destination || '自由行'} ${meta.total_days || 3} 天探索旅程`;\n\nconst originalInput = $node['1. Receive Webhook'].json;\nconst webhookBody = originalInput.body || originalInput;\nconst itineraryId = webhookBody.itinerary_id || webhookBody.id;\nconst userId = webhookBody.user_id;\n\nreturn [\n  {\n    json: {\n      itineraryId,\n      userId,\n      title,\n      destination: meta.destination || '旅遊目的地',\n      status: 'completed',\n      itinerary_data: parsed,\n      updated_at: new Date().toISOString()\n    }\n  }\n];"
+        "promptType": "define",
+        "text": "={{ $json.prompt }}"
+      },
+      "id": "basic-llm-chain",
+      "name": "4. Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawResponse = $input.item.json;\nlet content = '';\nif (typeof rawResponse === 'string') { content = rawResponse; }\nelse if (rawResponse.text) { content = rawResponse.text; }\nelse if (rawResponse.response) { content = typeof rawResponse.response === 'string' ? rawResponse.response : JSON.stringify(rawResponse.response); }\nelse if (rawResponse.choices && rawResponse.choices[0]) { content = rawResponse.choices[0].message?.content || rawResponse.choices[0].text || ''; }\nelse if (rawResponse.candidates && rawResponse.candidates[0]) { content = rawResponse.candidates[0].content?.parts?.[0]?.text || ''; }\nelse { content = JSON.stringify(rawResponse); }\n\ncontent = content.replace(/^\\s*```json/i, '').replace(/^\\s*```/i, '').replace(/```\\s*$/i, '').trim();\nconst firstBrace = content.indexOf('{');\nconst lastBrace = content.lastIndexOf('}');\nif (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) { content = content.slice(firstBrace, lastBrace + 1); }\ncontent = content.replace(/,\\s*([\\}\\]])/g, '$1');\n\nconst DEFAULT_FALLBACKS = {\n  essentials: [{ item_name: '護照正本（效期6個月以上）與入境申報單', notes: '隨身攜帶勿托運' }, { item_name: '海外高回饋信用卡與當地貨幣現鈔', notes: '應急金流備用' }],\n  clothing: [{ item_name: '舒適好走防滑健步鞋', notes: '每日萬步自由行必備' }, { item_name: '防風保暖外套與換洗衣物', notes: '因應早晚溫差與氣候變化' }],\n  electronics: [{ item_name: '大容量行動電源 (需隨身攜帶)', notes: '拍照與地圖導航必備，嚴禁托運' }, { item_name: '萬國通用規格轉接插頭與多孔快充線組', notes: '充電必備' }],\n  toiletries: [{ item_name: '個人常備藥（止痛/胃腸藥/暈車藥）', notes: '隨身備用' }, { item_name: '旅行分裝盥洗用品組與保濕護膚品', notes: '機艙與飯店乾燥必備' }]\n};\n\nconst promptNode = $('3. Prompt Assembler').first().json;\nlet parsed = {};\ntry { parsed = JSON.parse(content); } catch (e) {\n  try {\n    const sanitized = content.replace(/[\\u0000-\\u001F]+/g, ' ').replace(/,\\s*([\\}\\]])/g, '$1');\n    parsed = JSON.parse(sanitized);\n  } catch (e2) {\n    parsed = {\n      meta: { trip_title: `${promptNode.destination || '旅遊目的地'} ${promptNode.days || 3} 天深度自由行`, destination: promptNode.destination || '東京', total_days: promptNode.days || 3 },\n      daily_itinerary: [{ day_number: 1, date_label: 'Day 1', district: '精華市區', daily_theme: '經典地標巡禮', accommodation: { hotel_name: '精選市區飯店', address: '市中心周邊', booking_tip: '建議提早預訂' }, activities: [{ id: 'act-d1-1-fallback', time_slot: '09:30 - 12:00', period: 'morning', category: 'sightseeing', location_name: `${promptNode.destination || '市區'}著名地標`, description: '深度感受在地人文歷史與美景。', coordinates: { lat: 35.6895, lng: 139.6917 }, duration_minutes: 150, cost_estimate: 0, cost_currency: 'TWD', tips: ['建議搭乘大眾交通工具前往'], transit_to_next: { mode: 'transit', route_summary: '搭乘地鐵至下一站', duration_minutes: 15 } }] }],\n      packing_list: DEFAULT_FALLBACKS\n    };\n  }\n}\n\nif (Array.isArray(parsed.daily_itinerary)) {\n  parsed.daily_itinerary.forEach((day, dIdx) => {\n    const dNum = day.day_number || dIdx + 1;\n    if (Array.isArray(day.activities)) {\n      day.activities.forEach((act, aIdx) => {\n        if (!act.id || act.id.length < 5) { act.id = `act-d${dNum}-${aIdx + 1}-${Math.random().toString(16).slice(2, 8)}`; }\n        if (act.coordinates) { act.coordinates.lat = Number(act.coordinates.lat) || 0; act.coordinates.lng = Number(act.coordinates.lng) || 0; }\n        act.duration_minutes = Number(act.duration_minutes) || 60;\n        act.cost_estimate = Number(act.cost_estimate) || 0;\n      });\n    }\n  });\n}\n\nconst validCategories = ['essentials', 'clothing', 'electronics', 'toiletries'];\nif (!parsed.packing_list || typeof parsed.packing_list !== 'object' || Array.isArray(parsed.packing_list)) {\n  parsed.packing_list = DEFAULT_FALLBACKS;\n} else {\n  validCategories.forEach(cat => {\n    const rawItems = parsed.packing_list[cat];\n    if (!Array.isArray(rawItems) || rawItems.length === 0) {\n      parsed.packing_list[cat] = DEFAULT_FALLBACKS[cat];\n    } else {\n      parsed.packing_list[cat] = rawItems.map((item, idx) => typeof item === 'string' ? { item_name: item, notes: '' } : { item_name: item.item_name || item.name || `行前必備品 ${idx + 1}`, notes: item.notes || item.description || '' });\n    }\n  });\n}\n\nconst meta = parsed.meta || {};\nconst destination = meta.destination || promptNode.destination || '旅遊目的地';\nconst title = meta.trip_title || `${destination} ${meta.total_days || promptNode.days || 3} 天深度自由行`;\n\nreturn [{ json: { itineraryId: promptNode.itineraryId, userId: promptNode.userId, lineUserId: promptNode.lineUserId, title, destination, itinerary_data: parsed, preference_snapshot: promptNode.preference_snapshot } }];"
       },
       "id": "data-cleaner",
       "name": "5. Clean & Format Itinerary",
@@ -95,6 +100,53 @@
       "typeVersion": 2,
       "position": [
         800,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://fvnxaksfcftatvxddhpx.supabase.co/rest/v1/profiles",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "select",
+              "value": "id,line_user_id"
+            },
+            {
+              "name": "line_user_id",
+              "value": "={{ 'eq.' + ($('3. Prompt Assembler').first().json.lineUserId || $('1. Webhook Ingress').first().json.body?.lineUserId || $('1. Webhook Ingress').first().json.body?.userId) }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "get-supabase-profile",
+      "name": "5.1 Get Supabase Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
         380
       ]
     },
@@ -125,7 +177,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({\n  id: $('5. Clean & Format Itinerary').first()?.json?.itineraryId || $('3. Prompt Assembler').first()?.json?.itineraryId || $('1. Webhook Ingress').first()?.json?.body?.itineraryId,\n  user_id: $('5. Clean & Format Itinerary').first()?.json?.userId || $('3. Prompt Assembler').first()?.json?.userId || $('1. Webhook Ingress').first()?.json?.body?.userId,\n  title: $('5. Clean & Format Itinerary').first()?.json?.supabaseUpdateBody?.title || '專屬自由行',\n  destination: $('5. Clean & Format Itinerary').first()?.json?.destination || '東京',\n  status: 'completed',\n  version: 1,\n  is_public: true,\n  itinerary_data: $('5. Clean & Format Itinerary').first()?.json?.supabaseUpdateBody?.itinerary_data || {},\n  preference_snapshot: $('3. Prompt Assembler').first()?.json?.preference_snapshot || $('1. Webhook Ingress').first()?.json?.body?.preference_snapshot || {},\n  error_message: null,\n  updated_at: new Date().toISOString()\n}) }}",
+        "jsonBody": "={{ JSON.stringify({\n  id: $('5. Clean & Format Itinerary').first().json.itineraryId,\n  user_id: $json?.[0]?.id || $json?.id || $('5. Clean & Format Itinerary').first().json.userId || '4d910483-4a11-4d1b-afac-7f13d95bba66',\n  title: $('5. Clean & Format Itinerary').first().json.title,\n  destination: $('5. Clean & Format Itinerary').first().json.destination,\n  status: 'completed',\n  version: 1,\n  is_public: true,\n  itinerary_data: $('5. Clean & Format Itinerary').first().json.itinerary_data,\n  preference_snapshot: $('5. Clean & Format Itinerary').first().json.preference_snapshot,\n  error_message: null,\n  updated_at: new Date().toISOString()\n}) }}",
         "options": {}
       },
       "id": "supabase-update",
@@ -133,7 +185,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1040,
+        1260,
         380
       ]
     },
@@ -146,7 +198,7 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "YOUR_SUPABASE_EDGE_FUNCTION_KEY"
+              "value": "YOUR_SUPABASE_SERVICE_ROLE_OR_ANON_KEY"
             },
             {
               "name": "Content-Type",
@@ -156,136 +208,18 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"itineraryId\": \"{{ $('6. Update Supabase Itinerary').first()?.json?.id || $('6. Update Supabase Itinerary').first()?.json?.itineraryId || $('5. Clean & Format Itinerary').first()?.json?.itineraryId || $('3. Prompt Assembler').first()?.json?.itineraryId || $('1. Webhook Ingress').first()?.json?.body?.itineraryId }}\"\n}",
+        "jsonBody": "={\n  \"itineraryId\": \"{{ $('5. Clean & Format Itinerary').first().json.itineraryId || $json?.[0]?.id || $json?.id }}\"\n}",
         "options": {
           "timeout": 30000
         }
       },
-      "id": "b204bef2-da62-48d2-af84-ae5b36613543",
-      "name": "7. Push LINE Flex Message1",
+      "id": "7a29e694-33f5-4129-a111-de5c2ebbba26",
+      "name": "7. Push LINE Flex Message",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        4640,
-        2496
-      ]
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "auth-line",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "auth-webhook-ingress",
-      "name": "Auth: Webhook Ingress",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        100,
-        600
-      ],
-      "webhookId": "auth-line"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://fvnxaksfcftatvxddhpx.supabase.co/auth/v1/admin/users",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
-            },
-            {
-              "name": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ {\n  email: ($json.body.lineUserId || 'user').toLowerCase() + '@atrip.line',\n  password: 'line-user-' + ($json.body.lineUserId || 'user') + '-atrip2026',\n  email_confirm: true,\n  user_metadata: {\n    line_user_id: $json.body.lineUserId,\n    display_name: $json.body.displayName || 'LINE 旅行家',\n    avatar_url: $json.body.pictureUrl || null\n  }\n} }}",
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        }
-      },
-      "id": "auth-create-user",
-      "name": "Auth: Create or Check User",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        340,
-        600
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://fvnxaksfcftatvxddhpx.supabase.co/rest/v1/profiles",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
-            },
-            {
-              "name": "Authorization",
-              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTUzMjk5OCwiZXhwIjoyMTA1MTA4OTk4fQ.a2n_6uHAugC5IeddlGG3wIHoZn4l5Z_lskV-IUrRzQk"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            },
-            {
-              "name": "Prefer",
-              "value": "resolution=merge-duplicates,return=representation"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ {\n  id: $json.id || $json.user?.id || $('Auth: Webhook Ingress').first().json.body.lineUserId,\n  line_user_id: $('Auth: Webhook Ingress').first().json.body.lineUserId,\n  display_name: $('Auth: Webhook Ingress').first().json.body.displayName || 'LINE 旅行家',\n  avatar_url: $('Auth: Webhook Ingress').first().json.body.pictureUrl || null,\n  updated_at: new Date().toISOString()\n} }}",
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        }
-      },
-      "id": "auth-sync-profile",
-      "name": "Auth: Sync Profile",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        580,
-        600
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ {\n  success: true,\n  email: ($('Auth: Webhook Ingress').first().json.body.lineUserId || 'user').toLowerCase() + '@atrip.line',\n  password: 'line-user-' + ($('Auth: Webhook Ingress').first().json.body.lineUserId || 'user') + '-atrip2026',\n  userId: $json[0]?.id || $('Auth: Create or Check User').first().json.id || $('Auth: Create or Check User').first().json.user?.id\n} }}",
-        "options": {}
-      },
-      "id": "auth-respond-webhook",
-      "name": "Auth: Respond to Webhook",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        820,
-        600
+        1480,
+        380
       ]
     }
   ],
@@ -343,6 +277,17 @@
       "main": [
         [
           {
+            "node": "5.1 Get Supabase Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5.1 Get Supabase Profile": {
+      "main": [
+        [
+          {
             "node": "6. Update Supabase Itinerary",
             "type": "main",
             "index": 0
@@ -354,40 +299,7 @@
       "main": [
         [
           {
-            "node": "7. Push LINE Flex Message1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Auth: Webhook Ingress": {
-      "main": [
-        [
-          {
-            "node": "Auth: Create or Check User",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Auth: Create or Check User": {
-      "main": [
-        [
-          {
-            "node": "Auth: Sync Profile",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Auth: Sync Profile": {
-      "main": [
-        [
-          {
-            "node": "Auth: Respond to Webhook",
+            "node": "7. Push LINE Flex Message",
             "type": "main",
             "index": 0
           }
@@ -398,5 +310,8 @@
   "active": true,
   "settings": {
     "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "9a61fc8171ff854d4c1782aa2c30b2603a37fa1abce288074ec259455b648efe"
   }
 }

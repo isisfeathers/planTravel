@@ -32,7 +32,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       const origin = window.location.origin;
       const pathname = window.location.pathname;
       const basePath = pathname.includes('/planTravel') ? '/planTravel' : '';
-      setShareUrl(`${origin}${basePath}/share/${shareToken}/`);
+      setShareUrl(`${origin}${basePath}/share?token=${shareToken}`);
     }
 
     const ensurePublic = async () => {

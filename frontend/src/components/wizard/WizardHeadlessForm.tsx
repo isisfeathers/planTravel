@@ -129,6 +129,13 @@ export function WizardHeadlessForm() {
       const preferenceSnapshot = wizard.buildPreferenceSnapshot();
       let { user } = useAuthStore.getState();
 
+      if (!user?.id && typeof window !== "undefined") {
+        try {
+          const cached = localStorage.getItem("atrip_auth_user");
+          if (cached) user = JSON.parse(cached);
+        } catch (e) {}
+      }
+
       if (!user?.id) {
         await useAuthStore.getState().initLiffAndAuth();
         user = useAuthStore.getState().user;

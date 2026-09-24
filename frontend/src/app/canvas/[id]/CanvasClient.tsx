@@ -23,6 +23,13 @@ interface CanvasClientProps {
   params?: { id?: string };
 }
 
+function safeEscapeId(id: string): string {
+  if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+    return CSS.escape(id);
+  }
+  return id.replace(/["\\]/g, '\\$&');
+}
+
 export function CanvasClient({ params }: CanvasClientProps) {
   const searchParams = useSearchParams();
   const itineraryId = params?.id || searchParams?.get('id') || 'mock-itinerary-id';
@@ -51,6 +58,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
 
   useEffect(() => {
     async function loadItinerary() {
+      let payload = (mockItinerary as any).itinerary_data || mockItinerary;
       try {
         const supabase = getSupabaseBrowserClient();
         const { data, error } = await supabase
@@ -60,23 +68,24 @@ export function CanvasClient({ params }: CanvasClientProps) {
           .maybeSingle();
 
         if (!error && data?.itinerary_data && Object.keys(data.itinerary_data).length > 0) {
-          const payload = data.itinerary_data;
+          payload = data.itinerary_data;
           if (data.share_token) setShareToken(data.share_token);
           initTimeline(itineraryId, payload, data.version || 1);
-          if (payload?.packing_list) {
-            initPacking(itineraryId, payload.packing_list);
-          }
+          const packingList = (payload?.packing_list && payload.packing_list.length > 0)
+            ? payload.packing_list
+            : ((mockItinerary as any).packing_list || []);
+          initPacking(itineraryId, packingList);
           return;
         }
       } catch (err) {
         console.warn('載入行程異常，切換至備用行程:', err);
       }
 
-      const payload = (mockItinerary as any).itinerary_data;
       initTimeline(itineraryId, payload, 1);
-      if (payload?.packing_list) {
-        initPacking(itineraryId, payload.packing_list);
-      }
+      const packingList = (payload?.packing_list && payload.packing_list.length > 0)
+        ? payload.packing_list
+        : ((mockItinerary as any).packing_list || []);
+      initPacking(itineraryId, packingList);
     }
 
     loadItinerary();
@@ -88,8 +97,11 @@ export function CanvasClient({ params }: CanvasClientProps) {
       setMobileView('map');
     }
     window.requestAnimationFrame(() => {
-      document.querySelector(`[data-activity-id="${CSS.escape(activityId)}"]`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try {
+        const escaped = safeEscapeId(activityId);
+        document.querySelector(`[data-activity-id="${escaped}"]`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (e) {}
     });
   };
 
@@ -450,8 +462,11 @@ export function CanvasClient({ params }: CanvasClientProps) {
                         onClick={() => {
                           setMobileView('timeline');
                           window.requestAnimationFrame(() => {
-                            document.querySelector(`[data-activity-id="${CSS.escape(selectedActivityData.id)}"]`)
-                              ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            try {
+                              const escaped = safeEscapeId(selectedActivityData.id);
+                              document.querySelector(`[data-activity-id="${escaped}"]`)
+                                ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            } catch (e) {}
                           });
                         }}
                         className="px-2.5 py-1 rounded-lg bg-white border border-sky-300 text-brand-primary font-bold text-[11px] hover:bg-sky-100 shrink-0"

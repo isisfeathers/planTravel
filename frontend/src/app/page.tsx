@@ -8,17 +8,34 @@ function HomeRouter() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    // 1. 優先檢查 SearchParams
     const token = searchParams.get('token') || searchParams.get('share_token');
     const itineraryId = searchParams.get('itinerary_id') || searchParams.get('id');
 
     if (token) {
-      router.replace(`/share?token=${token}`);
+      router.replace(`/share?token=${encodeURIComponent(token)}`);
       return;
     }
 
     if (itineraryId) {
-      router.replace(`/canvas?id=${itineraryId}`);
+      router.replace(`/canvas?id=${encodeURIComponent(itineraryId)}`);
       return;
+    }
+
+    // 2. 靜態伺服器 404 回退路徑檢查
+    if (typeof window !== 'undefined') {
+      const pathname = window.location.pathname;
+      const shareMatch = pathname.match(/\/share\/([^\/]+)/);
+      if (shareMatch && shareMatch[1] && shareMatch[1] !== 'index.html') {
+        router.replace(`/share?token=${encodeURIComponent(shareMatch[1])}`);
+        return;
+      }
+
+      const canvasMatch = pathname.match(/\/canvas\/([^\/]+)/);
+      if (canvasMatch && canvasMatch[1] && canvasMatch[1] !== 'index.html') {
+        router.replace(`/canvas?id=${encodeURIComponent(canvasMatch[1])}`);
+        return;
+      }
     }
 
     router.replace('/dashboard');

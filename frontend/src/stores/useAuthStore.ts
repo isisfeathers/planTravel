@@ -5,8 +5,6 @@ import type {
   AuthUser,
   AuthStatus,
   AuthErrorState,
-  AuthLineExchangeRequest,
-  AuthLineExchangeResponse,
 } from '@/types/auth';
 
 interface AuthStoreState {
@@ -24,18 +22,61 @@ interface AuthStoreState {
 
 const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID || '2011659983-aQFWuWxE';
 
+// 嘗試由本地快取預熱使用者資訊，避免頁面重整瞬間空白
+const getCachedUser = (): AuthUser | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem('atrip_auth_user');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+const initialCachedUser = getCachedUser();
+
 export const useAuthStore = create<AuthStoreState>((set, get) => ({
-  status: 'idle',
-  user: null,
+  status: initialCachedUser ? 'authenticated' : 'idle',
+  user: initialCachedUser,
   error: null,
   isInClient: false,
 
   mockLogin: async () => {
-    // 產生專屬隨機 Guest 訪客 UUID，絕不使用寫死的個人帳號
-    const guestId =
-      typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `guest-${Date.now()}`;
+    // 優先沿用本地固定的 Mock 帳號，避免每次重整 UUID 變動導致查無行程
+    let mockUser: AuthUser | null = null;
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('atrip_mock_user');
+        if (cached) mockUser = JSON.parse(cached);
+      } catch (e) {}
+    }
+
+    if (!mockUser) {
+      const guestId =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `guest-${Date.now()}`;
+
+      mockUser = {
+        id: guestId,
+        line_user_id: `guest-${guestId.slice(0, 8)}`,
+        display_name: '訪客旅人 (Demo)',
+        avatar_url: null,
+        active_itinerary_id: null,
+      };
+
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('atrip_mock_user', JSON.stringify(mockUser));
+        } catch (e) {}
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('atrip_auth_user', JSON.stringify(mockUser));
+      } catch (e) {}
+    }
 
     try {
       await supabase.auth.signOut();
@@ -43,13 +84,7 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
 
     set({
       status: 'authenticated',
-      user: {
-        id: guestId,
-        line_user_id: `guest-${guestId.slice(0, 8)}`,
-        display_name: '訪客旅人 (Demo)',
-        avatar_url: null,
-        active_itinerary_id: null,
-      },
+      user: mockUser,
       error: null,
     });
   },
@@ -113,64 +148,30 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
       const displayName = profile.displayName || 'LINE 旅行家';
       const pictureUrl = profile.pictureUrl || null;
 
-      // 清除可能殘留的舊測試帳號 Session
-      try {
-        const { data: currentSession } = await supabase.auth.getSession();
-        if (currentSession?.session?.user?.email?.includes('u84ec34085d449fe8f15e18a9e72711e0') && lineUserId !== 'u84ec34085d449fe8f15e18a9e72711e0') {
-          console.log('[Auth] 偵測到舊測試帳號殘留，自動登出重設...');
-          await supabase.auth.signOut();
-        }
-      } catch (e) {}
-
-      const exchangePayload: AuthLineExchangeRequest = {
-        id_token: idToken || '',
-        line_user_id: lineUserId,
-        display_name: displayName,
-        picture_url: pictureUrl || '',
-      };
-
       let authUser: AuthUser | null = null;
 
-      // 1. 優先向 n8n Auth Webhook 換取該 LINE 用戶專屬的 Supabase Session
+      // 1. 呼叫 get_or_create_line_user 函式 (自動在 Supabase 註冊並建立 profiles 記錄)
       try {
-        const n8nAuthUrl =
-          process.env.NEXT_PUBLIC_N8N_AUTH_URL ||
-          'https://n8n-210083939307.asia-east1.run.app/webhook/auth-line';
-
-        const authRes = await fetch(n8nAuthUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            lineUserId,
-            displayName,
-            pictureUrl,
-          }),
+        const { data: rpcUserId, error: rpcErr } = await supabase.rpc('get_or_create_line_user', {
+          p_line_user_id: lineUserId,
+          p_display_name: displayName,
+          p_avatar_url: pictureUrl,
         });
 
-        if (authRes.ok) {
-          const authData = await authRes.json();
-          if (authData?.email && authData?.password) {
-            const { data: signData, error: sErr } = await supabase.auth.signInWithPassword({
-              email: authData.email,
-              password: authData.password,
-            });
-
-            if (!sErr && signData?.session) {
-              authUser = {
-                id: signData.user.id,
-                line_user_id: lineUserId,
-                display_name: displayName,
-                avatar_url: pictureUrl,
-                active_itinerary_id: null,
-              };
-            }
-          }
+        if (!rpcErr && rpcUserId) {
+          authUser = {
+            id: rpcUserId,
+            line_user_id: lineUserId,
+            display_name: displayName,
+            avatar_url: pictureUrl,
+            active_itinerary_id: null,
+          };
         }
-      } catch (invokeErr) {
-        console.warn('n8n auth-line fallback to profile check:', invokeErr);
+      } catch (authErr) {
+        console.warn('[Auth] Supabase Session 交換提示:', authErr);
       }
 
-      // 2. 備援登入方案：若尚未拿到 Session，以專屬 profile 建立
+      // 2. 備援方案：若 RPC 未及時回應，查詢既有 Profile
       if (!authUser) {
         try {
           const { data: existingProfile } = await supabase
@@ -188,12 +189,9 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
               active_itinerary_id: existingProfile.active_itinerary_id || null,
             };
           } else {
-            const newUserId =
-              typeof crypto !== 'undefined' && crypto.randomUUID
-                ? crypto.randomUUID()
-                : `u-${Date.now()}`;
+            const fallbackUserId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `u-${Date.now()}`;
             authUser = {
-              id: newUserId,
+              id: fallbackUserId,
               line_user_id: lineUserId,
               display_name: displayName,
               avatar_url: pictureUrl,
@@ -201,18 +199,34 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
             };
           }
         } catch (dbErr) {
-          const newUserId =
-            typeof crypto !== 'undefined' && crypto.randomUUID
-              ? crypto.randomUUID()
-              : `u-${Date.now()}`;
+          const fallbackUserId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `u-${Date.now()}`;
           authUser = {
-            id: newUserId,
+            id: fallbackUserId,
             line_user_id: lineUserId,
             display_name: displayName,
             avatar_url: pictureUrl,
             active_itinerary_id: null,
           };
         }
+      }
+
+      // 3. 嘗試讀取 active_itinerary_id
+      try {
+        const { data: pData } = await supabase
+          .from('profiles')
+          .select('active_itinerary_id')
+          .eq('id', authUser.id)
+          .maybeSingle();
+        if (pData?.active_itinerary_id) {
+          authUser.active_itinerary_id = pData.active_itinerary_id;
+        }
+      } catch (e) {}
+
+      // 4. 快取至 localStorage
+      if (typeof window !== 'undefined' && authUser) {
+        try {
+          localStorage.setItem('atrip_auth_user', JSON.stringify(authUser));
+        } catch (e) {}
       }
 
       set({
@@ -241,6 +255,9 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
 
   logout: async () => {
     try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('atrip_auth_user');
+      }
       if (liff.isLoggedIn()) {
         liff.logout();
       }
@@ -264,12 +281,16 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   setActiveItineraryId: (itineraryId: string | null) => {
     const currentUser = get().user;
     if (currentUser) {
-      set({
-        user: {
-          ...currentUser,
-          active_itinerary_id: itineraryId,
-        },
-      });
+      const updated = {
+        ...currentUser,
+        active_itinerary_id: itineraryId,
+      };
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('atrip_auth_user', JSON.stringify(updated));
+        } catch (e) {}
+      }
+      set({ user: updated });
     }
   },
 

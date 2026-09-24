@@ -196,6 +196,30 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_user_pref_updated_at BEFORE UPDATE ON public.user_preferences FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_itineraries_updated_at BEFORE UPDATE ON public.itineraries FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+-- 自動將 Supabase Auth 新註冊用戶同步至 public.profiles 表
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, line_user_id, display_name, avatar_url)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'line_user_id', NEW.id::text),
+    COALESCE(NEW.raw_user_meta_data->>'display_name', 'LINE 旅行家'),
+    NEW.raw_user_meta_data->>'avatar_url'
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    line_user_id = EXCLUDED.line_user_id,
+    display_name = COALESCE(EXCLUDED.display_name, public.profiles.display_name),
+    avatar_url = COALESCE(EXCLUDED.avatar_url, public.profiles.avatar_url),
+    updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 CREATE TRIGGER update_prompt_templates_updated_at BEFORE UPDATE ON public.prompt_templates FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_itinerary_jobs_updated_at BEFORE UPDATE ON public.itinerary_jobs FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 
@@ -214,6 +238,10 @@ ALTER TABLE public.itinerary_shares ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "用戶可查看個人 Profile"
     ON public.profiles FOR SELECT
     USING (auth.uid() = id);
+
+CREATE POLICY "用戶可新增個人 Profile"
+    ON public.profiles FOR INSERT
+    WITH CHECK (auth.uid() = id);
 
 CREATE POLICY "用戶可更新個人 Profile"
     ON public.profiles FOR UPDATE
@@ -331,4 +359,295 @@ COMMENT ON FUNCTION public.get_prompt_directives IS
     '傳入使用者偏好快照，回傳應套用之 prompt_directive 清單（含命中選項與各分類回退預設）。';
 
 GRANT EXECUTE ON FUNCTION public.get_prompt_directives(TEXT[], TEXT, TEXT) TO anon, authenticated;
+
+-- ==============================================================================
+-- 10. TRACK1-01: LINE LIFF 用戶自動同步與註冊 RPC 函式 (Zero-fail Auto User Provisioning)
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION public.get_or_create_line_user(
+    p_line_user_id TEXT,
+    p_display_name TEXT DEFAULT 'LINE 旅行家',
+    p_avatar_url TEXT DEFAULT NULL
+)
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_user_id UUID;
+    v_email TEXT;
+BEGIN
+    -- 1. 檢查 profiles 是否已存在此 line_user_id
+    SELECT id INTO v_user_id
+    FROM public.profiles
+    WHERE line_user_id = p_line_user_id;
+
+    IF v_user_id IS NOT NULL THEN
+        UPDATE public.profiles
+        SET 
+            display_name = COALESCE(NULLIF(p_display_name, ''), display_name),
+            avatar_url = COALESCE(NULLIF(p_avatar_url, ''), avatar_url),
+            updated_at = NOW()
+        WHERE id = v_user_id;
+        
+        RETURN v_user_id;
+    END IF;
+
+    -- 2. 若不存在，在 auth.users 建立新使用者
+    v_user_id := gen_random_uuid();
+    v_email := LOWER(p_line_user_id) || '@atrip.app';
+
+    INSERT INTO auth.users (
+        instance_id, id, aud, role, email, encrypted_password,
+        email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+        is_super_admin, is_sso_user, created_at, updated_at
+    )
+    VALUES (
+        '00000000-0000-0000-0000-000000000000',
+        v_user_id,
+        'authenticated',
+        'authenticated',
+        v_email,
+        crypt('line-auth-' || p_line_user_id, gen_salt('bf')),
+        NOW(),
+        '{"provider":"line","providers":["line"]}'::jsonb,
+        jsonb_build_object('line_user_id', p_line_user_id, 'display_name', p_display_name, 'avatar_url', p_avatar_url),
+        false,
+        false,
+        NOW(),
+        NOW()
+    )
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 3. 確保 public.profiles 存在該紀錄
+    INSERT INTO public.profiles (id, line_user_id, display_name, avatar_url)
+    VALUES (v_user_id, p_line_user_id, COALESCE(NULLIF(p_display_name, ''), 'LINE 旅行家'), p_avatar_url)
+    ON CONFLICT (id) DO UPDATE SET
+        line_user_id = EXCLUDED.line_user_id,
+        display_name = COALESCE(EXCLUDED.display_name, public.profiles.display_name),
+        avatar_url = COALESCE(EXCLUDED.avatar_url, public.profiles.avatar_url),
+        updated_at = NOW();
+
+    RETURN v_user_id;
+END;
+$$;
+
+COMMENT ON FUNCTION public.get_or_create_line_user IS
+    '供前端與 n8n 自動建立或取得 LINE 用戶對應之專屬 User UUID，確保外鍵永遠合法且新用戶無感註冊。';
+
+GRANT EXECUTE ON FUNCTION public.get_or_create_line_user(TEXT, TEXT, TEXT) TO anon, authenticated, service_role;
+
+
+
+-- ==============================================================================
+-- 11. n8n 原子化寫入行程 RPC 函式 (Zero-fail Atomic Itinerary Persistence)
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION public.save_generated_itinerary(
+    p_line_user_id TEXT,
+    p_itinerary_id UUID,
+    p_destination TEXT,
+    p_title TEXT,
+    p_preference_snapshot JSONB,
+    p_itinerary_data JSONB,
+    p_flight_data JSONB DEFAULT '[]'::jsonb
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_user_id UUID;
+    v_result JSONB;
+BEGIN
+    -- 1. 取得或自動建立使用者
+    v_user_id := public.get_or_create_line_user(p_line_user_id);
+
+    -- 2. 寫入或更新行程
+    INSERT INTO public.itineraries (
+        id,
+        user_id,
+        destination,
+        title,
+        status,
+        is_archived,
+        is_public,
+        preference_snapshot,
+        itinerary_data,
+        flight_data,
+        updated_at
+    )
+    VALUES (
+        p_itinerary_id,
+        v_user_id,
+        p_destination,
+        COALESCE(p_title, p_destination || ' 自由行'),
+        'completed',
+        false,
+        true,
+        COALESCE(p_preference_snapshot, '{}'::jsonb),
+        COALESCE(p_itinerary_data, '{}'::jsonb),
+        COALESCE(p_flight_data, '[]'::jsonb),
+        NOW()
+    )
+    ON CONFLICT (id) DO UPDATE SET
+        destination = EXCLUDED.destination,
+        title = EXCLUDED.title,
+        status = 'completed',
+        preference_snapshot = EXCLUDED.preference_snapshot,
+        itinerary_data = EXCLUDED.itinerary_data,
+        flight_data = EXCLUDED.flight_data,
+        updated_at = NOW();
+
+    -- 3. 自動更新為當前活躍關注行程 (Active Itinerary)
+    UPDATE public.profiles
+    SET active_itinerary_id = p_itinerary_id, updated_at = NOW()
+    WHERE id = v_user_id;
+
+    -- 4. 回傳精簡結果
+    SELECT jsonb_build_object(
+
+-- ==============================================================================
+-- 12. 儀表板資料讀取與操作 RPC 函式 (Zero-fail Dashboard RPCs)
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION public.get_user_dashboard(
+    p_user_id UUID DEFAULT NULL,
+    p_line_user_id TEXT DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_user_id UUID := p_user_id;
+    v_active_id UUID := NULL;
+    v_itineraries JSONB := '[]'::jsonb;
+    v_profile JSONB := NULL;
+BEGIN
+    -- 1. 若只有 line_user_id，查找對應之 user_id
+    IF v_user_id IS NULL AND p_line_user_id IS NOT NULL THEN
+        SELECT id INTO v_user_id
+        FROM public.profiles
+        WHERE line_user_id = p_line_user_id;
+    END IF;
+
+    -- 2. 若有 user_id，取得 profile 與 active_itinerary_id
+    IF v_user_id IS NOT NULL THEN
+        SELECT 
+            active_itinerary_id,
+            jsonb_build_object(
+                'id', id,
+                'line_user_id', line_user_id,
+                'display_name', display_name,
+                'avatar_url', avatar_url,
+                'active_itinerary_id', active_itinerary_id
+            )
+        INTO v_active_id, v_profile
+        FROM public.profiles
+        WHERE id = v_user_id;
+
+        -- 3. 取得該用戶所有的未軟刪除行程 (依 created_at 降冪排序)
+        SELECT COALESCE(jsonb_agg(to_jsonb(i.*) ORDER BY i.created_at DESC), '[]'::jsonb)
+        INTO v_itineraries
+        FROM public.itineraries i
+        WHERE i.user_id = v_user_id
+          AND i.deleted_at IS NULL;
+    END IF;
+
+    RETURN jsonb_build_object(
+        'user_id', v_user_id,
+        'active_itinerary_id', v_active_id,
+        'profile', v_profile,
+        'itineraries', v_itineraries
+    );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_user_dashboard(UUID, TEXT) TO anon, authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION public.set_active_itinerary(
+    p_user_id UUID,
+    p_itinerary_id UUID
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    UPDATE public.profiles
+    SET active_itinerary_id = p_itinerary_id, updated_at = NOW()
+    WHERE id = p_user_id;
+    RETURN true;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.set_active_itinerary(UUID, UUID) TO anon, authenticated, service_role;
+
+-- 13. 更新 RLS 政策以相容 LIFF 前端無 Token (Anon Key) 讀寫
+DROP POLICY IF EXISTS "用戶可查看個人 Profile" ON public.profiles;
+DROP POLICY IF EXISTS "用戶可新增個人 Profile" ON public.profiles;
+DROP POLICY IF EXISTS "用戶可更新個人 Profile" ON public.profiles;
+DROP POLICY IF EXISTS "所有人可依ID查看個人 Profile" ON public.profiles;
+DROP POLICY IF EXISTS "所有人可依ID更新個人 Profile" ON public.profiles;
+DROP POLICY IF EXISTS "所有人可新增個人 Profile" ON public.profiles;
+
+CREATE POLICY "所有人可依ID查看個人 Profile"
+    ON public.profiles FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
+CREATE POLICY "所有人可依ID更新個人 Profile"
+    ON public.profiles FOR UPDATE
+    TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);
+
+CREATE POLICY "所有人可新增個人 Profile"
+    ON public.profiles FOR INSERT
+    TO anon, authenticated
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "擁有者可檢視未軟刪除之個人行程" ON public.itineraries;
+DROP POLICY IF EXISTS "擁有者可新增個人行程" ON public.itineraries;
+DROP POLICY IF EXISTS "擁有者可更新個人行程" ON public.itineraries;
+DROP POLICY IF EXISTS "擁有者可軟刪除或刪除個人行程" ON public.itineraries;
+DROP POLICY IF EXISTS "外連訪客可唯讀檢視公開未刪除之行程" ON public.itineraries;
+DROP POLICY IF EXISTS "允許讀取未刪除行程" ON public.itineraries;
+DROP POLICY IF EXISTS "允許新增行程" ON public.itineraries;
+DROP POLICY IF EXISTS "允許更新個人行程" ON public.itineraries;
+DROP POLICY IF EXISTS "允許刪除個人行程" ON public.itineraries;
+
+CREATE POLICY "允許讀取未刪除行程"
+    ON public.itineraries FOR SELECT
+    TO anon, authenticated
+    USING (deleted_at IS NULL);
+
+CREATE POLICY "允許新增行程"
+    ON public.itineraries FOR INSERT
+    TO anon, authenticated
+    WITH CHECK (true);
+
+CREATE POLICY "允許更新個人行程"
+    ON public.itineraries FOR UPDATE
+    TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);
+
+CREATE POLICY "允許刪除個人行程"
+    ON public.itineraries FOR DELETE
+    TO anon, authenticated
+    USING (true);
+
+        'id', id,
+        'user_id', user_id,
+        'status', status,
+        'title', title,
+        'share_token', share_token
+    ) INTO v_result
+    FROM public.itineraries
+    WHERE id = p_itinerary_id;
+
+    RETURN v_result;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.save_generated_itinerary(TEXT, UUID, TEXT, TEXT, JSONB, JSONB, JSONB) TO anon, authenticated, service_role;
 

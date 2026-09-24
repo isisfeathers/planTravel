@@ -21,35 +21,48 @@ interface TimelineState {
 // 800ms 防抖計時器參照
 let debounceTimer: NodeJS.Timeout | null = null;
 
-// 輔助函式：時間字串轉分鐘數 (例 "09:30" -> 570)
+// 輔助函式：時間字串轉分鐘數 (例 "09:30" 或 "09:30 - 11:00" -> 570)
 function parseTimeToMinutes(timeStr: string): number {
   if (!timeStr) return 570;
-  const parts = timeStr.split(':').map(Number);
-  return (parts[0] || 9) * 60 + (parts[1] || 0);
+  const match = timeStr.match(/(\d{1,2}):(\d{2})/);
+  if (!match) return 570;
+  return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
 }
 
 // 輔助函式：分鐘數轉時間字串 (例 570 -> "09:30")
 function formatMinutesToTime(totalMinutes: number): string {
-  const h = Math.floor(totalMinutes / 60) % 24;
-  const m = totalMinutes % 60;
+  const normalized = Math.max(0, totalMinutes);
+  const h = Math.floor(normalized / 60) % 24;
+  const m = normalized % 60;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-// 核心演算法：行程重排後重新推算當日活動的時間區間與交通銜接（重置回當日 AI 推薦出發時間）
-function recalculateDayTimeSlots(activities: ActivityItem[], dayNumber: number = 1, hotelName?: string): ActivityItem[] {
+// 核心演算法：行程重排後重新推算當日活動的時間區間與交通銜接
+function recalculateDayTimeSlots(
+  activities: ActivityItem[],
+  dayNumber: number = 1,
+  hotelName?: string
+): ActivityItem[] {
   if (!activities || activities.length === 0) return [];
 
-  // 當日行程基準起始時間：
-  // Day 1 預設配合抵達班機與 Check-in 為 13:00 (780 分鐘) 或 10:00 (600 分鐘)
-  // Day 2 起固定重置為 AI 推薦的黃金出發時間 09:30 (570 分鐘)
-  let currentStartMinutes = dayNumber === 1 ? 780 : 570;
+  // 1. 取得當日行程基準出發時間（若原本已有起始時間則保留，否則 Day 1 預設 13:00 / 10:00，Day 2+ 預設 09:30）
+  let baseStart = dayNumber === 1 ? 780 : 570;
+  const firstSlot = activities[0]?.time_slot;
+  if (firstSlot) {
+    const parsed = parseTimeToMinutes(firstSlot);
+    if (parsed >= 360 && parsed <= 1260) {
+      baseStart = parsed;
+    }
+  }
+
+  let currentStartMinutes = baseStart;
 
   return activities.map((act, idx) => {
-    const duration = Number(act.duration_minutes) || 90;
+    const duration = Math.max(Number(act.duration_minutes) || 90, 30);
     const endMinutes = currentStartMinutes + duration;
     const newTimeSlot = `${formatMinutesToTime(currentStartMinutes)} - ${formatMinutesToTime(endMinutes)}`;
 
-    const transitDuration = Number(act.transit_to_next?.duration_minutes) || 20;
+    const transitDuration = Math.max(Number(act.transit_to_next?.duration_minutes) || 20, 10);
     currentStartMinutes = endMinutes + transitDuration;
 
     const nextAct = activities[idx + 1];
@@ -107,9 +120,9 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
     if (!itineraryData || !itineraryId) return;
 
     // 1. 純陣列重排演算法
-    const updatedDailyItinerary = [...(itineraryData.daily_itinerary || [])];
+    const updatedDailyItinerary = JSON.parse(JSON.stringify(itineraryData.daily_itinerary || []));
     const targetDay = updatedDailyItinerary[dayIndex];
-    if (!targetDay) return;
+    if (!targetDay || !Array.isArray(targetDay.activities)) return;
 
     const reorderedList = Array.from(targetDay.activities) as ActivityItem[];
     const [movedItem] = reorderedList.splice(startIndex, 1);
@@ -117,7 +130,7 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
 
     const dayNumber = targetDay.day_number || dayIndex + 1;
     const hotelName = itineraryData.recommendations?.accommodations?.[0]?.name;
-    // 2. 重新動態推算時間軸順序與時間區間 (time_slot)，自動重置為當日標準出發時間
+    // 2. 重新動態推算時間軸順序與時間區間 (time_slot)，自動依序排定
     const timeCalculatedActivities = recalculateDayTimeSlots(reorderedList, dayNumber, hotelName);
 
     updatedDailyItinerary[dayIndex] = {
