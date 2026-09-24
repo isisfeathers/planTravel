@@ -121,12 +121,14 @@ export async function GET(request: Request) {
   const retDate = retDateParam && retDateParam.trim() ? retDateParam : defaultRet;
 
   try {
-    const res = await fetch(`http://127.0.0.1:3001/api/v1/flights/search?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&departureDate=${depDate}&returnDate=${retDate}`, {
-      signal: AbortSignal.timeout(1500),
+    const flightServiceUrl = process.env.FLIGHT_SERVICE_URL || 'https://atrip-flight-service-1096361179847.asia-east1.run.app';
+    const res = await fetch(`${flightServiceUrl}/api/v1/flights/search?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&departureDate=${depDate}&returnDate=${retDate}`, {
+      signal: AbortSignal.timeout(4500),
     });
     if (res.ok) {
       const json = await res.json();
-      if (json.data && json.data.length > 0) return NextResponse.json({ success: true, data: json.data });
+      const flightsList = json.flights || json.data;
+      if (flightsList && flightsList.length > 0) return NextResponse.json({ success: true, data: flightsList });
     }
   } catch (e) {}
 

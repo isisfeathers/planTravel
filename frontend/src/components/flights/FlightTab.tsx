@@ -21,22 +21,26 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
     const retDate = endDate || defaultRet;
 
     try {
-      const isStaticHost =
-        typeof window !== 'undefined' &&
-        (window.location.hostname.includes('github.io') ||
-          process.env.NEXT_PUBLIC_MOCK_LIFF === 'true');
+      const depQ = `&departureDate=${encodeURIComponent(depDate)}&departure_date=${encodeURIComponent(depDate)}`;
+      const retQ = retDate ? `&returnDate=${encodeURIComponent(retDate)}&return_date=${encodeURIComponent(retDate)}` : '';
 
-      if (!isStaticHost) {
-        const depQ = startDate ? `&departureDate=${startDate}` : '';
-        const retQ = endDate ? `&returnDate=${endDate}` : '';
-        const res = await fetch(`/api/flights/search?destination=${encodeURIComponent(destination)}&origin=${origin}${depQ}${retQ}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && json.data.length > 0) {
-            setFlights(json.data);
-            setLoading(false);
-            return;
-          }
+      const cloudRunUrl = process.env.NEXT_PUBLIC_FLIGHT_SERVICE_URL || 'https://atrip-flight-service-1096361179847.asia-east1.run.app';
+
+      // 1. 優先嘗試 Next.js 伺服端 API Proxy
+      let res = await fetch(`/api/flights/search?destination=${encodeURIComponent(destination)}&origin=${origin}${depQ}${retQ}`).catch(() => null);
+
+      // 2. 若在純靜態前端 (GitHub Pages / Local)，直接連線 Google Cloud Run 機票服務
+      if (!res || !res.ok) {
+        res = await fetch(`${cloudRunUrl}/api/v1/flights/search?destination=${encodeURIComponent(destination)}&origin=${origin}${depQ}${retQ}`).catch(() => null);
+      }
+
+      if (res && res.ok) {
+        const json = await res.json();
+        const list = json.flights || json.data;
+        if (Array.isArray(list) && list.length > 0) {
+          setFlights(list);
+          setLoading(false);
+          return;
         }
       }
     } catch (e) {
@@ -51,16 +55,65 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
     fetchFlights();
   }, [destination, origin, startDate, endDate]);
 
-  const handleBook = (flight: any) => {
+  const handleBook = async (flight: any) => {
     setVerifyingId(flight.id);
+    try {
+      const cloudRunUrl = process.env.NEXT_PUBLIC_FLIGHT_SERVICE_URL || 'https://atrip-flight-service-1096361179847.asia-east1.run.app';
+
+      // 1. 優先透過 Next.js Proxy 驗價
+      let refreshRes = await fetch('/api/flights/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ offer_id: flight.id }),
+      }).catch(() => null);
+
+      // 2. 備用直接呼叫 Google Cloud Run 雲端服務
+      if (!refreshRes || !refreshRes.ok) {
+        refreshRes = await fetch(`${cloudRunUrl}/api/v1/flights/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ offer_id: flight.id }),
+        }).catch(() => null);
+      }
+
+      if (refreshRes && refreshRes.ok) {
+        const data = await refreshRes.json();
+        if (data.valid) {
+          if (data.warning) {
+            setToastMsg(`⚠️ ${data.warning} 即將為您導向官方結帳頁面...`);
+          } else {
+            setToastMsg('✅ 驗價通過！即將為您導向官方合作購票頁面...');
+          }
+          setTimeout(() => {
+            window.open(data.deep_link || flight.deep_link_url, '_blank');
+            setToastMsg(null);
+            setVerifyingId(null);
+          }, 700);
+          return;
+        } else {
+          if (data.reason === 'PRICE_CHANGED') {
+            setToastMsg(`⚠️ 票價已異動 (最新: NT$ ${data.new_price?.toLocaleString() || ''})，正在為您刷新最新比價...`);
+          } else {
+            setToastMsg('⚠️ 此機位已售罄，正在為您刷新可用航班清單...');
+          }
+          setTimeout(() => {
+            fetchFlights();
+            setToastMsg(null);
+            setVerifyingId(null);
+          }, 1400);
+          return;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    setToastMsg('驗價完成！即將導向官方合作購票頁面...');
     setTimeout(() => {
+      window.open(flight.deep_link_url, '_blank');
+      setToastMsg(null);
       setVerifyingId(null);
-      setToastMsg('驗價完成！即將導向官方合作購票頁面...');
-      setTimeout(() => {
-        window.open(flight.deep_link_url, '_blank');
-        setToastMsg(null);
-      }, 800);
-    }, 500);
+    }, 600);
   };
 
   return (

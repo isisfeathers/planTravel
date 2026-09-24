@@ -3,5 +3,5 @@ SUPABASE_URL=https://<your-project>.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
 WEBHOOK_SECRET=your-secret-token
 OPENAI_API_KEY=sk-...
-FLIGHT_SERVICE_URL=http://flight-service:3001
+FLIGHT_SERVICE_URL=https://atrip-flight-service-1096361179847.asia-east1.run.app
 LINE_BOT_URL=http://line-bot-service:3002

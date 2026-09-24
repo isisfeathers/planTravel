@@ -47,6 +47,8 @@ jobs:
           NEXT_PUBLIC_LIFF_ID: 2011659983-aQFWuWxE
           NEXT_PUBLIC_SUPABASE_URL: https://fvnxaksfcftatvxddhpx.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bnhha3NmY2Z0YXR2eGRkaHB4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1MzI5OTgsImV4cCI6MjEwNTEwODk5OH0.WaYAvOxh6jevcZew5QgwR1ZFP97i7MqyfheZTdR4Dkg
+          NEXT_PUBLIC_FLIGHT_SERVICE_URL: https://atrip-flight-service-1096361179847.asia-east1.run.app
+          FLIGHT_SERVICE_URL: https://atrip-flight-service-1096361179847.asia-east1.run.app
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

@@ -29,10 +29,10 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 
 # 設定環境變數
-ENV PORT=3002
+ENV PORT=8080
 ENV NODE_ENV=production
 
-EXPOSE 3002
+EXPOSE 8080
 
 # 啟動命令
 CMD ["node", "dist/server.js"]

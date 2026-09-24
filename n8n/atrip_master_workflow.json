@@ -177,7 +177,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({\n  id: $('5. Clean & Format Itinerary').first().json.itineraryId,\n  user_id: $json?.[0]?.id || $json?.id || $('5. Clean & Format Itinerary').first().json.userId || '4d910483-4a11-4d1b-afac-7f13d95bba66',\n  title: $('5. Clean & Format Itinerary').first().json.title,\n  destination: $('5. Clean & Format Itinerary').first().json.destination,\n  status: 'completed',\n  version: 1,\n  is_public: true,\n  itinerary_data: $('5. Clean & Format Itinerary').first().json.itinerary_data,\n  preference_snapshot: $('5. Clean & Format Itinerary').first().json.preference_snapshot,\n  error_message: null,\n  updated_at: new Date().toISOString()\n}) }}",
+        "jsonBody": "={{ JSON.stringify({\n  id: $('5. Clean & Format Itinerary').first().json.itineraryId,\n  user_id: $json?.[0]?.id || $json?.id || $('5. Clean & Format Itinerary').first().json.userId || '4d910483-4a11-4d1b-afac-7f13d95bba66',\n  title: $('5. Clean & Format Itinerary').first().json.title,\n  destination: $('5. Clean & Format Itinerary').first().json.destination,\n  status: 'completed',\n  version: 1,\n  is_public: true,\n  itinerary_data: $('5. Clean & Format Itinerary').first().json.itinerary_data,\n  flight_data: $('5. Clean & Format Itinerary').first().json.flight_data || [],\n  preference_snapshot: $('5. Clean & Format Itinerary').first().json.preference_snapshot,\n  error_message: null,\n  updated_at: new Date().toISOString()\n}) }}",
         "options": {}
       },
       "id": "supabase-update",

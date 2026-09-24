@@ -52,7 +52,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "http://flight-service:3001/api/v1/flights/search",
+        "url": "https://atrip-flight-service-1096361179847.asia-east1.run.app/api/v1/flights/search",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
