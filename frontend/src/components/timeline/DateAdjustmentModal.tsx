@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, CheckCircle2, ArrowRight, Plane, Luggage, Clock, X } from 'lucide-react';
 
 interface DateAdjustmentModalProps {
@@ -20,15 +20,30 @@ export const DateAdjustmentModal: React.FC<DateAdjustmentModalProps> = ({
   destination,
   onConfirm,
 }) => {
-  const [selectedDate, setSelectedDate] = useState(
-    currentStartDate || new Date().toISOString().slice(0, 10)
-  );
+  const getInitialDate = () => {
+    if (currentStartDate && /^\d{4}-\d{2}-\d{2}$/.test(currentStartDate)) {
+      return currentStartDate;
+    }
+    return new Date().toISOString().slice(0, 10);
+  };
+
+  const [selectedDate, setSelectedDate] = useState<string>(getInitialDate);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 當彈窗開啟或 currentStartDate 更新時，即時同步選取日期
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedDate(getInitialDate());
+      setIsSubmitting(false);
+    }
+  }, [isOpen, currentStartDate]);
 
   if (!isOpen) return null;
 
-  const startObj = new Date(selectedDate);
-  const endObj = new Date(startObj.getTime() + (totalDays - 1) * 24 * 3600 * 1000);
+  const effectiveStartDate = selectedDate || getInitialDate();
+  const startObj = new Date(effectiveStartDate);
+  const effectiveTotalDays = Math.max(1, totalDays || 1);
+  const endObj = new Date(startObj.getTime() + (effectiveTotalDays - 1) * 24 * 3600 * 1000);
   const newEndDateStr = !isNaN(endObj.getTime()) ? endObj.toISOString().slice(0, 10) : '';
 
   const dayOfWeekStart = !isNaN(startObj.getTime())
@@ -39,10 +54,11 @@ export const DateAdjustmentModal: React.FC<DateAdjustmentModalProps> = ({
     : '';
 
   const handleApply = async () => {
-    if (!selectedDate || isSubmitting) return;
+    const targetDate = selectedDate || getInitialDate();
+    if (!targetDate || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      await onConfirm(selectedDate);
+      await onConfirm(targetDate);
       onClose();
     } catch (e) {
       console.error('更新日期失敗:', e);
@@ -84,8 +100,7 @@ export const DateAdjustmentModal: React.FC<DateAdjustmentModalProps> = ({
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              min={new Date().toISOString().slice(0, 10)}
-              className="w-full p-2.5 rounded-xl border border-slate-300 bg-white text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="w-full p-2.5 rounded-xl border border-slate-300 bg-white text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-primary cursor-pointer"
             />
           </div>
 
@@ -93,11 +108,11 @@ export const DateAdjustmentModal: React.FC<DateAdjustmentModalProps> = ({
           <div className="p-3 rounded-xl bg-white border border-slate-200 flex items-center justify-between text-xs">
             <div>
               <span className="text-slate-400 font-medium block">出發 (Day 1)</span>
-              <span className="font-extrabold text-slate-800">{selectedDate} ({dayOfWeekStart})</span>
+              <span className="font-extrabold text-slate-800">{effectiveStartDate} ({dayOfWeekStart})</span>
             </div>
             <ArrowRight size={14} className="text-slate-400" />
             <div className="text-right">
-              <span className="text-slate-400 font-medium block">回程 (Day {totalDays})</span>
+              <span className="text-slate-400 font-medium block">回程 (Day {effectiveTotalDays})</span>
               <span className="font-extrabold text-slate-800">{newEndDateStr} ({dayOfWeekEnd})</span>
             </div>
           </div>
@@ -124,7 +139,7 @@ export const DateAdjustmentModal: React.FC<DateAdjustmentModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all"
+            className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer"
           >
             取消
           </button>
@@ -132,7 +147,7 @@ export const DateAdjustmentModal: React.FC<DateAdjustmentModalProps> = ({
             type="button"
             onClick={handleApply}
             disabled={isSubmitting}
-            className="flex-1 py-2.5 rounded-xl bg-brand-primary text-slate-900 text-xs font-black shadow-sm hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            className="flex-1 py-2.5 rounded-xl bg-brand-primary text-slate-900 text-xs font-black shadow-sm hover:opacity-95 active:scale-98 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
           >
             {isSubmitting ? (
               <>

@@ -29,12 +29,12 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           ref={provided.innerRef}
           {...provided.draggableProps}
           data-activity-id={activity.id}
-          className="relative select-none max-w-full"
+          className="relative select-none max-w-full w-full min-w-0"
         >
           {/* 景點/住宿主卡片 */}
           <div
             onClick={() => onSelect?.(activity.id)}
-            className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
+            className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer min-w-0 max-w-full overflow-hidden ${
               isActive
                 ? 'ring-2 ring-brand-primary ring-offset-2 bg-sky-50/40 border-brand-primary/60'
                 : isHotelCheckin
@@ -97,17 +97,17 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
 
             {/* 景點描述 */}
             {activity.description && (
-              <p className="text-xs text-slate-600 mt-2 sm:ml-7 leading-relaxed line-clamp-3 sm:line-clamp-none">
+              <p className="text-xs text-slate-600 mt-2 sm:ml-7 leading-relaxed line-clamp-3 sm:line-clamp-none break-words">
                 {activity.description}
               </p>
             )}
 
             {/* 小叮嚀與地圖捷徑 */}
-            <div className="mt-2.5 sm:ml-7 flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100/80">
+            <div className="mt-2.5 sm:ml-7 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-100/80 min-w-0">
               {activity.tips ? (
-                <div className="text-[11px] sm:text-xs text-amber-800 bg-amber-50/80 rounded-lg px-2 py-1 flex items-start gap-1 border border-amber-200/50 flex-1 min-w-[180px]">
+                <div className="text-[11px] sm:text-xs text-amber-800 bg-amber-50/80 rounded-lg px-2 py-1 flex items-start gap-1 border border-amber-200/50 min-w-0 flex-1 break-words">
                   <span className="shrink-0">💡</span>
-                  <span className="line-clamp-2 sm:line-clamp-none">{activity.tips}</span>
+                  <span className="break-words line-clamp-2 sm:line-clamp-none">{activity.tips}</span>
                 </div>
               ) : <div />}
 
@@ -118,7 +118,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                     e.stopPropagation();
                     onSelect?.(activity.id);
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-primary hover:text-slate-900 px-2 py-1 rounded-md bg-brand-primary/10 hover:bg-brand-primary/20 transition-colors ml-auto shrink-0"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-primary hover:text-slate-900 px-2 py-1 rounded-md bg-brand-primary/10 hover:bg-brand-primary/20 transition-colors self-end sm:self-auto shrink-0"
                 >
                   <MapPin size={12} />
                   <span>定位景點</span>

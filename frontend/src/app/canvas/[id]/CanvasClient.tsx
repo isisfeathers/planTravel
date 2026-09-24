@@ -16,6 +16,7 @@ import { PdfExportButton } from '@/components/export/PdfExportButton';
 import { PdfPrintView } from '@/components/export/PdfPrintView';
 import { ShareModal } from '@/components/share/ShareModal';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { generateDynamicPackingList } from '@/lib/packingListGenerator';
 import { Calendar, Share2, Map as MapIcon, List, Compass } from 'lucide-react';
 import mockItinerary from '@/mocks/mock_itinerary.json';
 
@@ -28,6 +29,28 @@ function safeEscapeId(id: string): string {
     return CSS.escape(id);
   }
   return id.replace(/["\\]/g, '\\$&');
+}
+
+function getResolvedPackingList(payload: any) {
+  const dest = payload?.meta?.destination || '巴黎';
+  const days = Number(payload?.meta?.total_days || payload?.daily_itinerary?.length || 3);
+  const startDate = payload?.meta?.start_date;
+  const existingList = payload?.packing_list;
+
+  const isJapan = /日本|東京|大阪|京都|沖繩|福岡|札幌|北海道|名古屋|熊本|仙台|廣島|高松/.test(dest);
+  const hasMismatchedJapanItems = !isJapan && Array.isArray(existingList) && existingList.some(
+    (item: any) =>
+      item.item_name?.includes('日幣') ||
+      item.item_name?.includes('Suica') ||
+      item.item_name?.includes('ICOCA') ||
+      item.item_name?.includes('Visit Japan Web') ||
+      item.item_name?.includes('VJW')
+  );
+
+  if (!existingList || existingList.length === 0 || hasMismatchedJapanItems) {
+    return generateDynamicPackingList(dest, days, startDate);
+  }
+  return existingList;
 }
 
 export function CanvasClient({ params }: CanvasClientProps) {
@@ -71,9 +94,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
           payload = data.itinerary_data;
           if (data.share_token) setShareToken(data.share_token);
           initTimeline(itineraryId, payload, data.version || 1);
-          const packingList = (payload?.packing_list && payload.packing_list.length > 0)
-            ? payload.packing_list
-            : ((mockItinerary as any).packing_list || []);
+          const packingList = getResolvedPackingList(payload);
           initPacking(itineraryId, packingList);
           return;
         }
@@ -82,9 +103,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
       }
 
       initTimeline(itineraryId, payload, 1);
-      const packingList = (payload?.packing_list && payload.packing_list.length > 0)
-        ? payload.packing_list
-        : ((mockItinerary as any).packing_list || []);
+      const packingList = getResolvedPackingList(payload);
       initPacking(itineraryId, packingList);
     }
 
@@ -399,9 +418,9 @@ export function CanvasClient({ params }: CanvasClientProps) {
           )}
 
           {/* 核心雙欄佈局：平板 & 桌面端 (>= 768px) 左右並排；手機端 (< 768px) 依切換器展示 */}
-          <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] gap-5 items-start">
+          <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] gap-5 items-start min-w-0 max-w-full">
             {/* 左欄：時間軸活動卡片列表 */}
-            <div className={`flex flex-col gap-2 ${mobileView !== 'timeline' ? 'hidden md:flex' : 'flex'}`}>
+            <div className={`flex flex-col gap-2 min-w-0 max-w-full overflow-hidden ${mobileView !== 'timeline' ? 'hidden md:flex' : 'flex'}`}>
               <div className="flex items-center justify-between text-[11px] font-medium text-slate-400 px-1 mb-1">
                 <span>💡 可長按左側握把拖曳排序</span>
                 <span>點擊卡片定位地圖</span>
@@ -413,7 +432,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className="flex flex-col gap-2.5 min-h-[300px]"
+                      className="flex flex-col gap-2.5 min-h-[300px] min-w-0 max-w-full overflow-hidden"
                     >
                       {currentDayPlan?.activities.map((activity: any, index: number) => (
                         <ActivityCard
@@ -520,7 +539,11 @@ export function CanvasClient({ params }: CanvasClientProps) {
           </div>
         </div>
       ) : currentTab === 'packing' ? (
-        <PackingListTab />
+        <PackingListTab
+          destination={itineraryData.meta.destination}
+          totalDays={itineraryData.meta.total_days}
+          startDate={itineraryData.meta.start_date}
+        />
       ) : (
         <FlightTab
           destination={itineraryData.meta.destination}

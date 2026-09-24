@@ -9,7 +9,7 @@ interface DayTabsProps {
 
 export const DayTabs: React.FC<DayTabsProps> = ({ days, selectedDay, onSelectDay }) => {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 select-none">
+    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full max-w-full select-none">
       {days.map((day) => {
         const isSelected = day.day_number === selectedDay;
         return (

@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabaseClient';
 import { ItineraryPayload, ActivityItem } from '@/types/itinerary';
+import { generateDynamicPackingList } from '@/lib/packingListGenerator';
+import { usePackingListStore } from '@/stores/usePackingListStore';
 
 interface TimelineState {
   itineraryId: string | null;
@@ -220,26 +222,15 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
       };
     });
 
-    // 2. 根據新月份智慧調整季節打包建議
-    const month = baseDate.getMonth() + 1; // 1 ~ 12
-    let seasonalNote = '舒適排汗衣物與防滑好走健步鞋';
-    if ([12, 1, 2].includes(month)) {
-      seasonalNote = '冬季保暖防風厚外套、發熱衣褲與手套毛帽';
-    } else if ([6, 7, 8].includes(month)) {
-      seasonalNote = '夏季透氣排汗短袖、遮陽帽與高係數防曬乳';
-    } else {
-      seasonalNote = '春秋多層次洋蔥式穿搭與防風防雨薄外套';
-    }
+    // 2. 根據新目的地、新月份與天數智慧更新打包清單
+    const updatedPackingList = generateDynamicPackingList(
+      itineraryData.meta.destination || '旅遊目的地',
+      totalDays,
+      newStartDate
+    );
 
-    const updatedPackingList = (itineraryData.packing_list || []).map((item) => {
-      if (item.category === 'clothing') {
-        return {
-          ...item,
-          notes: `${seasonalNote}（配合 ${month} 月出遊氣候）`,
-        };
-      }
-      return item;
-    });
+    // 同步更新 PackingListStore
+    usePackingListStore.getState().initialize(itineraryId, updatedPackingList);
 
     const newItineraryData: ItineraryPayload = {
       ...itineraryData,
@@ -259,24 +250,27 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
       saveStatusText: '正在更新所有日期與航班聯動...',
     });
 
-    // 4. 即時寫入 Supabase 資料庫
+    // 4. 即時寫入 Supabase 資料庫 (若是 mock-id 或 mock 模式則安全更新本地狀態)
     try {
-      const { error: updateErr } = await supabase
-        .from('itineraries')
-        .update({
-          itinerary_data: newItineraryData,
-          preference_snapshot: {
-            destination: newItineraryData.meta.destination,
-            total_days: totalDays,
-            start_date: newStartDate,
-            end_date: newEndDate,
-          },
-          version: version + 1,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', itineraryId);
+      const isMock = !itineraryId || itineraryId === 'mock-itinerary-id' || itineraryId.startsWith('mock-');
+      if (!isMock) {
+        const { error: updateErr } = await supabase
+          .from('itineraries')
+          .update({
+            itinerary_data: newItineraryData,
+            preference_snapshot: {
+              destination: newItineraryData.meta.destination,
+              total_days: totalDays,
+              start_date: newStartDate,
+              end_date: newEndDate,
+            },
+            version: version + 1,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', itineraryId);
 
-      if (updateErr) throw updateErr;
+        if (updateErr) throw updateErr;
+      }
 
       set({
         version: version + 1,
