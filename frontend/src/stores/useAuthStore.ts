@@ -12,8 +12,8 @@ interface AuthStoreState {
   user: AuthUser | null;
   error: AuthErrorState | null;
   isInClient: boolean;
-  initLiffAndAuth: () => Promise<void>;
-  login: () => void;
+  initLiffAndAuth: (force?: boolean) => Promise<void>;
+  login: () => Promise<void>;
   mockLogin: () => void;
   logout: () => Promise<void>;
   setActiveItineraryId: (itineraryId: string | null) => void;
@@ -27,7 +27,12 @@ const getCachedUser = (): AuthUser | null => {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem('atrip_auth_user');
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed.display_name === 'string') {
+      parsed.display_name = parsed.display_name.replace(/\s*\(Demo\)/g, '').trim();
+    }
+    return parsed;
   } catch (e) {
     return null;
   }
@@ -47,7 +52,12 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
     if (typeof window !== 'undefined') {
       try {
         const cached = localStorage.getItem('atrip_mock_user');
-        if (cached) mockUser = JSON.parse(cached);
+        if (cached) {
+          mockUser = JSON.parse(cached);
+          if (mockUser && typeof mockUser.display_name === 'string') {
+            mockUser.display_name = mockUser.display_name.replace(/\s*\(Demo\)/g, '').trim();
+          }
+        }
       } catch (e) {}
     }
 
@@ -60,7 +70,7 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
       mockUser = {
         id: guestId,
         line_user_id: `guest-${guestId.slice(0, 8)}`,
-        display_name: '訪客旅人 (Demo)',
+        display_name: '訪客旅人',
         avatar_url: null,
         active_itinerary_id: null,
       };
@@ -89,30 +99,32 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
     });
   },
 
-  initLiffAndAuth: async () => {
+  initLiffAndAuth: async (force = false) => {
     const currentStatus = get().status;
-    if (
-      currentStatus === 'initializing' ||
-      currentStatus === 'exchanging_token' ||
-      currentStatus === 'authenticated'
-    ) {
-      return;
+    const currentUser = get().user;
+    const isGuest = currentUser?.line_user_id?.startsWith('guest-');
+
+    if (!force) {
+      if (
+        currentStatus === 'initializing' ||
+        currentStatus === 'exchanging_token' ||
+        (currentStatus === 'authenticated' && !isGuest)
+      ) {
+        return;
+      }
     }
 
     set({ status: 'initializing', error: null });
 
-    if (process.env.NEXT_PUBLIC_MOCK_LIFF === 'true') {
+    if (process.env.NEXT_PUBLIC_MOCK_LIFF === 'true' && !force) {
       get().mockLogin();
       return;
     }
 
-    if (!LIFF_ID) {
-      set({ status: 'unauthenticated' });
-      return;
-    }
+    const liffId = LIFF_ID || '2011659983-aQFWuWxE';
 
     try {
-      await liff.init({ liffId: LIFF_ID });
+      await liff.init({ liffId });
       const inClient = liff.isInClient();
       set({ isInClient: inClient });
 
@@ -123,6 +135,10 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
           } else {
             liff.login();
           }
+          return;
+        }
+        if (isGuest && !force) {
+          set({ status: 'authenticated', user: currentUser });
           return;
         }
         set({ status: 'unauthenticated' });

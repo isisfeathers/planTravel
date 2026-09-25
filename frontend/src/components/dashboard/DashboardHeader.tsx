@@ -32,8 +32,10 @@ export const DashboardHeader: React.FC = () => {
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
-              onClick={() => void login()}
-              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold inline-flex items-center gap-1 transition-all"
+              onClick={async () => {
+                await login();
+              }}
+              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold inline-flex items-center gap-1 transition-all cursor-pointer shadow-xs"
             >
               <LogIn size={13} />
               <span>使用 LINE 登入</span>
@@ -61,7 +63,9 @@ export const DashboardHeader: React.FC = () => {
               />
             )}
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              {user?.display_name ? `${user.display_name} 的行程` : '我的行程儀表板'}
+              {isGuest
+                ? '訪客旅人的行程'
+                : (user?.display_name ? `${user.display_name.replace(/\s*\(Demo\)/g, '')} 的行程` : '我的行程儀表板')}
             </h1>
             {!isGuest && (
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
