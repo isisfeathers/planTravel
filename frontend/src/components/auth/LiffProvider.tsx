@@ -37,13 +37,13 @@ export const LiffProvider: React.FC<LiffProviderProps> = ({ children }) => {
       <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-slate-50 text-slate-800">
         <div className="w-full max-w-sm rounded-2xl p-6 bg-white border border-slate-200 shadow-md text-center space-y-4">
           <p className="text-sm font-bold text-slate-800">LINE 連線提示</p>
-          <p className="text-xs text-slate-500">外部瀏覽器未偵測到 LINE 環境，您可以直接登入或使用 Demo 模式體驗。</p>
+          <p className="text-xs text-slate-500">外部瀏覽器未偵測到 LINE 環境，您可以直接登入或使用訪客身分體驗。</p>
           <button
             type="button"
             onClick={mockLogin}
             className="w-full py-2.5 px-4 rounded-xl font-bold bg-brand-primary text-slate-900 hover:brightness-95 transition-all text-xs"
           >
-            🚀 進入 Demo 體驗
+            🚀 以臨時訪客身分體驗
           </button>
         </div>
       </div>

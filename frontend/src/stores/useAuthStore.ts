@@ -26,6 +26,9 @@ const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID || '2011659983-aQFWuWxE';
 const getCachedUser = (): AuthUser | null => {
   if (typeof window === 'undefined') return null;
   try {
+    if (sessionStorage.getItem('atrip_explicit_logout') === 'true') {
+      return null;
+    }
     const raw = localStorage.getItem('atrip_auth_user');
     if (!raw) return null;
     const parsed = JSON.parse(raw);
@@ -47,6 +50,9 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   isInClient: false,
 
   mockLogin: async () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('atrip_explicit_logout');
+    }
     // 優先沿用本地固定的 Mock 帳號，避免每次重整 UUID 變動導致查無行程
     let mockUser: AuthUser | null = null;
     if (typeof window !== 'undefined') {
@@ -100,6 +106,11 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   },
 
   initLiffAndAuth: async (force = false) => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('atrip_explicit_logout') === 'true' && !force) {
+      set({ status: 'unauthenticated', user: null });
+      return;
+    }
+
     const currentStatus = get().status;
     const currentUser = get().user;
     const isGuest = currentUser?.line_user_id?.startsWith('guest-');
@@ -262,6 +273,9 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   login: async () => {
     if (typeof window === 'undefined') return;
     try {
+      sessionStorage.removeItem('atrip_explicit_logout');
+      localStorage.removeItem('atrip_auth_user');
+      localStorage.removeItem('atrip_mock_user');
       const liffId = LIFF_ID || '2011659983-aQFWuWxE';
 
       try {
@@ -271,8 +285,8 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
       }
 
       if (liff.isLoggedIn()) {
-        // 如果在 LINE App 內已登入，執行使用者狀態同步
-        await get().initLiffAndAuth();
+        // 如果在 LINE App 內已登入，強制執行使用者狀態同步
+        await get().initLiffAndAuth(true);
         return;
       }
 
@@ -293,6 +307,7 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
   logout: async () => {
     try {
       if (typeof window !== 'undefined') {
+        sessionStorage.setItem('atrip_explicit_logout', 'true');
         localStorage.removeItem('atrip_auth_user');
         localStorage.removeItem('atrip_mock_user');
       }
