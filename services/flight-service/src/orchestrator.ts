@@ -42,7 +42,7 @@ export class SearchOrchestrator {
    * @param returnDate 回程日期 (YYYY-MM-DD，單程則為 undefined)
    * @param adults 人數
    * @param cabin 艙等
-   * @param maxTimeoutMs 調度器限制最大執行時間 (預設 4500ms)
+   * @param maxTimeoutMs 調度器限制最大執行時間 (預設 25000ms，以支援雲端爬蟲 Apify 完整抓取)
    */
   public async searchAll(
     queryOrigin: string,
@@ -51,7 +51,7 @@ export class SearchOrchestrator {
     returnDate?: string,
     adults: number = 1,
     cabin: 'ECONOMY' | 'PREMIUM_ECONOMY' | 'BUSINESS' | 'FIRST' = 'ECONOMY',
-    maxTimeoutMs: number = 4500
+    maxTimeoutMs: number = 25000
   ): Promise<FlightOfferItem[]> {
     // 0. 啟用自適應雙軌快取查閱
     const cacheService = CacheService.getInstance();

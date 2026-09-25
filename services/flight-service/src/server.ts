@@ -71,7 +71,7 @@ app.get('/api/v1/flights/search', async (req: Request, res: Response) => {
 
     const adults = parseInt((req.query.adults as string) || '1') || 1;
     const cabin = (((req.query.cabin as string) || 'ECONOMY').toUpperCase() as any);
-    const clientTimeout = parseInt(req.query.timeout as string) || 4500;
+    const clientTimeout = parseInt(req.query.timeout as string) || 25000;
 
     console.log(`\n[API] 收到機票查詢請求: ${origin} -> ${destination} (${departureDate} 至 ${returnDate || '單程'}), 人數: ${adults}, 艙等: ${cabin}, 限制超時: ${clientTimeout}ms`);
 

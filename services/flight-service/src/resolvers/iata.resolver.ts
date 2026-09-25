@@ -36,17 +36,33 @@ export class IataResolver {
     '釜山': { city: 'Busan', airportCodes: ['PUS'] },
     '濟州': { city: 'Jeju', airportCodes: ['CJU'] },
 
-    // 東南亞 & 港澳
+    // 東南亞 & 港澳 & 海島
     '曼谷': { city: 'Bangkok', airportCodes: ['BKK', 'DMK'] },
     '清邁': { city: 'Chiang Mai', airportCodes: ['CNX'] },
     '新加坡': { city: 'Singapore', airportCodes: ['SIN'] },
     '吉隆坡': { city: 'Kuala Lumpur', airportCodes: ['KUL'] },
     '峇里島': { city: 'Bali', airportCodes: ['DPS'] },
+    '富國島': { city: 'Phu Quoc', airportCodes: ['PQC'] },
+    '富國': { city: 'Phu Quoc', airportCodes: ['PQC'] },
     '峴港': { city: 'Da Nang', airportCodes: ['DAD'] },
+    '芽莊': { city: 'Nha Trang', airportCodes: ['CXR'] },
     '胡志明': { city: 'Ho Chi Minh', airportCodes: ['SGN'] },
     '河內': { city: 'Hanoi', airportCodes: ['HAN'] },
+    '宿霧': { city: 'Cebu', airportCodes: ['CEB'] },
+    '長灘島': { city: 'Boracay', airportCodes: ['MPH', 'KLO'] },
+    '蘇美島': { city: 'Koh Samui', airportCodes: ['USM'] },
+    '芭達雅': { city: 'Pattaya', airportCodes: ['BKK', 'UTP'] },
+    '普吉島': { city: 'Phuket', airportCodes: ['HKT', 'BKK'] },
+    '普吉': { city: 'Phuket', airportCodes: ['HKT'] },
     '香港': { city: 'Hong Kong', airportCodes: ['HKG'] },
     '澳門': { city: 'Macau', airportCodes: ['MFM'] },
+    '關島': { city: 'Guam', airportCodes: ['GUM'] },
+    '夏威夷': { city: 'Honolulu', airportCodes: ['HNL'] },
+    '檀香山': { city: 'Honolulu', airportCodes: ['HNL'] },
+    '越南': { city: 'Vietnam', airportCodes: ['PQC', 'SGN', 'HAN', 'DAD'] },
+    '泰國': { city: 'Thailand', airportCodes: ['BKK', 'DMK', 'CNX', 'HKT'] },
+    '菲律賓': { city: 'Philippines', airportCodes: ['CEB', 'MNL'] },
+    '印尼': { city: 'Indonesia', airportCodes: ['DPS', 'CGK'] },
 
     // 歐洲 & 美加 & 大洋洲
     '倫敦': { city: 'London', airportCodes: ['LHR', 'LGW', 'STN'], metroCode: 'LON' },
@@ -124,7 +140,6 @@ export class IataResolver {
     '班夫': { city: 'Vancouver', airportCodes: ['YVR', 'YYC'] },
     '大峽谷': { city: 'Las Vegas', airportCodes: ['LAS'] },
     '皇后鎮': { city: 'Auckland', airportCodes: ['AKL', 'ZQN'] },
-    '普吉島': { city: 'Bangkok', airportCodes: ['BKK', 'HKT'] },
   };
 
   /**

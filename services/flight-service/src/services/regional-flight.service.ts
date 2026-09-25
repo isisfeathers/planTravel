@@ -25,6 +25,8 @@ const REGION_MAP: Record<FlightRegion, FlightPreset[]> = {
     { code: 'BR', airline: '長榮航空 EVA Air', flightNo: 'BR012', price: 33800, hours: 11.5, stops: 0, baggage: '包含 2 件 23kg 托運 + 7kg 手提' },
   ],
   SOUTHEAST_ASIA: [
+    { code: 'VJ', airline: '越捷航空 VietJet Air', flightNo: 'VJ845', price: 7976, hours: 3.7, stops: 0, baggage: '包含手提行李 7kg（可加購托運）' },
+    { code: 'VN', airline: '越南航空 Vietnam Airlines', flightNo: 'VN571', price: 10935, hours: 3.8, stops: 0, baggage: '包含 1 件 23kg 托運 + 7kg 手提' },
     { code: 'BR', airline: '長榮航空 EVA Air', flightNo: 'BR211', price: 11800, hours: 3.8, stops: 0, baggage: '包含 1 件 23kg 托運 + 7kg 手提' },
     { code: 'JX', airline: '星宇航空 STARLUX Airlines', flightNo: 'JX741', price: 12500, hours: 3.8, stops: 0, baggage: '包含 1 件 23kg 托運 + 7kg 手提' },
   ],
@@ -52,7 +54,8 @@ export class RegionalFlightService {
     if (['JFK', 'EWR', 'LGA', 'LAX', 'SFO', 'SEA', 'ORD', 'BOS', 'YVR', 'YYZ'].includes(code)) return 'NORTH_AMERICA';
     if (['SYD', 'MEL', 'BNE', 'AKL', 'CHC'].includes(code)) return 'OCEANIA';
     if (['NRT', 'HND', 'KIX', 'ITM', 'OKA', 'FUK', 'CTS', 'NGO', 'KMJ', 'SDJ', 'HKD', 'OKJ', 'HIJ', 'TAK', 'ICN', 'GMP', 'PUS', 'CJU'].includes(code)) return 'JAPAN_KOREA';
-    if (['BKK', 'DMK', 'CNX', 'SIN', 'KUL', 'DPS', 'DAD', 'SGN', 'HAN', 'HKG', 'MFM'].includes(code)) return 'SOUTHEAST_ASIA';
+    if (['BKK', 'DMK', 'CNX', 'SIN', 'KUL', 'DPS', 'DAD', 'SGN', 'HAN', 'HKG', 'MFM', 'PQC', 'CEB', 'USM', 'HKT', 'CXR', 'KBV', 'UTP', 'KLO', 'MPH', 'MNL', 'CGK'].includes(code)) return 'SOUTHEAST_ASIA';
+    if (['GUM', 'HNL'].includes(code)) return 'NORTH_AMERICA';
     if (['DXB', 'DOH', 'CAI', 'TAS'].includes(code)) return 'MIDDLE_EAST';
     return 'OTHER';
   }

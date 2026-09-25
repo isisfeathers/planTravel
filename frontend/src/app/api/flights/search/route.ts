@@ -69,7 +69,11 @@ const CITY_MAP: Record<string, { code: string; name: string; tsaCode?: string; t
   '釜山': { code: 'PUS', name: '釜山金海 (PUS)', airline: '大韓航空 Korean Air', code2: 'KE2250', price: 9800, hours: 2.3 },
   '濟州': { code: 'CJU', name: '濟州國際機場 (CJU)', airline: '台灣虎航 Tigerair', code2: 'IT654', price: 8800, hours: 2.0 },
 
-  // 東南亞 & 港澳
+  // 東南亞 & 港澳 & 海島
+  '富國島': { code: 'PQC', name: '富國國際機場 (PQC)', airline: '越捷航空 VietJet Air', code2: 'VJ845', price: 7976, hours: 3.7 },
+  '富國': { code: 'PQC', name: '富國國際機場 (PQC)', airline: '越捷航空 VietJet Air', code2: 'VJ845', price: 7976, hours: 3.7 },
+  '宿霧': { code: 'CEB', name: '宿霧麥克坦 (CEB)', airline: '長榮航空 EVA Air', code2: 'BR281', price: 9200, hours: 2.8 },
+  '長灘島': { code: 'MPH', name: '卡提克蘭長灘島 (MPH)', airline: '菲律賓航空 Philippine Airlines', code2: 'PR890', price: 10500, hours: 4.2 },
   '曼谷': { code: 'BKK', name: '曼谷素萬那普 (BKK)', airline: '泰國航空 Thai Airways', code2: 'TG633', price: 11200, hours: 3.8 },
   '清邁': { code: 'CNX', name: '清邁國際機場 (CNX)', airline: '長榮航空 EVA Air', code2: 'BR257', price: 12500, hours: 4.0 },
   '新加坡': { code: 'SIN', name: '新加坡樟宜 (SIN)', airline: '新加坡航空 Singapore Airlines', code2: 'SQ877', price: 13800, hours: 4.5 },

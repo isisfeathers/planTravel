@@ -19,8 +19,13 @@ export class ScoringService {
       const depTime = flight.outbound.departure_time;
       const arrTime = flight.outbound.arrival_time;
 
-      // 生成 MD5 去重唯一主鍵
-      const rawKey = `${airline}_${flightNo}_${depTime}_${arrTime}`;
+      const inSegment = flight.inbound?.segments?.[0];
+      const inFlightNo = inSegment?.flight_number || '';
+      const inDepTime = flight.inbound?.departure_time || '';
+      const inArrTime = flight.inbound?.arrival_time || '';
+
+      // 生成 MD5 去重唯一主鍵（同時考量去程與回程航班）
+      const rawKey = `${airline}_${flightNo}_${depTime}_${arrTime}_${inFlightNo}_${inDepTime}_${inArrTime}`;
       const hashKey = crypto.createHash('md5').update(rawKey).digest('hex');
 
       const existing = flightMap.get(hashKey);
