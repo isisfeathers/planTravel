@@ -67,7 +67,8 @@ export class RegionalFlightService {
     const retDate = params.returnDate;
     const region = this.getRegion(params.destination);
     const presets = REGION_MAP[region] || REGION_MAP.OTHER;
-    const googleDeepLink = `https://www.google.com/travel/flights?q=flights%20from%20${params.origin}%20to%20${params.destination}%20on%20${depDate}${retDate ? `%20returning%20${retDate}` : ''}`;
+    const destQuery = encodeURIComponent(params.destination);
+    const googleDeepLink = `https://www.google.com/travel/flights?q=flights%20from%20${params.origin}%20to%20${destQuery}%20on%20${depDate}${retDate ? `%20returning%20${retDate}` : ''}`;
 
     return presets.map((p, idx) => {
       const durationHours = Math.floor(p.hours);

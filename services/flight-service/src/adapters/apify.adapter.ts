@@ -226,6 +226,11 @@ export class ApifyAdapter implements FlightProviderAdapter {
       const isLCC = ['MM', 'IT', 'GK', 'TR', 'VJ', '5J', 'F9'].includes(primaryAirline);
       const baggageAllowance = isLCC ? '無免費托運行李' : '包含 1 件 23kg 托運行李';
 
+      // 構建 Google Flights 官方即時直達比價 Deep Link（精準預填出發地、目的地、去程日與回程日）
+      const depQuery = actualDepartureDate ? `%20on%20${actualDepartureDate}` : '';
+      const retQuery = actualReturnDate ? `%20returning%20${actualReturnDate}` : '';
+      const googleDeepLink = `https://www.google.com/travel/flights?q=flights%20from%20${actualOrigin}%20to%20${actualDestination}${depQuery}${retQuery}`;
+
       return {
         id: flightId,
         provider: this.providerName,
@@ -239,7 +244,7 @@ export class ApifyAdapter implements FlightProviderAdapter {
         inbound: inboundData,
         price_total_twd: price,
         baggage_included: baggageAllowance,
-        deep_link_url: `https://www.google.com/travel/flights?q=${actualOrigin}-${actualDestination}`,
+        deep_link_url: googleDeepLink,
         checked_at: checkedAt,
         expires_at: expiresAt,
       };
