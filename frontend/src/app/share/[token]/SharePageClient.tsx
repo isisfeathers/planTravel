@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Check, Clipboard, MapPinned, Share2, Sparkles, AlertCircle } from 'lucide-react';
+import { Check, Clipboard, MapPinned, Share2, AlertCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 import { InteractiveMap } from '@/components/map/InteractiveMapClient';
 import { PublicActivityCard } from '@/components/share/PublicActivityCard';
-import { ForkButton } from '@/components/share/ForkButton';
 import { supabase } from '@/lib/supabaseClient';
 import { toDeidentifiedItinerary, type DeidentifiedItinerary, type PublicItineraryRow } from '@/lib/deidentifiedShare';
 import mockItinerary from '@/mocks/mock_itinerary.json';
@@ -156,13 +155,6 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
               <span>{copied ? '已複製連結' : '分享'}</span>
             </button>
           </div>
-          <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3">
-            <span className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-              <Sparkles size={14} className="text-brand-primary" />
-              喜歡這份行程？可直接複製為自己帳號的專屬行程
-            </span>
-            <ForkButton shareToken={itinerary.share_token} />
-          </div>
         </header>
 
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -206,12 +198,11 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
           ))}
         </section>
 
-        <footer className="sticky bottom-4 rounded-2xl border border-slate-200 bg-white/95 p-3.5 shadow-lg backdrop-blur flex items-center justify-between flex-wrap gap-2">
+        <footer className="sticky bottom-4 rounded-2xl border border-slate-200 bg-white/95 p-3.5 shadow-lg backdrop-blur flex items-center justify-center">
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Clipboard size={14} className="text-slate-400" />
             <span>公開分享內容已自動隱藏建立者個資與預算資訊</span>
           </div>
-          <ForkButton shareToken={itinerary.share_token} label="複製到我的行程 (Fork)" />
         </footer>
       </div>
     </main>

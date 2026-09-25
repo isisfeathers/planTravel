@@ -81,7 +81,24 @@ const CITY_MAP: Record<string, { code: string; name: string; tsaCode?: string; t
 
   // 歐美 & 其他
   '巴黎': { code: 'CDG', name: '巴黎戴高樂 (CDG)', airline: '長榮航空 EVA Air 直飛', code2: 'BR087', price: 32800, hours: 14.5 },
+  '法國': { code: 'CDG', name: '巴黎戴高樂 (CDG)', airline: '長榮航空 EVA Air 直飛', code2: 'BR087', price: 32800, hours: 14.5 },
   '倫敦': { code: 'LHR', name: '倫敦希斯洛 (LHR)', airline: '長榮航空 EVA Air 直飛', code2: 'BR067', price: 34500, hours: 15.0 },
+  '英國': { code: 'LHR', name: '倫敦希斯洛 (LHR)', airline: '長榮航空 EVA Air 直飛', code2: 'BR067', price: 34500, hours: 15.0 },
+  '哥本哈根': { code: 'CPH', name: '哥本哈根凱斯楚普 (CPH)', airline: '阿聯酋航空 Emirates (杜拜轉機)', code2: 'EK367', price: 32800, hours: 16.5 },
+  '丹麥': { code: 'CPH', name: '哥本哈根凱斯楚普 (CPH)', airline: '阿聯酋航空 Emirates (杜拜轉機)', code2: 'EK367', price: 32800, hours: 16.5 },
+  '赫爾辛基': { code: 'HEL', name: '赫爾辛基萬塔 (HEL)', airline: '芬蘭航空 Finnair (轉機)', code2: 'AY100', price: 33500, hours: 16.0 },
+  '芬蘭': { code: 'HEL', name: '赫爾辛基萬塔 (HEL)', airline: '芬蘭航空 Finnair (轉機)', code2: 'AY100', price: 33500, hours: 16.0 },
+  '斯德哥爾摩': { code: 'ARN', name: '斯德哥爾摩阿蘭達 (ARN)', airline: '阿聯酋航空 Emirates (杜拜轉機)', code2: 'EK367', price: 33800, hours: 16.8 },
+  '瑞典': { code: 'ARN', name: '斯德哥爾摩阿蘭達 (ARN)', airline: '阿聯酋航空 Emirates (杜拜轉機)', code2: 'EK367', price: 33800, hours: 16.8 },
+  '奧斯陸': { code: 'OSL', name: '奧斯陸加勒穆恩 (OSL)', airline: '卡達航空 Qatar Airways (轉機)', code2: 'QR817', price: 34200, hours: 17.0 },
+  '挪威': { code: 'OSL', name: '奧斯陸加勒穆恩 (OSL)', airline: '卡達航空 Qatar Airways (轉機)', code2: 'QR817', price: 34200, hours: 17.0 },
+  '布拉格': { code: 'PRG', name: '布拉格瓦茨拉夫 (PRG)', airline: '中華航空 China Airlines 直飛/轉機', code2: 'CI067', price: 32500, hours: 15.5 },
+  '捷克': { code: 'PRG', name: '布拉格瓦茨拉夫 (PRG)', airline: '中華航空 China Airlines 直飛/轉機', code2: 'CI067', price: 32500, hours: 15.5 },
+  '巴塞隆納': { code: 'BCN', name: '巴塞隆納埃爾普拉特 (BCN)', airline: '阿聯酋航空 Emirates (杜拜轉機)', code2: 'EK367', price: 32800, hours: 16.5 },
+  '馬德里': { code: 'MAD', name: '馬德里巴拉哈斯 (MAD)', airline: '阿聯酋航空 Emirates (杜拜轉機)', code2: 'EK367', price: 32800, hours: 16.5 },
+  '西班牙': { code: 'MAD', name: '馬德里巴拉哈斯 (MAD)', airline: '阿聯酋航空 Emirates (杜拜轉機)', code2: 'EK367', price: 32800, hours: 16.5 },
+  '慕尼黑': { code: 'MUC', name: '慕尼黑國際機場 (MUC)', airline: '長榮航空 EVA Air 直飛', code2: 'BR071', price: 33500, hours: 14.2 },
+  '柏林': { code: 'BER', name: '柏林布蘭登堡 (BER)', airline: '卡達航空 Qatar Airways (轉機)', code2: 'QR817', price: 33000, hours: 16.0 },
   '羅馬': { code: 'FCO', name: '羅馬菲烏米奇諾 (FCO)', airline: '中華航空 China Airlines 直飛', code2: 'CI075', price: 33500, hours: 14.8 },
   '米蘭': { code: 'MXP', name: '米蘭馬爾彭薩 (MXP)', airline: '長榮航空 EVA Air 直飛', code2: 'BR095', price: 32500, hours: 14.0 },
   '阿姆斯特丹': { code: 'AMS', name: '阿姆斯特丹史基浦 (AMS)', airline: '中華航空 China Airlines 直飛', code2: 'CI073', price: 31800, hours: 14.2 },
@@ -90,13 +107,23 @@ const CITY_MAP: Record<string, { code: string; name: string; tsaCode?: string; t
   '蘇黎世': { code: 'ZRH', name: '蘇黎世國際機場 (ZRH)', airline: '瑞士國際航空 SWISS', code2: 'LX139', price: 36800, hours: 14.0 },
   '瑞士': { code: 'ZRH', name: '蘇黎世國際機場 (ZRH)', airline: '瑞士國際航空 SWISS', code2: 'LX139', price: 36800, hours: 14.0 },
   '冰島': { code: 'KEF', name: '冰島凱夫拉維克 (KEF)', airline: '冰島航空 Icelandair', code2: 'FI543', price: 38900, hours: 18.0 },
+  '雷克雅維克': { code: 'KEF', name: '冰島凱夫拉維克 (KEF)', airline: '冰島航空 Icelandair', code2: 'FI543', price: 38900, hours: 18.0 },
+  '伊斯坦堡': { code: 'IST', name: '伊斯坦堡機場 (IST)', airline: '土耳其航空 Turkish Airlines 直飛', code2: 'TK025', price: 31800, hours: 12.5 },
+  '土耳其': { code: 'IST', name: '伊斯坦堡機場 (IST)', airline: '土耳其航空 Turkish Airlines 直飛', code2: 'TK025', price: 31800, hours: 12.5 },
   '紐約': { code: 'JFK', name: '紐約甘迺迪 (JFK)', airline: '長榮航空 EVA Air 直飛', code2: 'BR032', price: 38500, hours: 15.5 },
   '洛杉磯': { code: 'LAX', name: '洛杉磯國際機場 (LAX)', airline: '星宇航空 STARLUX 直飛', code2: 'JX002', price: 32500, hours: 12.0 },
   '舊金山': { code: 'SFO', name: '舊金山國際機場 (SFO)', airline: '星宇航空 STARLUX 直飛', code2: 'JX012', price: 33000, hours: 11.5 },
   '西雅圖': { code: 'SEA', name: '西雅圖塔科馬 (SEA)', airline: '星宇航空 STARLUX 直飛', code2: 'JX022', price: 31500, hours: 11.0 },
+  '芝加哥': { code: 'ORD', name: '芝加哥奧黑爾 (ORD)', airline: '長榮航空 EVA Air 直飛', code2: 'BR056', price: 35500, hours: 14.0 },
+  '波士頓': { code: 'BOS', name: '波士頓洛根 (BOS)', airline: '國泰航空 Cathay Pacific (轉機)', code2: 'CX812', price: 36800, hours: 17.5 },
+  '溫哥華': { code: 'YVR', name: '溫哥華國際機場 (YVR)', airline: '長榮航空 EVA Air 直飛', code2: 'BR010', price: 31800, hours: 11.0 },
+  '多倫多': { code: 'YYZ', name: '多倫多皮爾遜 (YYZ)', airline: '長榮航空 EVA Air 直飛', code2: 'BR036', price: 36500, hours: 14.5 },
   '雪梨': { code: 'SYD', name: '雪梨國際機場 (SYD)', airline: '中華航空 China Airlines 直飛', code2: 'CI051', price: 26800, hours: 9.0 },
+  '墨爾本': { code: 'MEL', name: '墨爾本國際機場 (MEL)', airline: '中華航空 China Airlines 直飛', code2: 'CI057', price: 26800, hours: 9.2 },
+  '布里斯本': { code: 'BNE', name: '布里斯本國際機場 (BNE)', airline: '長榮航空 EVA Air 直飛', code2: 'BR315', price: 25800, hours: 8.8 },
+  '奧克蘭': { code: 'AKL', name: '奧克蘭國際機場 (AKL)', airline: '紐西蘭航空 Air New Zealand 直飛', code2: 'NZ078', price: 29800, hours: 10.8 },
   '杜拜': { code: 'DXB', name: '杜拜國際機場 (DXB)', airline: '阿聯酋航空 Emirates 直飛', code2: 'EK367', price: 31000, hours: 8.5 },
-  '烏茲別克': { code: 'TAS', name: '塔什干國際機場 (TAS)', airline: '烏茲別克航空 / 大韓航空', code2: 'HY514', price: 28500, hours: 10.5 },
+  '開羅': { code: 'CAI', name: '開羅國際機場 (CAI)', airline: '阿聯酋航空 Emirates', code2: 'EK367', price: 33500, hours: 15.5 },
   '埃及': { code: 'CAI', name: '開羅國際機場 (CAI)', airline: '阿聯酋航空 Emirates', code2: 'EK367', price: 33500, hours: 15.5 },
 };
 
@@ -164,6 +191,20 @@ export async function GET(request: Request) {
   // 2. Google Flights 官方日期起訖搜尋連結
   const googleFlightsDeepLink = `https://www.google.com/travel/flights?q=Flights%20from%20${origin}%20to%20${encodeURIComponent(searchTarget)}%20on%20${depDate}%20returning%20${retDate}`;
 
+  const isLongHaul = match.hours >= 8;
+  const isTransit = match.airline.includes('轉機');
+
+  const secondAirlineCode = isLongHaul ? (match.code === 'CPH' || match.code === 'LHR' || match.code === 'CDG' ? 'SQ' : 'CI') : 'CI';
+  const secondAirlineName = isLongHaul
+    ? (match.code === 'CPH' || match.code === 'LHR' || match.code === 'CDG' ? '新加坡航空 Singapore Airlines' : '中華航空 China Airlines')
+    : '中華航空 China Airlines';
+  const secondFlightNo = isLongHaul ? (secondAirlineCode === 'SQ' ? 'SQ877' : 'CI008') : 'CI100';
+  const secondFlightNoRet = isLongHaul ? (secondAirlineCode === 'SQ' ? 'SQ878' : 'CI009') : 'CI101';
+  const secondPrice = isLongHaul ? Math.round(match.price * 1.05) : Math.round(match.price * 0.88);
+  const secondTag = isLongHaul ? '✨ 五星航空 · 精品轉機' : '💰 最實惠直飛';
+  const secondStops = isLongHaul ? 1 : 0;
+  const secondHours = isLongHaul ? match.hours + 1.5 : match.hours;
+
   const results: FlightOfferItem[] = [
     {
       id: `offer-${destCode}-1`,
@@ -173,7 +214,7 @@ export async function GET(request: Request) {
         departure_time: `${depDate} 08:30`,
         arrival_time: `${depDate} 12:45`,
         duration: `${Math.floor(match.hours)}h ${Math.round((match.hours % 1) * 60)}m`,
-        stops: 0,
+        stops: isTransit ? 1 : 0,
         segments: [{
           airline_code: match.code2.slice(0, 2),
           airline_name: match.airline,
@@ -187,7 +228,7 @@ export async function GET(request: Request) {
         departure_time: `${retDate} 14:15`,
         arrival_time: `${retDate} 17:00`,
         duration: `${Math.floor(match.hours)}h ${Math.round((match.hours % 1) * 60)}m`,
-        stops: 0,
+        stops: isTransit ? 1 : 0,
         segments: [{
           airline_code: match.code2.slice(0, 2),
           airline_name: match.airline,
@@ -198,7 +239,7 @@ export async function GET(request: Request) {
         }],
       },
       price_total_twd: match.price,
-      baggage_included: '包含 2 件 23kg 托運行李 + 7kg 手提',
+      baggage_included: isLongHaul ? '包含 1 件 23kg 托運行李 + 7kg 手提' : '包含 2 件 23kg 托運行李 + 7kg 手提',
       deep_link_url: skyscannerDeepLink,
       checked_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 20 * 60 * 1000).toISOString(),
@@ -206,37 +247,37 @@ export async function GET(request: Request) {
     {
       id: `offer-${destCode}-2`,
       provider: 'Amadeus-GDS',
-      tag: '💰 最實惠直飛',
+      tag: secondTag,
       outbound: {
         departure_time: `${depDate} 06:40`,
         arrival_time: `${depDate} 10:55`,
-        duration: `${Math.floor(match.hours)}h ${Math.round((match.hours % 1) * 60)}m`,
-        stops: 0,
+        duration: `${Math.floor(secondHours)}h ${Math.round((secondHours % 1) * 60)}m`,
+        stops: secondStops,
         segments: [{
-          airline_code: 'CI',
-          airline_name: '中華航空 China Airlines',
-          flight_number: 'CI100',
+          airline_code: secondAirlineCode,
+          airline_name: secondAirlineName,
+          flight_number: secondFlightNo,
           departure: { airport_code: origin, airport_name: originAirportName, time: '06:40' },
           arrival: { airport_code: destCode, airport_name: destName, time: '10:55' },
-          duration_minutes: Math.round(match.hours * 60),
+          duration_minutes: Math.round(secondHours * 60),
         }],
       },
       inbound: {
         departure_time: `${retDate} 18:30`,
         arrival_time: `${retDate} 21:20`,
-        duration: `${Math.floor(match.hours)}h ${Math.round((match.hours % 1) * 60)}m`,
-        stops: 0,
+        duration: `${Math.floor(secondHours)}h ${Math.round((secondHours % 1) * 60)}m`,
+        stops: secondStops,
         segments: [{
-          airline_code: 'CI',
-          airline_name: '中華航空 China Airlines',
-          flight_number: 'CI101',
+          airline_code: secondAirlineCode,
+          airline_name: secondAirlineName,
+          flight_number: secondFlightNoRet,
           departure: { airport_code: destCode, airport_name: destName, time: '18:30' },
           arrival: { airport_code: origin, airport_name: originAirportName, time: '21:20' },
-          duration_minutes: Math.round(match.hours * 60),
+          duration_minutes: Math.round(secondHours * 60),
         }],
       },
-      price_total_twd: Math.round(match.price * 0.88),
-      baggage_included: '包含 1 件 23kg 托運行李',
+      price_total_twd: secondPrice,
+      baggage_included: '包含 1 件 23kg 托運行李 + 7kg 手提',
       deep_link_url: googleFlightsDeepLink,
       checked_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 20 * 60 * 1000).toISOString(),
