@@ -32,7 +32,7 @@ export const DashboardHeader: React.FC = () => {
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
-              onClick={login}
+              onClick={() => void login()}
               className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold inline-flex items-center gap-1 transition-all"
             >
               <LogIn size={13} />

@@ -24,8 +24,9 @@ export const QrLoginGuide: React.FC = () => {
 
         <div className="flex flex-col gap-3">
           <button
-            onClick={login}
-            className="w-full py-3.5 px-4 rounded-xl font-bold bg-[#06C755] text-white hover:bg-[#05b34c] active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 text-base"
+            type="button"
+            onClick={() => void login()}
+            className="w-full py-3.5 px-4 rounded-xl font-bold bg-[#06C755] text-white hover:bg-[#05b34c] active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 text-base cursor-pointer"
           >
             <span>💬 使用 LINE 帳號一鍵登入</span>
           </button>

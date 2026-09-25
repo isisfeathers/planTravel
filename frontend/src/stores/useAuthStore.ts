@@ -243,13 +243,34 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
     }
   },
 
-  login: () => {
-    if (!liff.isLoggedIn()) {
-      if (typeof window !== 'undefined') {
-        liff.login({ redirectUri: window.location.href });
-      } else {
-        liff.login();
+  login: async () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const liffId = LIFF_ID || '2011659983-aQFWuWxE';
+
+      try {
+        await liff.init({ liffId });
+      } catch (initErr) {
+        console.warn('LIFF init inside login:', initErr);
       }
+
+      if (liff.isLoggedIn()) {
+        // 如果在 LINE App 內已登入，執行使用者狀態同步
+        await get().initLiffAndAuth();
+        return;
+      }
+
+      const currentUrl = window.location.href;
+      try {
+        liff.login({ redirectUri: currentUrl });
+      } catch (loginErr) {
+        console.warn('liff.login redirect fallback to https://liff.line.me:', loginErr);
+        window.location.href = `https://liff.line.me/${liffId}`;
+      }
+    } catch (err) {
+      console.error('Login exception, fallback to direct LIFF URL:', err);
+      const liffId = LIFF_ID || '2011659983-aQFWuWxE';
+      window.location.href = `https://liff.line.me/${liffId}`;
     }
   },
 
