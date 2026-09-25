@@ -151,6 +151,21 @@ export function WizardHeadlessForm() {
       const dest = preferenceSnapshot.destination || "東京";
       const days = preferenceSnapshot.total_days || 3;
 
+      // 確保出發與回程日期必定有值（若用戶未指定，帶入 AI 智能推薦的近期週六出發日期）
+      const now = new Date();
+      const targetDate = new Date(now.getTime() + 14 * 24 * 3600 * 1000);
+      const dayOfWeek = targetDate.getDay();
+      const daysToSaturday = (6 - dayOfWeek + 7) % 7;
+      targetDate.setDate(targetDate.getDate() + daysToSaturday);
+      const recStart = targetDate.toISOString().slice(0, 10);
+      const recEnd = new Date(targetDate.getTime() + (days - 1) * 24 * 3600 * 1000).toISOString().slice(0, 10);
+
+      const finalSnapshot = {
+        ...preferenceSnapshot,
+        start_date: preferenceSnapshot.start_date || recStart,
+        end_date: preferenceSnapshot.end_date || recEnd,
+      };
+
       // 前端生成唯一的行程 UUID，交由後端非同步入庫，徹底杜絕前端 401 Unauthorized
       const createdId =
         typeof crypto !== "undefined" && crypto.randomUUID
@@ -171,7 +186,7 @@ export function WizardHeadlessForm() {
             lineUserId,
             destination: dest,
             days,
-            preference_snapshot: preferenceSnapshot,
+            preference_snapshot: finalSnapshot,
           }),
         });
       } catch (n8nErr) {
@@ -297,7 +312,7 @@ export function WizardHeadlessForm() {
                   出發日期設定
                 </label>
                 <span className="text-[11px] font-medium text-slate-500">
-                  {wizard.startDate && wizard.endDate ? `${wizard.startDate} ~ ${wizard.endDate}` : 'AI 推薦出發時機'}
+                  {wizard.startDate && wizard.endDate ? `${wizard.startDate} ~ ${wizard.endDate}` : '✨ AI 智能推薦出發日期'}
                 </span>
               </div>
 
@@ -314,8 +329,8 @@ export function WizardHeadlessForm() {
                       : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
                   }`}
                 >
-                  <span className="block">✨ 尚未確定日期</span>
-                  <span className="text-[10px] font-normal text-slate-500">由 AI 安排最合適季節與航班</span>
+                  <span className="block">✨ AI 智能推薦時機</span>
+                  <span className="text-[10px] font-normal text-slate-500">自動安排近期週六最佳出發日期</span>
                 </button>
 
                 <div className={`p-2.5 rounded-xl border transition-all ${

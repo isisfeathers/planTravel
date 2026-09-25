@@ -65,65 +65,12 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
     fetchFlights();
   }, [destination, origin, startDate, endDate]);
 
-  const handleBook = async (flight: any) => {
-    setVerifyingId(flight.id);
-    try {
-      const cloudRunUrl = process.env.NEXT_PUBLIC_FLIGHT_SERVICE_URL || 'https://atrip-flight-service-1096361179847.asia-east1.run.app';
-
-      // 1. 優先透過 Next.js Proxy 驗價
-      let refreshRes = await fetch('/api/flights/refresh', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offer_id: flight.id }),
-      }).catch(() => null);
-
-      // 2. 備用直接呼叫 Google Cloud Run 雲端服務
-      if (!refreshRes || !refreshRes.ok) {
-        refreshRes = await fetch(`${cloudRunUrl}/api/v1/flights/refresh`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ offer_id: flight.id }),
-        }).catch(() => null);
-      }
-
-      if (refreshRes && refreshRes.ok) {
-        const data = await refreshRes.json();
-        if (data.valid) {
-          if (data.warning) {
-            setToastMsg(`⚠️ ${data.warning} 即將為您導向官方結帳頁面...`);
-          } else {
-            setToastMsg('✅ 驗價通過！即將為您導向官方合作購票頁面...');
-          }
-          setTimeout(() => {
-            window.open(data.deep_link || flight.deep_link_url, '_blank');
-            setToastMsg(null);
-            setVerifyingId(null);
-          }, 700);
-          return;
-        } else {
-          if (data.reason === 'PRICE_CHANGED') {
-            setToastMsg(`⚠️ 票價已異動 (最新: NT$ ${data.new_price?.toLocaleString() || ''})，正在為您刷新最新比價...`);
-          } else {
-            setToastMsg('⚠️ 此機位已售罄，正在為您刷新可用航班清單...');
-          }
-          setTimeout(() => {
-            fetchFlights();
-            setToastMsg(null);
-            setVerifyingId(null);
-          }, 1400);
-          return;
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    setToastMsg('驗價完成！即將導向官方合作購票頁面...');
+  const handleBook = (flight: any) => {
+    const airlineName = flight.outbound?.segments?.[0]?.airline_name || '官方推薦航班';
+    setToastMsg(`🚀 正在為您另開新分頁前往「${airlineName}」官方即時比價與訂票頁面...`);
     setTimeout(() => {
-      window.open(flight.deep_link_url, '_blank');
       setToastMsg(null);
-      setVerifyingId(null);
-    }, 600);
+    }, 3000);
   };
 
   return (

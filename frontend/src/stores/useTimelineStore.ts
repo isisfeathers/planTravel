@@ -95,6 +95,58 @@ function recalculateDayTimeSlots(
   });
 }
 
+function applyDatesToItinerary(itinerary: ItineraryPayload, customStartDate?: string): ItineraryPayload {
+  if (!itinerary) return itinerary;
+
+  let baseDate: Date;
+  if (customStartDate) {
+    baseDate = new Date(customStartDate);
+  } else if (itinerary.meta?.start_date) {
+    baseDate = new Date(itinerary.meta.start_date);
+  } else {
+    // 預設為 2 週後的星期六出發
+    const now = new Date();
+    const target = new Date(now.getTime() + 14 * 24 * 3600 * 1000);
+    const dayOfWeek = target.getDay();
+    const daysToSaturday = (6 - dayOfWeek + 7) % 7;
+    target.setDate(target.getDate() + daysToSaturday);
+    baseDate = target;
+  }
+
+  if (isNaN(baseDate.getTime())) {
+    baseDate = new Date();
+  }
+
+  const startStr = baseDate.toISOString().slice(0, 10);
+  const totalDays = Number(itinerary.meta?.total_days || itinerary.daily_itinerary?.length || 1);
+  const endObj = new Date(baseDate.getTime() + (totalDays - 1) * 24 * 3600 * 1000);
+  const endStr = endObj.toISOString().slice(0, 10);
+
+  const updatedDailyItinerary = (itinerary.daily_itinerary || []).map((day, dIdx) => {
+    const dNum = day.day_number || dIdx + 1;
+    const thisDay = new Date(baseDate.getTime() + (dNum - 1) * 24 * 3600 * 1000);
+    const yyyymmdd = thisDay.toISOString().slice(0, 10);
+    const dayOfWeek = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'][thisDay.getDay()];
+    const cleanLabel = (day.date_label || '').replace(/^(第\s*\d+\s*天|\d{4}-\d{2}-\d{2}[^·]*)\s*·?\s*/, '');
+
+    return {
+      ...day,
+      date_label: `${yyyymmdd} (${dayOfWeek}) · Day ${dNum} · ${cleanLabel || day.summary || '深度探索'}`,
+    };
+  });
+
+  return {
+    ...itinerary,
+    meta: {
+      ...itinerary.meta,
+      start_date: startStr,
+      end_date: endStr,
+      total_days: totalDays,
+    },
+    daily_itinerary: updatedDailyItinerary,
+  };
+}
+
 export const useTimelineStore = create<TimelineState>((set, get) => ({
   itineraryId: null,
   itineraryData: null,
@@ -105,9 +157,10 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
   saveStatusText: '所有變更已儲存',
 
   initialize: (id, initialData, initialVersion) => {
+    const formattedData = applyDatesToItinerary(initialData);
     set({
       itineraryId: id,
-      itineraryData: initialData,
+      itineraryData: formattedData,
       version: initialVersion,
       selectedDay: 1,
       saveError: null,
