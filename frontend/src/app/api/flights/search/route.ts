@@ -229,7 +229,7 @@ export async function GET(request: Request) {
     : `https://www.google.com/travel/flights?q=flights%20from%20${origin}%20to%20${encodeURIComponent(searchTarget)}%20on%20${depDate}%20returning%20${retDate}`;
 
   // 2. Google Flights 官方日期起訖搜尋連結
-  const googleFlightsDeepLink = `https://www.google.com/travel/flights?q=Flights%20from%20${origin}%20to%20${encodeURIComponent(searchTarget)}%20on%20${depDate}%20returning%20${retDate}`;
+  const googleFlightsDeepLink = `https://www.google.com/travel/flights?q=Flights%20to%20${encodeURIComponent(searchTarget)}%20from%20${origin}%20on%20${depDate}%20through%20${retDate}&hl=zh-TW&curr=TWD`;
 
   const isLongHaul = match.hours >= 8;
   const isTransit = match.airline.includes('轉機');

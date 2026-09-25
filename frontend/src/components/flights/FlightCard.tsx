@@ -61,6 +61,35 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
     ? 'Skyscanner'
     : '官方合作渠道';
 
+  // 智慧構建 Google Flights 官方即時直達比價 Deep Link（防護確保起訖機場與日期 100% 帶入）
+  const buildEffectiveDeepLink = () => {
+    const rawUrl = flight.deep_link_url;
+    if (rawUrl && (rawUrl.includes('Flights%20to') || rawUrl.includes('flights%20to') || rawUrl.includes('skyscanner'))) {
+      return rawUrl;
+    }
+
+    const originCode = flight.outbound?.segments?.[0]?.departure?.airport_code || 'TPE';
+    const destCode = flight.outbound?.segments?.[flight.outbound?.segments?.length - 1]?.arrival?.airport_code || 
+                     flight.gateway_info?.gateway_airport_code || 
+                     '';
+    
+    const outboundDep = flight.outbound?.departure_time || '';
+    const depDate = outboundDep.includes('T') ? outboundDep.split('T')[0] : outboundDep.split(' ')[0];
+    
+    const inboundDep = flight.inbound?.departure_time || '';
+    const retDate = inboundDep ? (inboundDep.includes('T') ? inboundDep.split('T')[0] : inboundDep.split(' ')[0]) : '';
+
+    if (destCode && depDate) {
+      const depDateQuery = `%20on%20${depDate}`;
+      const retDateQuery = retDate ? `%20through%20${retDate}` : '';
+      return `https://www.google.com/travel/flights?q=Flights%20to%20${encodeURIComponent(destCode)}%20from%20${encodeURIComponent(originCode)}${depDateQuery}${retDateQuery}&hl=zh-TW&curr=TWD`;
+    }
+
+    return rawUrl || 'https://www.google.com/travel/flights';
+  };
+
+  const effectiveDeepLink = buildEffectiveDeepLink();
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-brand-primary/40 transition-all flex flex-col gap-3">
       <div className="flex justify-between items-center pb-2 border-b border-slate-100">
@@ -171,7 +200,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
             </span>
           </div>
           <a
-            href={flight.deep_link_url || `https://www.google.com/travel/flights`}
+            href={effectiveDeepLink}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onBook(flight)}

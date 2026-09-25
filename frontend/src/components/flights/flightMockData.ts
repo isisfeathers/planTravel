@@ -156,7 +156,7 @@ export function getFallbackFlights(destName: string, originCode: string, depDate
 
   // 構建精準 Google Flights 比價深層連結：若有門戶機場帶門戶機場，無代碼帶目的地真實名稱
   const searchDestQuery = (gateway || matchEntry) ? targetCode : cleanDest;
-  const googleDeepLink = `https://www.google.com/travel/flights?q=flights%20from%20${originCode}%20to%20${encodeURIComponent(searchDestQuery)}%20on%20${depDate}%20returning%20${retDate}`;
+  const googleDeepLink = `https://www.google.com/travel/flights?q=Flights%20to%20${encodeURIComponent(searchDestQuery)}%20from%20${originCode}%20on%20${depDate}%20through%20${retDate}&hl=zh-TW&curr=TWD`;
 
   const isLongHaul = match.hours >= 8;
   const secondAirlineCode = isLongHaul ? 'SQ' : 'IT';
