@@ -4,9 +4,13 @@
  */
 
 const DESTINATION_IMAGE_MAP: Record<string, string[]> = {
-  // 巴黎
+  // 巴黎 / 法國 / 普羅旺斯
   '巴黎': ['巴黎-01.jpg', '巴黎-02.jpg'],
   '法國': ['巴黎-01.jpg', '巴黎-02.jpg'],
+  '普羅旺斯': ['巴黎-01.jpg', '巴黎-02.jpg'],
+  '南法': ['巴黎-01.jpg', '巴黎-02.jpg'],
+  '羅馬': ['巴黎-01.jpg', '巴黎-02.jpg'],
+  '義大利': ['巴黎-01.jpg', '巴黎-02.jpg'],
 
   // 冰島
   '冰島': ['冰島-01.jpg', '冰島-02.jpg'],
@@ -80,5 +84,6 @@ export function getDestinationCoverImage(destination?: string, seed?: string): s
     : process.env.DEPLOY_TARGET === 'gh-pages' || process.env.GITHUB_ACTIONS === 'true';
   const basePath = isGitHubPages ? '/planTravel' : '';
 
-  return `${basePath}/travel-pic/${encodeURIComponent(filename)}`;
+  // 加入時間版本破壞快取 (Cache-Busting)，確保手機瀏覽器不會卡在舊版大圖快取
+  return `${basePath}/travel-pic/${encodeURIComponent(filename)}?v=20260925v2`;
 }
