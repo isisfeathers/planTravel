@@ -86,7 +86,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
         const supabase = getSupabaseBrowserClient();
         const { data, error } = await supabase
           .from('itineraries')
-          .select('itinerary_data, version, share_token')
+          .select('itinerary_data, version, share_token, destination, title, preference_snapshot')
           .eq('id', itineraryId)
           .maybeSingle();
 
@@ -97,6 +97,22 @@ export function CanvasClient({ params }: CanvasClientProps) {
           const packingList = getResolvedPackingList(payload);
           initPacking(itineraryId, packingList);
           return;
+        }
+
+        if (data?.destination || data?.title) {
+          const pref = (data.preference_snapshot as any) || {};
+          payload = {
+            ...payload,
+            meta: {
+              ...payload.meta,
+              destination: data.destination || pref.destination || payload.meta.destination,
+              trip_title: data.title || `${data.destination || pref.destination} ${pref.total_days || payload.meta.total_days} 天行程`,
+              total_days: pref.total_days || payload.meta.total_days,
+              start_date: pref.start_date || payload.meta.start_date,
+              end_date: pref.end_date || payload.meta.end_date,
+            },
+          };
+          if (data.share_token) setShareToken(data.share_token);
         }
       } catch (err) {
         console.warn('載入行程異常，切換至備用行程:', err);

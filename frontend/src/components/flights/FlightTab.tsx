@@ -38,9 +38,19 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
         const json = await res.json();
         const list = json.flights || json.data;
         if (Array.isArray(list) && list.length > 0) {
-          setFlights(list);
-          setLoading(false);
-          return;
+          // 檢查回傳資料是否為舊版未更新的 Cloud Run 測試假資料 (例如包含樂桃/全日空但目的地為歐美長程)
+          const isAsia = ['東京', '大阪', '沖繩', '名古屋', '福岡', '札幌', '仙台', '岡山', '日本', '首爾', '釜山', '濟州', '曼谷', '新加坡', '吉隆坡', '峇里島', '峴港', '胡志明', '河內', '香港', '澳門'].some(c => destination.includes(c));
+          const hasInvalidLCC = list.some((f: any) => 
+            f.id?.startsWith('flight-mock-mm-') || 
+            (f.airline_name?.includes('樂桃') && !isAsia) ||
+            (f.airline_name?.includes('全日空') && !isAsia)
+          );
+
+          if (!hasInvalidLCC) {
+            setFlights(list);
+            setLoading(false);
+            return;
+          }
         }
       }
     } catch (e) {
