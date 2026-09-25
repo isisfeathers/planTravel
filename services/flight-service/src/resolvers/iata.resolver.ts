@@ -107,6 +107,24 @@ export class IataResolver {
     '杜拜': { city: 'Dubai', airportCodes: ['DXB'] },
     '開羅': { city: 'Cairo', airportCodes: ['CAI'] },
     '埃及': { city: 'Cairo', airportCodes: ['CAI'] },
+
+    // 景點與大區門戶映射
+    '普羅旺斯': { city: 'Nice', airportCodes: ['NCE', 'CDG'] },
+    '南法': { city: 'Nice', airportCodes: ['NCE', 'CDG'] },
+    '合掌村': { city: 'Nagoya', airportCodes: ['NGO'] },
+    '白川鄉': { city: 'Nagoya', airportCodes: ['NGO'] },
+    '富士山': { city: 'Tokyo', airportCodes: ['HND', 'NRT'] },
+    '河口湖': { city: 'Tokyo', airportCodes: ['HND', 'NRT'] },
+    '輕井澤': { city: 'Tokyo', airportCodes: ['HND', 'NRT'] },
+    '聖托里尼': { city: 'Athens', airportCodes: ['ATH'] },
+    '哈修塔特': { city: 'Vienna', airportCodes: ['VIE'] },
+    '托斯卡尼': { city: 'Rome', airportCodes: ['FCO'] },
+    '佛羅倫斯': { city: 'Rome', airportCodes: ['FCO'] },
+    '羅瓦涅米': { city: 'Helsinki', airportCodes: ['HEL'] },
+    '班夫': { city: 'Vancouver', airportCodes: ['YVR', 'YYC'] },
+    '大峽谷': { city: 'Las Vegas', airportCodes: ['LAS'] },
+    '皇后鎮': { city: 'Auckland', airportCodes: ['AKL', 'ZQN'] },
+    '普吉島': { city: 'Bangkok', airportCodes: ['BKK', 'HKT'] },
   };
 
   /**

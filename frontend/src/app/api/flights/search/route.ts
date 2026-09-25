@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { resolveGateway, GatewayTransitInfo } from '@/lib/gatewayResolver';
 
 export interface FlightSegment {
   airline_code: string;
@@ -13,6 +14,7 @@ export interface FlightOfferItem {
   id: string;
   provider: string;
   tag?: string;
+  gateway_info?: GatewayTransitInfo;
   outbound: {
     departure_time: string;
     arrival_time: string;
@@ -162,18 +164,52 @@ export async function GET(request: Request) {
   const originAirportName = ORIGIN_NAMES[origin] || `${origin} 機場`;
 
   const cleanDest = cleanDestinationName(destination);
+  const gateway = resolveGateway(destination);
   const matchEntry = Object.entries(CITY_MAP).find(([k]) =>
     cleanDest.includes(k) || k.includes(cleanDest) || destination.includes(k)
   );
 
-  const match = matchEntry ? matchEntry[1] : {
-    code: cleanDest,
-    name: `${cleanDest}國際機場`,
-    airline: '星宇航空 STARLUX',
-    code2: 'JX901',
-    price: 15800,
-    hours: 4.0,
+  let match: {
+    code: string;
+    name: string;
+    tsaCode?: string;
+    tsaName?: string;
+    airline: string;
+    code2: string;
+    price: number;
+    hours: number;
+    gatewayInfo?: GatewayTransitInfo;
   };
+
+  if (gateway) {
+    match = {
+      code: gateway.airportCode,
+      name: gateway.airportName,
+      airline: gateway.airlineName || '長榮航空 EVA Air (轉乘直達)',
+      code2: gateway.airlineCode2 || 'BR087',
+      price: gateway.price || 32800,
+      hours: gateway.hours || 15.0,
+      gatewayInfo: {
+        gateway_city: gateway.gatewayCity,
+        gateway_airport_code: gateway.airportCode,
+        gateway_airport_name: gateway.airportName,
+        transit_instruction: gateway.instruction,
+        transit_estimated_time: gateway.estimatedTime,
+      },
+    };
+  } else if (matchEntry) {
+    match = matchEntry[1];
+  } else {
+    const isAsia = ['日', '韓', '泰', '越', '星', '馬', '菲', '港', '澳', '台', '中'].some(k => cleanDest.includes(k));
+    match = {
+      code: cleanDest,
+      name: `${cleanDest}國際機場`,
+      airline: isAsia ? '中華航空 China Airlines 直飛' : '長榮航空 EVA Air / 阿聯酋航空 (轉機)',
+      code2: isAsia ? 'CI100' : 'BR087',
+      price: isAsia ? 13500 : 32800,
+      hours: isAsia ? 3.5 : 15.5,
+    };
+  }
 
   const destCode = (origin === 'TSA' && match.tsaCode) ? match.tsaCode : match.code;
   const destName = (origin === 'TSA' && match.tsaName) ? match.tsaName : match.name;
@@ -181,7 +217,7 @@ export async function GET(request: Request) {
   const depYYMMDD = depDate.slice(2).replace(/-/g, '');
   const retYYMMDD = retDate.slice(2).replace(/-/g, '');
 
-  const searchTarget = matchEntry ? destCode : cleanDest;
+  const searchTarget = (gateway || matchEntry) ? destCode : cleanDest;
 
   // 1. Skyscanner 官方即時直達購票比價 Deep Link
   const skyscannerDeepLink = /^[A-Za-z]{3}$/.test(destCode)
@@ -194,9 +230,9 @@ export async function GET(request: Request) {
   const isLongHaul = match.hours >= 8;
   const isTransit = match.airline.includes('轉機');
 
-  const secondAirlineCode = isLongHaul ? (match.code === 'CPH' || match.code === 'LHR' || match.code === 'CDG' ? 'SQ' : 'CI') : 'CI';
+  const secondAirlineCode = isLongHaul ? (match.code === 'CPH' || match.code === 'LHR' || match.code === 'CDG' || match.code === 'NCE' ? 'SQ' : 'CI') : 'CI';
   const secondAirlineName = isLongHaul
-    ? (match.code === 'CPH' || match.code === 'LHR' || match.code === 'CDG' ? '新加坡航空 Singapore Airlines' : '中華航空 China Airlines')
+    ? (match.code === 'CPH' || match.code === 'LHR' || match.code === 'CDG' || match.code === 'NCE' ? '新加坡航空 Singapore Airlines' : '中華航空 China Airlines')
     : '中華航空 China Airlines';
   const secondFlightNo = isLongHaul ? (secondAirlineCode === 'SQ' ? 'SQ877' : 'CI008') : 'CI100';
   const secondFlightNoRet = isLongHaul ? (secondAirlineCode === 'SQ' ? 'SQ878' : 'CI009') : 'CI101';
@@ -210,6 +246,7 @@ export async function GET(request: Request) {
       id: `offer-${destCode}-1`,
       provider: 'Skyscanner-Direct',
       tag: '🏆 AI 最佳推薦',
+      gateway_info: match.gatewayInfo,
       outbound: {
         departure_time: `${depDate} 08:30`,
         arrival_time: `${depDate} 12:45`,
@@ -248,6 +285,7 @@ export async function GET(request: Request) {
       id: `offer-${destCode}-2`,
       provider: 'Amadeus-GDS',
       tag: secondTag,
+      gateway_info: match.gatewayInfo,
       outbound: {
         departure_time: `${depDate} 06:40`,
         arrival_time: `${depDate} 10:55`,

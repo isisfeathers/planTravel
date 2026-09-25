@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Plane, Luggage, ExternalLink, Sparkles } from 'lucide-react';
+import { Plane, Luggage, ExternalLink, Sparkles, Compass } from 'lucide-react';
 
 interface FlightCardProps {
   flight: any;
@@ -138,6 +138,21 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
             <span className="text-[10px] text-slate-400 block font-bold">回程抵達</span>
             <span className="text-base font-black text-slate-900">{inboundArrTime}</span>
             <span className="text-xs text-slate-500 block">{flight.inbound?.segments?.[flight.inbound.segments.length - 1]?.arrival?.airport_name || flight.inbound?.segments?.[0]?.arrival?.airport_code}</span>
+          </div>
+        </div>
+      )}
+
+      {/* 門戶機場與在地轉乘指引 */}
+      {flight.gateway_info && (
+        <div className="p-3 rounded-xl bg-emerald-50/90 border border-emerald-200/80 text-xs flex items-start gap-2 shadow-2xs">
+          <Compass className="text-emerald-700 shrink-0 mt-0.5" size={16} />
+          <div className="flex-1 min-w-0">
+            <span className="font-extrabold text-emerald-950 block">
+              💡 門戶樞紐轉乘：經由 {flight.gateway_info.gateway_airport_name}
+            </span>
+            <p className="text-emerald-800 text-[11px] mt-0.5 leading-relaxed font-medium">
+              {flight.gateway_info.transit_instruction}（預估時間：{flight.gateway_info.transit_estimated_time}）
+            </p>
           </div>
         </div>
       )}

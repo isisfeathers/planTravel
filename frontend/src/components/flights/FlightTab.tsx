@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle2, RefreshCw } from 'lucide-react';
 import { FlightCard } from './FlightCard';
 import { getFallbackFlights } from './flightMockData';
+import { resolveGateway } from '@/lib/gatewayResolver';
 
 export const FlightTab: React.FC<{ destination: string; startDate?: string; endDate?: string }> = ({ destination, startDate, endDate }) => {
   const [flights, setFlights] = useState<any[]>([]);
@@ -20,6 +21,9 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
     const depDate = startDate || defaultDep;
     const retDate = endDate || defaultRet;
 
+    const gateway = resolveGateway(destination);
+    const searchTarget = gateway ? gateway.airportCode : destination;
+
     try {
       const depQ = `&departureDate=${encodeURIComponent(depDate)}&departure_date=${encodeURIComponent(depDate)}`;
       const retQ = retDate ? `&returnDate=${encodeURIComponent(retDate)}&return_date=${encodeURIComponent(retDate)}` : '';
@@ -27,11 +31,11 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
       const cloudRunUrl = process.env.NEXT_PUBLIC_FLIGHT_SERVICE_URL || 'https://atrip-flight-service-1096361179847.asia-east1.run.app';
 
       // 1. 優先嘗試 Next.js 伺服端 API Proxy
-      let res = await fetch(`/api/flights/search?destination=${encodeURIComponent(destination)}&origin=${origin}${depQ}${retQ}`).catch(() => null);
+      let res = await fetch(`/api/flights/search?destination=${encodeURIComponent(searchTarget)}&origin=${origin}${depQ}${retQ}`).catch(() => null);
 
       // 2. 若在純靜態前端 (GitHub Pages / Local)，直接連線 Google Cloud Run 機票服務
       if (!res || !res.ok) {
-        res = await fetch(`${cloudRunUrl}/api/v1/flights/search?destination=${encodeURIComponent(destination)}&origin=${origin}${depQ}${retQ}`).catch(() => null);
+        res = await fetch(`${cloudRunUrl}/api/v1/flights/search?destination=${encodeURIComponent(searchTarget)}&origin=${origin}${depQ}${retQ}`).catch(() => null);
       }
 
       if (res && res.ok) {
@@ -47,7 +51,17 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
           );
 
           if (!hasInvalidLCC) {
-            setFlights(list);
+            const enriched = list.map((f: any) => ({
+              ...f,
+              gateway_info: f.gateway_info || (gateway ? {
+                gateway_city: gateway.gatewayCity,
+                gateway_airport_code: gateway.airportCode,
+                gateway_airport_name: gateway.airportName,
+                transit_instruction: gateway.instruction,
+                transit_estimated_time: gateway.estimatedTime,
+              } : undefined)
+            }));
+            setFlights(enriched);
             setLoading(false);
             return;
           }

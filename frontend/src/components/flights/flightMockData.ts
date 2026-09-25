@@ -1,3 +1,5 @@
+import { resolveGateway, GatewayTransitInfo } from '@/lib/gatewayResolver';
+
 function cleanDestinationName(dest: string): string {
   if (!dest) return '旅遊目的地';
   return dest
@@ -96,25 +98,60 @@ const CITY_MAP: Record<string, { code: string; name: string; tsaCode?: string; t
 
 export function getFallbackFlights(destName: string, originCode: string, depDate: string, retDate: string) {
   const cleanDest = cleanDestinationName(destName);
+  const gateway = resolveGateway(destName);
   const matchEntry = Object.entries(CITY_MAP).find(([k]) =>
     cleanDest.includes(k) || k.includes(cleanDest) || destName.includes(k)
   );
 
-  const match = matchEntry ? matchEntry[1] : {
-    code: cleanDest,
-    name: `${cleanDest}國際機場`,
-    airline: '優質國際航空',
-    code2: 'IT101',
-    price: 15800,
-    hours: 4.0,
+  let match: {
+    code: string;
+    name: string;
+    tsaCode?: string;
+    tsaName?: string;
+    airline: string;
+    code2: string;
+    price: number;
+    hours: number;
+    gatewayInfo?: GatewayTransitInfo;
   };
+
+  if (gateway) {
+    match = {
+      code: gateway.airportCode,
+      name: gateway.airportName,
+      airline: gateway.airlineName || '長榮航空 EVA Air (轉乘直達)',
+      code2: gateway.airlineCode2 || 'BR087',
+      price: gateway.price || 32800,
+      hours: gateway.hours || 15.0,
+      gatewayInfo: {
+        gateway_city: gateway.gatewayCity,
+        gateway_airport_code: gateway.airportCode,
+        gateway_airport_name: gateway.airportName,
+        transit_instruction: gateway.instruction,
+        transit_estimated_time: gateway.estimatedTime,
+      },
+    };
+  } else if (matchEntry) {
+    match = matchEntry[1];
+  } else {
+    // 辨識是否為亞太城市
+    const isAsia = ['日', '韓', '泰', '越', '星', '馬', '菲', '港', '澳', '台', '中'].some(k => cleanDest.includes(k));
+    match = {
+      code: cleanDest,
+      name: `${cleanDest}國際機場`,
+      airline: isAsia ? '中華航空 China Airlines 直飛' : '長榮航空 EVA Air / 阿聯酋航空 (轉機)',
+      code2: isAsia ? 'CI100' : 'BR087',
+      price: isAsia ? 13500 : 32800,
+      hours: isAsia ? 3.5 : 15.5,
+    };
+  }
 
   const targetCode = (originCode === 'TSA' && match.tsaCode) ? match.tsaCode : match.code;
   const targetName = (originCode === 'TSA' && match.tsaName) ? match.tsaName : match.name;
   const originName = originCode === 'TPE' ? '台北桃園 (TPE)' : originCode === 'TSA' ? '台北松山 (TSA)' : '高雄小港 (KHH)';
 
-  // 構建精準 Google Flights 比價深層連結：有機場代碼帶代碼，無代碼帶目的地真實城市名稱
-  const searchDestQuery = matchEntry ? targetCode : cleanDest;
+  // 構建精準 Google Flights 比價深層連結：若有門戶機場帶門戶機場，無代碼帶目的地真實名稱
+  const searchDestQuery = (gateway || matchEntry) ? targetCode : cleanDest;
   const googleDeepLink = `https://www.google.com/travel/flights?q=flights%20from%20${originCode}%20to%20${encodeURIComponent(searchDestQuery)}%20on%20${depDate}%20through%20${retDate}`;
 
   const isLongHaul = match.hours >= 8;
@@ -136,6 +173,7 @@ export function getFallbackFlights(destName: string, originCode: string, depDate
       price_total_twd: match.price,
       baggage_included: '含托運行李 23kg × 1 件 + 手提 7kg',
       deep_link_url: googleDeepLink,
+      gateway_info: match.gatewayInfo,
       outbound: {
         departure_time: `${depDate} 08:30`,
         arrival_time: `${depDate} 12:45`,
@@ -172,6 +210,7 @@ export function getFallbackFlights(destName: string, originCode: string, depDate
       price_total_twd: secondPrice,
       baggage_included: secondBaggage,
       deep_link_url: googleDeepLink,
+      gateway_info: match.gatewayInfo,
       outbound: {
         departure_time: `${depDate} 06:40`,
         arrival_time: `${depDate} 10:55`,
