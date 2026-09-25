@@ -257,11 +257,16 @@ export const useAuthStore = create<AuthStoreState>((set, get) => ({
     try {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('atrip_auth_user');
+        localStorage.removeItem('atrip_mock_user');
       }
-      if (liff.isLoggedIn()) {
-        liff.logout();
-      }
-      await supabase.auth.signOut();
+      try {
+        if (liff.isLoggedIn()) {
+          liff.logout();
+        }
+      } catch (e) {}
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {}
       set({
         status: 'unauthenticated',
         user: null,
