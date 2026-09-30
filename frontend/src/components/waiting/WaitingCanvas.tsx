@@ -75,8 +75,18 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
           </p>
         </div>
 
-        <div className="relative mt-atrip-6 overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-5 text-white">
+        <div className="relative mt-atrip-6 min-h-[238px] overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-5 text-white">
           <div className="atrip-waiting-route" aria-hidden="true" />
+          {!failed && !completed ? (
+            <div className="atrip-waiting-flight-scene" aria-hidden="true">
+              <span className="atrip-waiting-cloud atrip-waiting-cloud-one" />
+              <span className="atrip-waiting-cloud atrip-waiting-cloud-two" />
+              <span className="atrip-waiting-flight-path" />
+              <span className="atrip-plane-flight">
+                <Plane size={23} strokeWidth={2.4} />
+              </span>
+            </div>
+          ) : null}
           <div className="relative z-10 flex items-start justify-between gap-atrip-4">
             <div>
               <span className="inline-flex items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-action-on-primary">
@@ -86,7 +96,7 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
               <p className="mt-atrip-5 text-atrip-caption text-white">TAIPEI</p>
               <p className="text-atrip-h1">下一站，專屬旅程</p>
             </div>
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-atrip-full bg-atrip-selection-background text-atrip-brand-logo-ai">
+            <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-atrip-full bg-atrip-selection-background text-atrip-brand-logo-ai ${!failed && !completed ? "atrip-waiting-beacon" : ""}`}>
               {completed ? <Sparkles size={26} /> : <Plane className="-rotate-12" size={26} />}
             </span>
           </div>
@@ -103,7 +113,7 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
               <p className="text-atrip-caption text-atrip-text-secondary">每一步都會同步保存</p>
             </div>
             <span className="rounded-atrip-sm bg-atrip-tag-background px-atrip-tag-x py-atrip-tag-y text-atrip-caption font-semibold text-atrip-tag-foreground">
-              {completed ? "4 / 4" : `${currentStep} / 4`}
+              {completed ? "4 / 4" : currentStep === progressSteps.length ? "最後整理" : `${currentStep} / 4`}
             </span>
           </div>
 
@@ -112,16 +122,20 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
               const done = completed || currentStep > step.id;
               const current = !completed && currentStep === step.id;
               return (
-                <li key={step.id} className="relative flex gap-atrip-3 pb-atrip-4 last:pb-0">
+                <li
+                  key={step.id}
+                  className="atrip-waiting-progress-step relative flex gap-atrip-3 pb-atrip-4 last:pb-0"
+                  style={{ animationDelay: `${index * 90}ms` }}
+                >
                   {index < progressSteps.length - 1 ? (
                     <span className="absolute left-[15px] top-8 h-[calc(100%-1rem)] border-l-2 border-dashed border-atrip-border-subtle" aria-hidden="true" />
                   ) : null}
                   <span
-                    className={`relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-atrip-full border text-atrip-caption font-semibold ${
+                    className={`relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-atrip-full border text-atrip-caption font-semibold transition-colors duration-atrip motion-reduce:transition-none ${
                       done
-                        ? "border-atrip-selection-foreground bg-atrip-selection-background text-atrip-selection-foreground"
+                        ? "atrip-waiting-step-done border-atrip-selection-foreground bg-atrip-selection-background text-atrip-selection-foreground"
                         : current
-                          ? "border-atrip-action-primary bg-atrip-action-primary text-atrip-action-on-primary"
+                          ? "atrip-waiting-step-current border-atrip-action-primary bg-atrip-action-primary text-atrip-action-on-primary"
                           : "border-atrip-border-subtle bg-atrip-surface-subtle text-atrip-text-secondary"
                     }`}
                   >
@@ -139,7 +153,12 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
 
         {!failed ? (
           <div key={tipIndex} className="atrip-loading-stage mt-atrip-4 rounded-atrip-lg bg-atrip-selection-background p-atrip-4">
-            <p className="text-atrip-caption font-semibold text-atrip-selection-foreground">旅途小提醒</p>
+            <div className="flex items-center gap-atrip-2">
+              <span className="atrip-waiting-tip-spark grid h-7 w-7 place-items-center rounded-atrip-full bg-atrip-action-primary text-atrip-action-on-primary" aria-hidden="true">
+                <Sparkles size={14} />
+              </span>
+              <p className="text-atrip-caption font-semibold text-atrip-selection-foreground">旅途小提醒</p>
+            </div>
             <p className="mt-atrip-1 text-atrip-body text-atrip-text-primary">{tips[tipIndex]}</p>
           </div>
         ) : null}

@@ -67,11 +67,8 @@ export function CanvasClient({ params }: CanvasClientProps) {
 
   const {
     itineraryData,
-    version,
     selectedDay,
-    isSaving: isTimelineSaving,
     saveError,
-    saveStatusText,
     initialize: initTimeline,
     setSelectedDay,
     reorderActivities,
@@ -244,12 +241,11 @@ export function CanvasClient({ params }: CanvasClientProps) {
             <span className="rounded-atrip-full bg-atrip-action-primary px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-action-on-primary">
               {itineraryData.meta.total_days} 天自由行
             </span>
-            <div className="flex items-center gap-atrip-2 rounded-atrip-full bg-atrip-brand-logo-trp/70 px-atrip-3 py-atrip-1 backdrop-blur-sm no-print">
-          {isTimelineSaving && (
-                <div className="atrip-loading-icon h-3.5 w-3.5 animate-spin rounded-full border-2 border-atrip-action-primary border-t-transparent" />
-          )}
-              <span className="text-atrip-caption text-white">{saveError ? '同步失敗' : saveStatusText} · v{version}</span>
-            </div>
+            {saveError ? (
+              <span className="rounded-atrip-full bg-atrip-brand-logo-trp/75 px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-white backdrop-blur-sm no-print">
+                日期同步失敗，請稍後重試
+              </span>
+            ) : null}
           </div>
 
           <div>
@@ -311,6 +307,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
       </nav>
 
       {/* 分頁內容展示 */}
+      <div key={currentTab} className="atrip-view-enter">
       {currentTab === 'timeline' ? (
         <div className="flex flex-col gap-4 sm:gap-5">
           {/* AI 精選住宿基地 (Basecamp) */}
@@ -568,6 +565,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
           endDate={itineraryData.meta.end_date}
         />
       )}
+      </div>
 
       {/* 日期調整彈窗 */}
       <DateAdjustmentModal

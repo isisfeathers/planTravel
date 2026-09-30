@@ -63,7 +63,7 @@ export default function DashboardPage() {
 
         <TripSection
           title="接下來的旅程"
-          description="當前關注行程會成為 LINE OA 旅遊助理的對話上下文"
+          description="打開旅程，繼續安排每日路線與出發前準備。"
           itineraries={activeAndUpcoming}
           activeItineraryId={activeItineraryId}
           onSetActive={setActiveItinerary}

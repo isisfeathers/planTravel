@@ -138,13 +138,13 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
   return (
     <main className="min-h-screen bg-atrip-surface-page px-atrip-gutter py-atrip-4 max-[359px]:px-atrip-gutter-narrow sm:py-atrip-6">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-atrip-5">
-        <header className="relative min-h-60 overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp shadow-atrip-soft">
+        <header className="atrip-hero-reveal relative min-h-60 overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp shadow-atrip-soft">
           <img src={coverImage} alt={`${itinerary.destination}行程封面`} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-atrip-brand-logo-trp via-atrip-brand-logo-trp/60 to-transparent" />
           <div className="relative flex min-h-60 items-end justify-between gap-atrip-4 p-atrip-5 text-white sm:p-atrip-6">
             <div>
-              <p className="text-atrip-caption font-bold uppercase tracking-wider text-atrip-action-primary">Atrip 公開行程分享</p>
-              <h1 className="mt-atrip-1 text-2xl font-bold text-white sm:text-3xl">{itinerary.title}</h1>
+              <p className="atrip-motion-reveal text-atrip-caption font-bold uppercase tracking-wider text-atrip-action-primary">Atrip 公開行程分享</p>
+              <h1 className="atrip-motion-reveal-delayed mt-atrip-1 text-2xl font-bold text-white sm:text-3xl">{itinerary.title}</h1>
               <p className="mt-atrip-2 flex items-center gap-1 text-atrip-body font-bold text-white">
                 <MapPinned size={18} className="text-atrip-action-primary" />
                 <span>{itinerary.destination}</span>
@@ -155,7 +155,7 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
               onClick={() => void share()}
               className="atrip-focus inline-flex min-h-atrip-icon-button shrink-0 items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 text-atrip-caption font-bold text-atrip-action-on-primary"
             >
-              {copied ? <Check size={14} className="text-emerald-600" /> : <Share2 size={14} />}
+              {copied ? <Check size={14} className="text-atrip-selection-foreground" /> : <Share2 className="atrip-icon-wiggle" size={14} />}
               <span>{copied ? '已複製連結' : '分享'}</span>
             </button>
           </div>
@@ -176,8 +176,8 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
         </section>
 
         <section className="flex flex-col gap-4">
-          {itinerary.itinerary_data?.daily_itinerary?.map((day) => (
-            <article key={day.day_number} className="space-y-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft sm:p-atrip-5">
+          {itinerary.itinerary_data?.daily_itinerary?.map((day, index) => (
+            <article key={day.day_number} className="atrip-stagger-card space-y-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft sm:p-atrip-5" style={{ animationDelay: `${Math.min(index, 5) * 70}ms` }}>
               <div className="border-b border-atrip-border-subtle pb-atrip-3">
                 <span className="rounded-atrip-full bg-atrip-selection-background px-atrip-2 py-atrip-1 text-atrip-micro font-bold uppercase text-atrip-selection-foreground">Day {day.day_number}</span>
                 <h2 className="mt-atrip-2 text-atrip-body font-bold text-atrip-text-primary">{day.date_label}</h2>

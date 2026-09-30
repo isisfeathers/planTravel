@@ -92,12 +92,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-atrip-lg bg-atrip-selection-background text-atrip-selection-foreground">
+          <div className="atrip-icon-wiggle flex h-11 w-11 shrink-0 items-center justify-center rounded-atrip-lg bg-atrip-selection-background text-atrip-selection-foreground">
             <Share2 size={20} />
           </div>
           <div>
             <h3 id="share-modal-title" className="text-atrip-title font-bold text-atrip-text-primary">分享專屬行程</h3>
-            <p className="text-atrip-caption text-atrip-text-secondary">邀請旅伴瀏覽或複製行程</p>
+            <p className="text-atrip-caption text-atrip-text-secondary">邀請旅伴查看每日安排與移動路線</p>
           </div>
         </div>
 
@@ -105,7 +105,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           <ShieldCheck size={18} className="mt-0.5 shrink-0 text-atrip-selection-foreground" />
           <div className="text-atrip-caption leading-relaxed text-atrip-selection-foreground">
             <span className="font-bold">去識別化安全保護：</span>
-            已自動隱藏您的個資與預算，同行親友可查看每日景點動線並一鍵複製（Fork）。
+            已自動隱藏您的個資與預算，同行親友只能瀏覽景點、時間與移動動線。
           </div>
         </div>
 

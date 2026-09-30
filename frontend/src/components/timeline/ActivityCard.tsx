@@ -87,10 +87,6 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                   <span className="text-[11px] sm:text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 whitespace-nowrap">
                     ${activity.cost_estimate}
                   </span>
-                ) : isHotelCheckin ? (
-                  <span className="whitespace-nowrap rounded-atrip-sm bg-atrip-selection-background px-atrip-2 py-atrip-1 text-[10px] font-semibold text-atrip-selection-foreground">
-                    已預訂
-                  </span>
                 ) : null}
               </div>
             </div>

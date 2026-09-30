@@ -270,6 +270,98 @@
     top: 1rem;
   }
 
+  .atrip-dashboard-route-dot {
+    position: absolute;
+    top: calc(50% - 0.375rem);
+    left: calc(50% - 0.375rem);
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid theme("colors.atrip-brand-logo-trp");
+    border-radius: 9999px;
+    background: theme("colors.atrip-action-primary");
+    box-shadow: 0 0 0 5px rgb(185 232 90 / 10%);
+    animation: atrip-route-orbit 7s linear infinite;
+  }
+
+  .atrip-cta-glint {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .atrip-cta-glint::before {
+    position: absolute;
+    inset: -40% auto -40% -35%;
+    z-index: 0;
+    width: 28%;
+    content: "";
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 42%), transparent);
+    transform: skewX(-18deg) translateX(-180%);
+    animation: atrip-cta-glint 5.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .atrip-view-enter {
+    animation: atrip-view-enter var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
+  }
+
+  .atrip-icon-wiggle {
+    transform-origin: 50% 70%;
+    animation: atrip-icon-wiggle 4.8s ease-in-out infinite;
+  }
+
+  .atrip-hero-reveal img {
+    animation: atrip-hero-image-in 900ms var(--atrip-ease-emphasized) both;
+  }
+
+  .atrip-stagger-card {
+    animation: atrip-content-reveal var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
+  }
+
+  .atrip-day-tab-indicator {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.45rem;
+    left: 0.75rem;
+    height: 2px;
+    border-radius: 9999px;
+    background: theme("colors.atrip-selection-foreground");
+    animation: atrip-tab-indicator-in var(--atrip-motion-normal) var(--atrip-ease-emphasized) both;
+  }
+
+  @keyframes atrip-route-orbit {
+    from { transform: rotate(0deg) translateX(5.9rem) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(5.9rem) rotate(-360deg); }
+  }
+
+  @keyframes atrip-cta-glint {
+    0%, 62% { transform: skewX(-18deg) translateX(-180%); opacity: 0; }
+    68% { opacity: 0.55; }
+    84%, 100% { transform: skewX(-18deg) translateX(650%); opacity: 0; }
+  }
+
+  @keyframes atrip-view-enter {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes atrip-icon-wiggle {
+    0%, 72%, 100% { transform: rotate(0deg); }
+    78% { transform: rotate(-7deg); }
+    84% { transform: rotate(6deg); }
+    90% { transform: rotate(-3deg); }
+  }
+
+  @keyframes atrip-hero-image-in {
+    from { opacity: 0.82; transform: scale(1.025); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes atrip-tab-indicator-in {
+    from { opacity: 0; transform: scaleX(0.25); }
+    to { opacity: 1; transform: scaleX(1); }
+  }
+
   .atrip-empty-route {
     position: absolute;
     top: 50%;
@@ -311,6 +403,113 @@
     border-radius: 9999px;
     background: theme("colors.atrip-brand-logo-trp");
     content: "";
+  }
+
+  .atrip-waiting-flight-scene {
+    position: absolute;
+    inset: 4.75rem 0.75rem 2.75rem;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .atrip-waiting-flight-path {
+    position: absolute;
+    top: 52%;
+    left: 5%;
+    width: 90%;
+    height: 3.75rem;
+    border-top: 2px dashed rgb(185 232 90 / 42%);
+    border-radius: 50%;
+    transform: rotate(-4deg);
+    animation: atrip-route-breathe 2.8s ease-in-out infinite;
+  }
+
+  .atrip-plane-flight {
+    position: absolute;
+    top: 46%;
+    left: 6%;
+    z-index: 2;
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border-radius: 9999px;
+    background: theme("colors.atrip-action-primary");
+    color: theme("colors.atrip-action-on-primary");
+    box-shadow: 0 0 0 6px rgb(185 232 90 / 12%);
+    animation: atrip-airplane-flight 4.2s var(--atrip-ease-emphasized) infinite;
+  }
+
+  .atrip-waiting-cloud {
+    position: absolute;
+    width: 3.75rem;
+    height: 1rem;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 9%);
+    filter: blur(1px);
+  }
+
+  .atrip-waiting-cloud-one {
+    top: 22%;
+    left: 18%;
+    animation: atrip-cloud-drift 6s ease-in-out infinite alternate;
+  }
+
+  .atrip-waiting-cloud-two {
+    right: 12%;
+    bottom: 15%;
+    width: 2.5rem;
+    animation: atrip-cloud-drift 5s ease-in-out 600ms infinite alternate-reverse;
+  }
+
+  .atrip-waiting-beacon {
+    animation: atrip-beacon-pulse 2.4s ease-in-out infinite;
+  }
+
+  .atrip-waiting-progress-step {
+    animation: atrip-content-reveal var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
+  }
+
+  .atrip-waiting-step-current {
+    animation: atrip-step-pulse 1.8s ease-in-out infinite;
+  }
+
+  .atrip-waiting-step-done svg {
+    animation: atrip-check-arrive var(--atrip-motion-normal) var(--atrip-ease-emphasized) both;
+  }
+
+  .atrip-waiting-tip-spark {
+    animation: atrip-tip-float 2.6s ease-in-out infinite;
+  }
+
+  @keyframes atrip-route-breathe {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes atrip-cloud-drift {
+    from { transform: translateX(-0.5rem); opacity: 0.35; }
+    to { transform: translateX(1rem); opacity: 0.8; }
+  }
+
+  @keyframes atrip-beacon-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(185 232 90 / 0%); }
+    50% { box-shadow: 0 0 0 9px rgb(185 232 90 / 14%); }
+  }
+
+  @keyframes atrip-step-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(185 232 90 / 20%); }
+    50% { box-shadow: 0 0 0 7px rgb(185 232 90 / 18%); }
+  }
+
+  @keyframes atrip-check-arrive {
+    from { opacity: 0; transform: rotate(-20deg); }
+    to { opacity: 1; transform: rotate(0); }
+  }
+
+  @keyframes atrip-tip-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
   }
 
   .atrip-scrollbar-hidden {
@@ -415,11 +614,6 @@
     border-top-color: #182B36;
   }
 
-  /* 飛機航線動態特效 */
-  .atrip-plane-flight {
-    animation: atrip-airplane-flight 3.5s ease-in-out infinite;
-  }
-
   @keyframes atrip-airplane-flight {
     0% {
       left: 6%;
@@ -502,10 +696,22 @@
 
   .atrip-modal-backdrop {
     @apply fixed inset-0 z-50 flex items-end bg-atrip-brand-logo-trp/65 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-atrip-4;
+    animation: atrip-backdrop-in var(--atrip-motion-normal) ease-out both;
   }
 
   .atrip-modal-panel {
     @apply relative flex max-h-[92dvh] w-full flex-col gap-atrip-4 overflow-y-auto rounded-t-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-5 shadow-atrip-soft sm:max-w-md sm:rounded-atrip-xl;
+    animation: atrip-sheet-in var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
+  }
+
+  @keyframes atrip-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes atrip-sheet-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }
 
@@ -523,7 +729,24 @@
   .atrip-motion-reveal,
   .atrip-motion-reveal-delayed,
   .atrip-loading-stage,
-  .atrip-choice-button[aria-pressed="true"] {
+  .atrip-choice-button[aria-pressed="true"],
+  .atrip-plane-flight,
+  .atrip-waiting-flight-path,
+  .atrip-waiting-cloud,
+  .atrip-waiting-beacon,
+  .atrip-waiting-progress-step,
+  .atrip-waiting-step-current,
+  .atrip-waiting-step-done svg,
+  .atrip-waiting-tip-spark,
+  .atrip-dashboard-route-dot,
+  .atrip-cta-glint::before,
+  .atrip-view-enter,
+  .atrip-modal-backdrop,
+  .atrip-modal-panel,
+  .atrip-icon-wiggle,
+  .atrip-hero-reveal img,
+  .atrip-stagger-card,
+  .atrip-day-tab-indicator {
     animation: none !important;
   }
 

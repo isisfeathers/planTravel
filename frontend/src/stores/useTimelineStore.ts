@@ -39,6 +39,20 @@ function formatMinutesToTime(totalMinutes: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
+function parseCalendarDate(value?: string): Date {
+  const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return new Date(Number.NaN);
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12);
+}
+
+function formatCalendarDate(value: Date): string {
+  return [
+    value.getFullYear(),
+    String(value.getMonth() + 1).padStart(2, '0'),
+    String(value.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
 // 核心演算法：行程重排後重新推算當日活動的時間區間與交通銜接
 function recalculateDayTimeSlots(
   activities: ActivityItem[],
@@ -100,9 +114,9 @@ function applyDatesToItinerary(itinerary: ItineraryPayload, customStartDate?: st
 
   let baseDate: Date;
   if (customStartDate) {
-    baseDate = new Date(customStartDate);
+    baseDate = parseCalendarDate(customStartDate);
   } else if (itinerary.meta?.start_date) {
-    baseDate = new Date(itinerary.meta.start_date);
+    baseDate = parseCalendarDate(itinerary.meta.start_date);
   } else {
     // 預設為 2 週後的星期六出發
     const now = new Date();
@@ -117,15 +131,15 @@ function applyDatesToItinerary(itinerary: ItineraryPayload, customStartDate?: st
     baseDate = new Date();
   }
 
-  const startStr = baseDate.toISOString().slice(0, 10);
+  const startStr = formatCalendarDate(baseDate);
   const totalDays = Number(itinerary.meta?.total_days || itinerary.daily_itinerary?.length || 1);
   const endObj = new Date(baseDate.getTime() + (totalDays - 1) * 24 * 3600 * 1000);
-  const endStr = endObj.toISOString().slice(0, 10);
+  const endStr = formatCalendarDate(endObj);
 
   const updatedDailyItinerary = (itinerary.daily_itinerary || []).map((day, dIdx) => {
     const dNum = day.day_number || dIdx + 1;
     const thisDay = new Date(baseDate.getTime() + (dNum - 1) * 24 * 3600 * 1000);
-    const yyyymmdd = thisDay.toISOString().slice(0, 10);
+    const yyyymmdd = formatCalendarDate(thisDay);
     const dayOfWeek = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'][thisDay.getDay()];
     const cleanLabel = (day.date_label || '').replace(/^(第\s*\d+\s*天|\d{4}-\d{2}-\d{2}[^·]*)\s*·?\s*/, '');
 
@@ -254,18 +268,18 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
     const { itineraryData, itineraryId, version } = get();
     if (!itineraryData || !itineraryId) return;
 
-    const baseDate = new Date(newStartDate);
+    const baseDate = parseCalendarDate(newStartDate);
     if (isNaN(baseDate.getTime())) return;
 
     const totalDays = Number(itineraryData.meta?.total_days || itineraryData.daily_itinerary?.length || 1);
     const endObj = new Date(baseDate.getTime() + (totalDays - 1) * 24 * 3600 * 1000);
-    const newEndDate = endObj.toISOString().slice(0, 10);
+    const newEndDate = formatCalendarDate(endObj);
 
     // 1. 動態重算每日行程標籤 (日期 + 星期)
     const updatedDailyItinerary = (itineraryData.daily_itinerary || []).map((day, dIdx) => {
       const dNum = day.day_number || dIdx + 1;
       const thisDay = new Date(baseDate.getTime() + (dNum - 1) * 24 * 3600 * 1000);
-      const yyyymmdd = thisDay.toISOString().slice(0, 10);
+      const yyyymmdd = formatCalendarDate(thisDay);
       const dayOfWeek = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'][thisDay.getDay()];
       const cleanLabel = (day.date_label || '').replace(/^(第\s*\d+\s*天|\d{4}-\d{2}-\d{2}[^·]*)\s*·?\s*/, '');
 
@@ -305,7 +319,7 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
 
     // 4. 即時寫入 Supabase 資料庫 (若是 mock-id 或 mock 模式則安全更新本地狀態)
     try {
-      const isMock = !itineraryId || itineraryId === 'mock-itinerary-id' || itineraryId.startsWith('mock-');
+      const isMock = !itineraryId || itineraryId === 'demo' || itineraryId === 'mock-itinerary-id' || itineraryId.startsWith('mock-');
       if (!isMock) {
         const { error: updateErr } = await supabase
           .from('itineraries')
@@ -329,7 +343,7 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
         version: version + 1,
         isSaving: false,
         saveError: null,
-        saveStatusText: '新出發日期已全數同步！',
+        saveStatusText: '所有變更已儲存',
       });
     } catch (e: any) {
       set({

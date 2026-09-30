@@ -41,10 +41,13 @@ export const DateAdjustmentModal: React.FC<DateAdjustmentModalProps> = ({
   if (!isOpen) return null;
 
   const effectiveStartDate = selectedDate || getInitialDate();
-  const startObj = new Date(effectiveStartDate);
+  const [startYear, startMonth, startDay] = effectiveStartDate.split('-').map(Number);
+  const startObj = new Date(startYear, startMonth - 1, startDay, 12);
   const effectiveTotalDays = Math.max(1, totalDays || 1);
   const endObj = new Date(startObj.getTime() + (effectiveTotalDays - 1) * 24 * 3600 * 1000);
-  const newEndDateStr = !isNaN(endObj.getTime()) ? endObj.toISOString().slice(0, 10) : '';
+  const newEndDateStr = !isNaN(endObj.getTime())
+    ? `${endObj.getFullYear()}-${String(endObj.getMonth() + 1).padStart(2, '0')}-${String(endObj.getDate()).padStart(2, '0')}`
+    : '';
 
   const dayOfWeekStart = !isNaN(startObj.getTime())
     ? ['週日', '週一', '週二', '週三', '週四', '週五', '週六'][startObj.getDay()]

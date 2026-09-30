@@ -29,6 +29,7 @@ function formatDateRange(startDate?: string, endDate?: string) {
   if (!startDate || !endDate) return '日期由 AI 協助安排';
 
   const formatter = new Intl.DateTimeFormat('zh-TW', {
+    year: 'numeric',
     month: 'numeric',
     day: 'numeric',
   });
@@ -136,7 +137,7 @@ export function TripCard({
               {isActive ? (
                 <span className="inline-flex items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-action-on-primary">
                   <Star size={13} fill="currentColor" aria-hidden="true" />
-                  當前關注
+                  目前旅程
                 </span>
               ) : null}
               {departureLabel ? (
@@ -175,7 +176,7 @@ export function TripCard({
                       className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-primary"
                     >
                       <Star size={18} aria-hidden="true" />
-                      設為當前關注
+                      設為目前旅程
                     </button>
                   ) : null}
                   {!is_archived ? (
@@ -226,7 +227,7 @@ export function TripCard({
             </div>
             {featured ? (
               <p className="mt-atrip-4 text-atrip-body text-atrip-text-secondary">
-                這是 LINE 旅遊助理目前優先關注的旅程。開啟後可查看每日路線、機票與行李清單。
+                每日路線、機票與行李清單都整理在這裡，出發前隨時回來確認。
               </p>
             ) : null}
           </div>
@@ -234,7 +235,7 @@ export function TripCard({
           <div className={`mt-atrip-4 flex items-center justify-between gap-atrip-3 border-t border-atrip-border-subtle pt-atrip-3 ${featured ? 'sm:mt-atrip-6' : ''}`}>
             <span className="inline-flex min-w-0 items-center gap-atrip-1 text-atrip-caption text-atrip-text-secondary">
               <CalendarDays size={15} className="shrink-0" aria-hidden="true" />
-              <span className="truncate">{formatDateRange(startDate, endDate)}</span>
+              <span className="whitespace-nowrap">{formatDateRange(startDate, endDate)}</span>
             </span>
             <span className="inline-flex shrink-0 items-center gap-atrip-1 text-atrip-body font-semibold text-atrip-brand-logo-ai">
               查看行程

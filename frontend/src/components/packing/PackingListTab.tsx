@@ -20,7 +20,7 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
   totalDays = 3,
   startDate,
 }) => {
-  const { items, isSaving, saveStatusText, toggleItem, addItem, deleteItem, regenerateForDestination } = usePackingListStore();
+  const { items, isSaving, saveStatusText, toggleItem, addItem, deleteItem } = usePackingListStore();
   const [newItemName, setNewItemName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<PackingItem['category']>('essentials');
 
@@ -44,7 +44,7 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
   return (
     <div className="flex flex-col gap-atrip-5">
       {/* 頂部 AI 定制行程提示橫幅 */}
-      <div className="flex flex-col items-start justify-between gap-atrip-4 rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-4 text-white sm:flex-row sm:items-center sm:p-atrip-5">
+      <div className="atrip-view-enter flex flex-col items-start justify-between gap-atrip-4 rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-4 text-white sm:flex-row sm:items-center sm:p-atrip-5">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="rounded-atrip-full bg-atrip-action-primary px-atrip-2 py-atrip-1 text-[10px] font-semibold text-atrip-action-on-primary">
@@ -58,16 +58,9 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
             已依據「{destination}」之簽證法規、電壓插座、當地幣別與季節氣候生成專屬清單
           </h3>
           <p className="mt-atrip-1 text-atrip-caption text-white">
-            換洗衣物已配合 {totalDays} 天 {nights} 夜計算，並精確提供當地交通與常備藥品防護建議。
+            換洗衣物已配合 {totalDays} 天 {nights} 夜與出發月份自動更新，日期變更後不需再次操作。
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => regenerateForDestination(destination, totalDays, startDate)}
-          className="atrip-focus inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-atrip-2 rounded-atrip-full border border-white/50 px-atrip-3 text-atrip-caption font-semibold text-white sm:w-auto"
-        >
-          <span>✨ 重新依目的地生成</span>
-        </button>
       </div>
 
       {/* 頂部進度條卡片 */}

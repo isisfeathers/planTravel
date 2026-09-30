@@ -101,7 +101,9 @@ export function DashboardHeader() {
       ) : null}
 
       <div className="relative overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-5 text-white sm:flex sm:items-end sm:justify-between sm:gap-atrip-6 sm:p-atrip-6">
-        <div className="atrip-dashboard-route" aria-hidden="true" />
+        <div className="atrip-dashboard-route" aria-hidden="true">
+          <span className="atrip-dashboard-route-dot" />
+        </div>
         <div className="relative z-10 max-w-lg">
           <p className="text-atrip-caption font-semibold text-atrip-action-primary">ATRIP × LINE</p>
           <h2 className="mt-atrip-1 text-atrip-display">下一站，想去哪裡？</h2>
@@ -111,7 +113,7 @@ export function DashboardHeader() {
         </div>
         <Link
           href="/wizard"
-          className="atrip-primary-button relative z-10 mt-atrip-5 sm:mt-0 sm:w-auto sm:min-w-44"
+          className="atrip-cta-glint atrip-primary-button relative z-10 mt-atrip-5 sm:mt-0 sm:w-auto sm:min-w-44"
         >
           <Plus size={20} aria-hidden="true" />
           規劃新旅程
