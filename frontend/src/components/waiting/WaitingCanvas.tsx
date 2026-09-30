@@ -71,12 +71,20 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
               ? "偏好資料仍然完整保留，可以安心重新嘗試。"
               : completed
                 ? "每日路線、機票與行李建議已經整理完成。"
-                : "你可以先離開這個畫面，完成後 LINE OA 會主動通知。"}
+                : "可以先關閉這個畫面，行程完成後我們會傳 LINE 訊息提醒你。"}
           </p>
         </div>
 
-        <div className="relative mt-atrip-6 min-h-[238px] overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-5 text-white">
-          <div className="atrip-waiting-route" aria-hidden="true" />
+        <div className="relative mt-atrip-6 overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-5 text-white">
+          <div className="relative z-10">
+            <span className="inline-flex items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-action-on-primary">
+              {failed ? <AlertTriangle size={13} /> : completed ? <Check size={13} /> : <LoaderCircle className="atrip-loading-icon animate-spin" size={13} />}
+              {failed ? "等待重試" : completed ? "規劃完成" : "AI 規劃中"}
+            </span>
+            <p className="mt-atrip-4 text-atrip-caption text-atrip-action-primary">正在安排每日動線</p>
+            <p className="text-atrip-h1">下一站，專屬旅程</p>
+          </div>
+
           {!failed && !completed ? (
             <div className="atrip-waiting-flight-scene" aria-hidden="true">
               <span className="atrip-waiting-cloud atrip-waiting-cloud-one" />
@@ -86,21 +94,13 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
                 <Plane size={23} strokeWidth={2.4} />
               </span>
             </div>
-          ) : null}
-          <div className="relative z-10 flex items-start justify-between gap-atrip-4">
-            <div>
-              <span className="inline-flex items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-action-on-primary">
-                {failed ? <AlertTriangle size={13} /> : completed ? <Check size={13} /> : <LoaderCircle className="atrip-loading-icon animate-spin" size={13} />}
-                {failed ? "等待重試" : completed ? "規劃完成" : "AI 規劃中"}
-              </span>
-              <p className="mt-atrip-5 text-atrip-caption text-white">TAIPEI</p>
-              <p className="text-atrip-h1">下一站，專屬旅程</p>
+          ) : (
+            <div className="mt-atrip-4 grid h-20 place-items-center rounded-atrip-lg bg-white/5" aria-hidden="true">
+              {completed ? <Sparkles className="text-atrip-action-primary" size={32} /> : <AlertTriangle className="text-atrip-action-primary" size={30} />}
             </div>
-            <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-atrip-full bg-atrip-selection-background text-atrip-brand-logo-ai ${!failed && !completed ? "atrip-waiting-beacon" : ""}`}>
-              {completed ? <Sparkles size={26} /> : <Plane className="-rotate-12" size={26} />}
-            </span>
-          </div>
-          <div className="relative z-10 mt-atrip-6 flex items-center gap-atrip-2 text-atrip-caption text-white">
+          )}
+
+          <div className="relative z-10 mt-atrip-3 flex items-center gap-atrip-2 text-atrip-caption text-white">
             <MapPin size={15} className="text-atrip-action-primary" />
             <span>路線建立後，可在地圖與時間軸間自由切換</span>
           </div>
@@ -176,7 +176,7 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
             </Link>
             <p className="mt-atrip-3 flex items-start justify-center gap-atrip-2 text-center text-atrip-caption text-atrip-text-secondary">
               {realtime.connectionState === "polling" ? <CloudOff className="mt-0.5 shrink-0" size={14} /> : <LoaderCircle className="atrip-loading-icon mt-0.5 shrink-0 animate-spin" size={14} />}
-              完成後會透過 LINE OA 傳送通知，不需要一直停留在此頁。
+              行程完成後會傳 LINE 訊息提醒你，不用一直開著這個畫面。
             </p>
           </div>
         )}

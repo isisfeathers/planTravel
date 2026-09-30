@@ -249,27 +249,6 @@
     pointer-events: none;
   }
 
-  .atrip-dashboard-route::before,
-  .atrip-dashboard-route::after {
-    position: absolute;
-    width: 0.75rem;
-    height: 0.75rem;
-    border: 3px solid theme("colors.atrip-action-primary");
-    border-radius: 9999px;
-    background: theme("colors.atrip-brand-logo-trp");
-    content: "";
-  }
-
-  .atrip-dashboard-route::before {
-    left: 0.7rem;
-    bottom: 1.8rem;
-  }
-
-  .atrip-dashboard-route::after {
-    right: 1.4rem;
-    top: 1rem;
-  }
-
   .atrip-dashboard-route-dot {
     position: absolute;
     top: calc(50% - 0.375rem);
@@ -406,18 +385,19 @@
   }
 
   .atrip-waiting-flight-scene {
-    position: absolute;
-    inset: 4.75rem 0.75rem 2.75rem;
+    position: relative;
+    height: 5.5rem;
+    margin-top: 0.75rem;
     overflow: hidden;
     pointer-events: none;
   }
 
   .atrip-waiting-flight-path {
     position: absolute;
-    top: 52%;
-    left: 5%;
-    width: 90%;
-    height: 3.75rem;
+    top: 55%;
+    left: 6%;
+    width: 88%;
+    height: 3rem;
     border-top: 2px dashed rgb(185 232 90 / 42%);
     border-radius: 50%;
     transform: rotate(-4deg);
@@ -426,7 +406,7 @@
 
   .atrip-plane-flight {
     position: absolute;
-    top: 46%;
+    top: 50%;
     left: 6%;
     z-index: 2;
     display: grid;
@@ -462,10 +442,6 @@
     animation: atrip-cloud-drift 5s ease-in-out 600ms infinite alternate-reverse;
   }
 
-  .atrip-waiting-beacon {
-    animation: atrip-beacon-pulse 2.4s ease-in-out infinite;
-  }
-
   .atrip-waiting-progress-step {
     animation: atrip-content-reveal var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
   }
@@ -490,11 +466,6 @@
   @keyframes atrip-cloud-drift {
     from { transform: translateX(-0.5rem); opacity: 0.35; }
     to { transform: translateX(1rem); opacity: 0.8; }
-  }
-
-  @keyframes atrip-beacon-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgb(185 232 90 / 0%); }
-    50% { box-shadow: 0 0 0 9px rgb(185 232 90 / 14%); }
   }
 
   @keyframes atrip-step-pulse {
@@ -733,7 +704,6 @@
   .atrip-plane-flight,
   .atrip-waiting-flight-path,
   .atrip-waiting-cloud,
-  .atrip-waiting-beacon,
   .atrip-waiting-progress-step,
   .atrip-waiting-step-current,
   .atrip-waiting-step-done svg,
