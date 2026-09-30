@@ -1,7 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+'use client';
+
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { ItineraryEntity } from '@/types/itinerary';
+import {
+  Archive,
+  ArrowRight,
+  CalendarDays,
+  Clock3,
+  MapPin,
+  MoreHorizontal,
+  Star,
+  Trash2,
+} from 'lucide-react';
+
 import { getDestinationCoverImage } from '@/lib/destinationImages';
+import type { ItineraryEntity } from '@/types/itinerary';
 
 interface TripCardProps {
   itinerary: ItineraryEntity;
@@ -9,20 +22,43 @@ interface TripCardProps {
   onSetActive: (id: string) => void;
   onArchive: (id: string) => void;
   onDelete: (id: string) => void;
+  featured?: boolean;
 }
 
-export const TripCard: React.FC<TripCardProps> = ({
+function formatDateRange(startDate?: string, endDate?: string) {
+  if (!startDate || !endDate) return '日期由 AI 協助安排';
+
+  const formatter = new Intl.DateTimeFormat('zh-TW', {
+    month: 'numeric',
+    day: 'numeric',
+  });
+  return `${formatter.format(new Date(startDate))} — ${formatter.format(new Date(endDate))}`;
+}
+
+function getDepartureLabel(startDate?: string) {
+  if (!startDate) return null;
+  const start = new Date(`${startDate}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = Math.ceil((start.getTime() - today.getTime()) / 86_400_000);
+
+  if (days > 0) return `距離出發 ${days} 天`;
+  if (days === 0) return '今天出發';
+  return null;
+}
+
+export function TripCard({
   itinerary,
   isActive,
   onSetActive,
   onArchive,
   onDelete,
-}) => {
+  featured = false,
+}: TripCardProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
   const { title, destination, status, preference_snapshot, is_archived } = itinerary;
   const [imgSrc, setImgSrc] = useState(() => getDestinationCoverImage(destination, itinerary.id));
 
@@ -31,7 +67,7 @@ export const TripCard: React.FC<TripCardProps> = ({
   }, [destination, itinerary.id]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
@@ -40,161 +76,173 @@ export const TripCard: React.FC<TripCardProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDeleteClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     setIsMenuOpen(false);
     setIsExiting(true);
-    setTimeout(() => {
-      onDelete(itinerary.id);
-    }, 250);
+    window.setTimeout(() => onDelete(itinerary.id), 220);
   };
 
-  const handleCardClick = () => {
-    if (itinerary.status === 'generating') {
-      router.push(`/waiting?id=${itinerary.id}`);
-    } else {
-      router.push(`/canvas?id=${itinerary.id}`);
-    }
+  const openItinerary = () => {
+    router.push(
+      itinerary.status === 'generating'
+        ? `/waiting?id=${itinerary.id}`
+        : `/canvas?id=${itinerary.id}`,
+    );
   };
 
   const totalDays = preference_snapshot?.total_days || 1;
   const startDate = preference_snapshot?.start_date;
   const endDate = preference_snapshot?.end_date;
-  const dateRangeText = startDate && endDate ? `${startDate} ~ ${endDate}` : '尚未指定出發日期';
+  const departureLabel = getDepartureLabel(startDate);
 
-  const getStatusBadge = () => {
-    switch (status) {
-      case 'completed':
-        return <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-800">已就緒</span>;
-      case 'generating':
-        return <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800 animate-pulse">AI 生成中</span>;
-      case 'failed':
-        return <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-rose-100 text-rose-800">生成失敗</span>;
-      default:
-        return <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-slate-100 text-slate-600">草稿</span>;
-    }
-  };
+  const statusBadge = {
+    completed: '已就緒',
+    generating: 'AI 規劃中',
+    failed: '需要重試',
+    draft: '草稿',
+  }[status];
 
   return (
-    <div
-      onClick={handleCardClick}
-      className={`relative bg-white rounded-2xl border transition-all duration-200 ease-in-out shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer overflow-hidden group ${
-        isActive ? 'border-brand-primary ring-2 ring-brand-primary/20' : 'border-slate-200'
-      } ${isExiting ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+    <article
+      className={`atrip-trip-card group relative overflow-hidden rounded-atrip-xl border bg-atrip-surface-card transition-[border-color,box-shadow,opacity] duration-atrip ease-atrip motion-reduce:transition-none ${
+        featured ? 'sm:col-span-2 lg:col-span-3' : ''
+      } ${
+        isActive
+          ? 'border-atrip-selection-foreground shadow-atrip-soft'
+          : 'border-atrip-border-subtle'
+      } ${isExiting ? 'opacity-0' : 'opacity-100'}`}
     >
-      <div className="h-36 relative p-4 flex flex-col justify-between text-white overflow-hidden bg-slate-900">
-        {/* 背景景點照片與暗色微漸層遮罩 */}
-        <img
-          src={imgSrc}
-          alt={destination || '行程封面'}
-          onError={() => {
-            setImgSrc(getDestinationCoverImage('default', `${itinerary.id}-fallback`));
-          }}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-          loading="lazy"
-          decoding="async"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/40 to-slate-900/30" />
+      <button
+        type="button"
+        onClick={openItinerary}
+        className="atrip-focus absolute inset-0 z-10 cursor-pointer rounded-atrip-xl"
+        aria-label={`開啟${title}`}
+      />
+      <div className={featured ? 'sm:grid sm:grid-cols-[1.35fr_1fr]' : ''}>
+        <div className={`relative overflow-hidden bg-atrip-brand-logo-trp ${featured ? 'h-52 sm:h-64' : 'h-44'}`}>
+          <img
+            src={imgSrc}
+            alt={`${destination || '目的地'}景色`}
+            onError={() => setImgSrc(getDestinationCoverImage('default', `${itinerary.id}-fallback`))}
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-atrip-brand-logo-trp via-atrip-brand-logo-trp/30 to-transparent" />
 
-        <div className="relative z-10 flex justify-between items-start">
-          {isActive ? (
-            <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-brand-primary text-slate-900 shadow-sm">
-              ★ 當前關注
-            </span>
-          ) : (
-            <span />
-          )}
+          <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-atrip-2 p-atrip-4">
+            <div className="flex flex-wrap gap-atrip-2">
+              {isActive ? (
+                <span className="inline-flex items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-action-on-primary">
+                  <Star size={13} fill="currentColor" aria-hidden="true" />
+                  當前關注
+                </span>
+              ) : null}
+              {departureLabel ? (
+                <span className="rounded-atrip-full bg-atrip-surface-card px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-text-primary">
+                  {departureLabel}
+                </span>
+              ) : null}
+            </div>
 
-          <div className="relative" ref={menuRef}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMenuOpen((prev) => !prev);
-              }}
-              className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-colors shadow-sm focus:outline-none"
-              aria-label="更多操作"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="1.5" />
-                <circle cx="19" cy="12" r="1.5" />
-                <circle cx="5" cy="12" r="1.5" />
-              </svg>
-            </button>
-
-            {isMenuOpen && (
-              <div
-                className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-30"
-                onClick={(e) => e.stopPropagation()}
+            <div className="relative z-20 shrink-0" ref={menuRef}>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setIsMenuOpen((value) => !value);
+                }}
+                className="atrip-focus grid h-11 w-11 place-items-center rounded-atrip-full border border-white/30 bg-atrip-brand-logo-trp/70 text-white backdrop-blur-sm"
+                aria-label={`管理${title}`}
+                aria-expanded={isMenuOpen}
               >
-                {!isActive && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsMenuOpen(false);
-                      onSetActive(itinerary.id);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
-                  >
-                    <span>★</span> 設為當前關注
-                  </button>
-                )}
-                {!is_archived && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsMenuOpen(false);
-                      onArchive(itinerary.id);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
-                  >
-                    <span>📁</span> 封存行程
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={handleDeleteClick}
-                  className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2"
+                <MoreHorizontal size={20} aria-hidden="true" />
+              </button>
+
+              {isMenuOpen ? (
+                <div
+                  className="atrip-motion-reveal absolute right-0 z-30 mt-atrip-2 w-52 rounded-atrip-md border border-atrip-border-subtle bg-atrip-surface-card p-atrip-1 shadow-atrip-popover"
+                  onClick={(event) => event.stopPropagation()}
                 >
-                  <span>🗑️</span> 移至垃圾桶
-                </button>
-              </div>
-            )}
+                  {!isActive ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onSetActive(itinerary.id);
+                      }}
+                      className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-primary"
+                    >
+                      <Star size={18} aria-hidden="true" />
+                      設為當前關注
+                    </button>
+                  ) : null}
+                  {!is_archived ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onArchive(itinerary.id);
+                      }}
+                      className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-primary"
+                    >
+                      <Archive size={18} aria-hidden="true" />
+                      封存行程
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={handleDeleteClick}
+                    className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-secondary"
+                  >
+                    <Trash2 size={18} aria-hidden="true" />
+                    移至垃圾桶
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="absolute inset-x-0 bottom-0 p-atrip-4 text-white">
+            <div className="flex items-center gap-atrip-2 text-atrip-caption">
+              <MapPin size={15} className="text-atrip-action-primary" aria-hidden="true" />
+              {destination || '目的地待定'}
+            </div>
+            <h3 className={`mt-atrip-1 font-bold ${featured ? 'text-xl leading-7' : 'text-atrip-h2'}`}>{title}</h3>
           </div>
         </div>
 
-        <div className="relative z-10 flex items-center gap-2">
-          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-black/40 backdrop-blur-md text-white shadow-sm border border-white/15">
-            📍 {destination || '目的地待定'}
-          </span>
-          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-black/40 backdrop-blur-md text-white shadow-sm border border-white/15">
-            🗓️ {totalDays} 天
-          </span>
+        <div className={`flex flex-col justify-between p-atrip-4 ${featured ? 'sm:p-atrip-6' : ''}`}>
+          <div>
+            <div className="flex flex-wrap items-center gap-atrip-2">
+              <span className="rounded-atrip-sm bg-atrip-tag-background px-atrip-tag-x py-atrip-tag-y text-atrip-caption text-atrip-tag-foreground">
+                {statusBadge}
+              </span>
+              <span className="inline-flex items-center gap-atrip-1 rounded-atrip-sm bg-atrip-tag-background px-atrip-tag-x py-atrip-tag-y text-atrip-caption text-atrip-tag-foreground">
+                <Clock3 size={13} aria-hidden="true" />
+                {totalDays} 天
+              </span>
+            </div>
+            {featured ? (
+              <p className="mt-atrip-4 text-atrip-body text-atrip-text-secondary">
+                這是 LINE 旅遊助理目前優先關注的旅程。開啟後可查看每日路線、機票與行李清單。
+              </p>
+            ) : null}
+          </div>
+
+          <div className={`mt-atrip-4 flex items-center justify-between gap-atrip-3 border-t border-atrip-border-subtle pt-atrip-3 ${featured ? 'sm:mt-atrip-6' : ''}`}>
+            <span className="inline-flex min-w-0 items-center gap-atrip-1 text-atrip-caption text-atrip-text-secondary">
+              <CalendarDays size={15} className="shrink-0" aria-hidden="true" />
+              <span className="truncate">{formatDateRange(startDate, endDate)}</span>
+            </span>
+            <span className="inline-flex shrink-0 items-center gap-atrip-1 text-atrip-body font-semibold text-atrip-brand-logo-ai">
+              查看行程
+              <ArrowRight size={17} aria-hidden="true" />
+            </span>
+          </div>
         </div>
       </div>
-
-      <div className="p-4 flex flex-col gap-2">
-        <div className="flex justify-between items-center gap-2">
-          <h3 className="font-bold text-slate-900 text-base truncate group-hover:text-brand-primary transition-colors" title={title}>
-            {title}
-          </h3>
-          {getStatusBadge()}
-        </div>
-
-        <div className="flex justify-between items-center text-xs text-slate-500 pt-1 border-t border-slate-100">
-          <span className="flex items-center gap-1">
-            <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            {dateRangeText}
-          </span>
-          <span className="text-brand-primary font-bold inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
-            進入畫布 →
-          </span>
-        </div>
-      </div>
-    </div>
+    </article>
   );
-};
+}

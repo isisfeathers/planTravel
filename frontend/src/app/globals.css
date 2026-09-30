@@ -212,6 +212,76 @@
     @apply atrip-focus min-h-atrip-input w-full rounded-atrip-md border border-atrip-brand-logo-ai bg-atrip-surface-card px-atrip-input-x py-atrip-input-y text-atrip-input text-atrip-text-primary placeholder:text-atrip-text-secondary;
   }
 
+  .atrip-compact-primary {
+    @apply atrip-focus inline-flex min-h-atrip-icon-button items-center justify-center gap-atrip-2 rounded-atrip-full border border-transparent bg-atrip-action-primary px-atrip-3 text-atrip-body font-semibold text-atrip-action-on-primary transition-atrip duration-atrip ease-atrip motion-reduce:transition-none;
+  }
+
+  .atrip-compact-secondary {
+    @apply atrip-focus inline-flex min-h-atrip-icon-button items-center justify-center gap-atrip-2 rounded-atrip-full border border-atrip-text-secondary bg-atrip-surface-card px-atrip-3 text-atrip-body font-semibold text-atrip-text-primary transition-atrip duration-atrip ease-atrip motion-reduce:transition-none;
+  }
+
+  .atrip-compact-primary:active {
+    @apply border-atrip-selection-foreground bg-atrip-action-primary-hover;
+  }
+
+  .atrip-compact-secondary:active {
+    @apply border-atrip-selection-foreground bg-atrip-selection-background;
+    box-shadow: inset 0 0 0 1px theme("colors.atrip-selection-foreground");
+  }
+
+  .atrip-menu-item {
+    transition: background-color var(--atrip-motion-fast) ease-out;
+  }
+
+  .atrip-menu-item:active {
+    @apply bg-atrip-selection-background;
+  }
+
+  .atrip-dashboard-route {
+    position: absolute;
+    top: -2rem;
+    right: -2.5rem;
+    width: 12rem;
+    height: 12rem;
+    border: 2px dashed rgb(185 232 90 / 45%);
+    border-radius: 50%;
+    transform: rotate(-18deg);
+    pointer-events: none;
+  }
+
+  .atrip-dashboard-route::before,
+  .atrip-dashboard-route::after {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 3px solid theme("colors.atrip-action-primary");
+    border-radius: 9999px;
+    background: theme("colors.atrip-brand-logo-trp");
+    content: "";
+  }
+
+  .atrip-dashboard-route::before {
+    left: 0.7rem;
+    bottom: 1.8rem;
+  }
+
+  .atrip-dashboard-route::after {
+    right: 1.4rem;
+    top: 1rem;
+  }
+
+  .atrip-empty-route {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(88%, 24rem);
+    height: 7rem;
+    border-top: 2px dashed theme("colors.atrip-border-subtle");
+    border-radius: 50%;
+    transform: translate(-50%, -12%);
+    pointer-events: none;
+  }
+
   .atrip-scrollbar-hidden {
     scrollbar-width: none;
   }
@@ -375,6 +445,22 @@
 
   .atrip-primary-button:hover:not([aria-disabled="true"]) {
     @apply bg-atrip-action-primary-hover;
+  }
+
+  .atrip-compact-primary:hover {
+    @apply bg-atrip-action-primary-hover;
+  }
+
+  .atrip-compact-secondary:hover {
+    @apply border-atrip-selection-foreground bg-atrip-selection-background;
+  }
+
+  .atrip-trip-card:hover {
+    @apply border-atrip-text-secondary shadow-atrip-soft;
+  }
+
+  .atrip-menu-item:hover {
+    @apply bg-atrip-selection-background;
   }
 }
 
