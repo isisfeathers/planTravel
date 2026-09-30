@@ -38,7 +38,11 @@ export function PreferenceChip({
         aria-hidden="true"
         className="flex h-atrip-check w-atrip-check shrink-0 items-center justify-center text-atrip-selection-foreground"
       >
-        {selected ? <Check size={16} strokeWidth={3} /> : null}
+        <Check
+          size={16}
+          strokeWidth={3}
+          className="atrip-selection-check"
+        />
       </span>
       <span>{label}</span>
     </button>

@@ -230,7 +230,7 @@ export function WizardHeadlessForm() {
         className="pb-[calc(7rem+env(safe-area-inset-bottom))]"
       >
         <main className="px-atrip-gutter py-atrip-6 max-[359px]:px-atrip-gutter-narrow">
-          <div>
+          <div className="atrip-motion-reveal">
             <h1 className="text-atrip-h1">開始規劃你的專屬自由行</h1>
             <p className="mt-atrip-1 text-atrip-body text-atrip-text-secondary">
               選擇目的地與天數，由 AI 旅遊管家為您量身打造行程。
@@ -238,7 +238,7 @@ export function WizardHeadlessForm() {
           </div>
 
           {/* 目的地與天數客製區塊 */}
-          <section className="mt-atrip-5 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-sm">
+          <section className="atrip-motion-reveal-delayed mt-atrip-5 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-sm">
             <label className="flex items-center gap-atrip-2 text-atrip-h2 font-bold text-slate-900">
               <MapPin aria-hidden="true" size={18} className="text-atrip-brand-logo-ai" />
               想去哪座城市？
@@ -251,7 +251,8 @@ export function WizardHeadlessForm() {
                   key={dest.value}
                   type="button"
                   onClick={() => wizard.setField("destination", dest.value)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
+                  aria-pressed={wizard.destination === dest.value}
+                  className={`atrip-choice-button rounded-full px-3 py-1.5 text-xs font-semibold ${
                     wizard.destination === dest.value
                       ? "bg-brand-primary text-white shadow-sm ring-2 ring-brand-primary/30"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -292,7 +293,8 @@ export function WizardHeadlessForm() {
                         wizard.setField("endDate", end.toISOString().slice(0, 10));
                       }
                     }}
-                    className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
+                    aria-pressed={wizard.totalDays === d.value}
+                    className={`atrip-choice-button rounded-full px-3 py-1 text-xs font-medium ${
                       wizard.totalDays === d.value
                         ? "bg-brand-primary text-white font-bold"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -323,7 +325,8 @@ export function WizardHeadlessForm() {
                     wizard.setField("startDate", undefined);
                     wizard.setField("endDate", undefined);
                   }}
-                  className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
+                  aria-pressed={!wizard.startDate}
+                  className={`atrip-choice-button p-2.5 rounded-xl border text-xs font-bold text-left ${
                     !wizard.startDate
                       ? "border-brand-primary bg-brand-primary/10 text-slate-900 ring-1 ring-brand-primary"
                       : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
@@ -360,7 +363,7 @@ export function WizardHeadlessForm() {
             </div>
           </section>
 
-          <section className="mt-atrip-6" aria-labelledby="preset-title">
+          <section className="atrip-motion-reveal-delayed mt-atrip-6" aria-labelledby="preset-title">
             <div className="flex items-center justify-between gap-atrip-3">
               <h2 id="preset-title" className="text-atrip-h2">
                 第一層｜懶人套版
@@ -406,7 +409,7 @@ export function WizardHeadlessForm() {
                 type="button"
                 aria-expanded="false"
                 aria-controls="fine-tune-panel"
-                className="atrip-focus mt-atrip-3 w-full rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 text-left"
+                className="atrip-focus atrip-motion-reveal mt-atrip-3 w-full rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 text-left transition-[border-color,box-shadow] duration-atrip ease-atrip hover:border-atrip-text-secondary hover:shadow-atrip-soft motion-reduce:transition-none"
                 onClick={() => setIsFineTuneExpanded(true)}
               >
                 <span className="flex items-start justify-between gap-atrip-3">
@@ -433,7 +436,7 @@ export function WizardHeadlessForm() {
                 </span>
               </button>
             ) : (
-              <div id="fine-tune-panel" className="mt-atrip-4 space-y-atrip-5">
+              <div id="fine-tune-panel" className="atrip-motion-reveal mt-atrip-4 space-y-atrip-5">
                 <fieldset>
                   <legend className="flex items-center gap-atrip-2 text-atrip-h2">
                     <BedDouble aria-hidden="true" size={18} className="text-atrip-brand-logo-ai" />
@@ -549,7 +552,7 @@ export function WizardHeadlessForm() {
           </section>
 
           {!isFineTuneExpanded ? (
-            <div className="mt-atrip-5 flex gap-atrip-2 rounded-atrip-lg border border-atrip-selection-foreground bg-atrip-selection-background p-atrip-3 text-atrip-selection-foreground">
+            <div className="atrip-motion-reveal mt-atrip-5 flex gap-atrip-2 rounded-atrip-lg border border-atrip-selection-foreground bg-atrip-selection-background p-atrip-3 text-atrip-selection-foreground">
               <span
                 aria-hidden="true"
                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-atrip-full bg-atrip-action-primary"
@@ -564,7 +567,7 @@ export function WizardHeadlessForm() {
           ) : null}
 
           {!isFineTuneExpanded ? (
-            <div className="mt-atrip-6">
+            <div className="atrip-motion-reveal mt-atrip-6">
               <h2 className="text-atrip-h2">想更精準？</h2>
               <p className="mt-atrip-1 text-atrip-body text-atrip-text-secondary">
                 展開「微調」即可調整住宿、交通與興趣標籤。
@@ -594,6 +597,7 @@ export function WizardHeadlessForm() {
           <button
             type="submit"
             className="atrip-primary-button"
+            disabled={isSubmitting}
             aria-busy={isSubmitting}
             aria-disabled={isSubmitting}
             aria-describedby={submitError ? "wizard-submit-error" : undefined}
@@ -602,12 +606,14 @@ export function WizardHeadlessForm() {
               <LoaderCircle
                 aria-hidden="true"
                 size={20}
-                className="atrip-loading-icon animate-spin"
+                className="atrip-loading-icon atrip-motion-reveal animate-spin"
               />
             ) : (
-              <Sparkles aria-hidden="true" size={20} />
+              <Sparkles aria-hidden="true" size={20} className="atrip-motion-reveal" />
             )}
-            {isSubmitting ? "AI 規劃中…" : "一鍵開始 AI 規劃"}
+            <span key={isSubmitting ? "submitting" : "ready"} className="atrip-loading-stage">
+              {isSubmitting ? "AI 規劃中…" : "一鍵開始 AI 規劃"}
+            </span>
           </button>
         </div>
       </form>

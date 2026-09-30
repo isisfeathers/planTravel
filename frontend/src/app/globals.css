@@ -7,6 +7,14 @@
 
 
 @layer base {
+  :root {
+    --atrip-motion-fast: 120ms;
+    --atrip-motion-normal: 220ms;
+    --atrip-motion-slow: 360ms;
+    --atrip-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --atrip-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
   *,
   *::before,
   *::after {
@@ -77,6 +85,127 @@
 
   .atrip-primary-button[aria-disabled="true"] {
     cursor: wait;
+  }
+
+  .atrip-primary-button[aria-busy="true"] {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 4px color-mix(in srgb, theme("colors.atrip-action-primary") 18%, transparent);
+  }
+
+  .atrip-primary-button[aria-busy="true"]::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgb(255 255 255 / 32%) 48%,
+      transparent 66%
+    );
+    animation: atrip-button-shimmer 1.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .atrip-page-enter {
+    animation: atrip-page-enter var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
+  }
+
+  .atrip-motion-reveal {
+    animation: atrip-content-reveal var(--atrip-motion-normal) var(--atrip-ease-emphasized) both;
+  }
+
+  .atrip-motion-reveal-delayed {
+    animation: atrip-content-reveal var(--atrip-motion-slow) var(--atrip-ease-emphasized) 80ms both;
+  }
+
+  .atrip-loading-stage {
+    animation: atrip-loading-stage var(--atrip-motion-normal) var(--atrip-ease-standard) both;
+  }
+
+  .atrip-loading-orbit {
+    position: relative;
+    display: grid;
+    height: 4.5rem;
+    width: 4.5rem;
+    place-items: center;
+    border-radius: 9999px;
+    background: theme("colors.atrip-selection-background");
+  }
+
+  .atrip-loading-orbit::before {
+    position: absolute;
+    inset: -5px;
+    border: 2px solid transparent;
+    border-top-color: theme("colors.atrip-action-primary");
+    border-right-color: theme("colors.atrip-brand-logo-ai");
+    border-radius: inherit;
+    content: "";
+    animation: atrip-orbit 1.5s linear infinite;
+  }
+
+  .atrip-choice-button {
+    transition-property: background-color, border-color, box-shadow, color;
+    transition-duration: var(--atrip-motion-fast);
+    transition-timing-function: ease-out;
+  }
+
+  .atrip-choice-button[aria-pressed="true"] {
+    animation: atrip-selection-glow var(--atrip-motion-normal) var(--atrip-ease-standard);
+  }
+
+  .atrip-selection-check {
+    opacity: 0;
+    transform: scale(0.75);
+    transition:
+      opacity var(--atrip-motion-fast) ease-out,
+      transform var(--atrip-motion-normal) var(--atrip-ease-emphasized);
+  }
+
+  [aria-pressed="true"] .atrip-selection-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @keyframes atrip-page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes atrip-content-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes atrip-loading-stage {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes atrip-orbit {
+    to { transform: rotate(1turn); }
+  }
+
+  @keyframes atrip-button-shimmer {
+    from { transform: translateX(-110%); }
+    to { transform: translateX(110%); }
+  }
+
+  @keyframes atrip-selection-glow {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    45% { box-shadow: 0 0 0 4px rgb(185 232 90 / 24%); }
   }
 
   .atrip-input {
@@ -256,7 +385,24 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .atrip-loading-icon {
-    animation: none;
+  .atrip-loading-icon,
+  .atrip-loading-orbit::before,
+  .atrip-primary-button[aria-busy="true"]::after,
+  .atrip-page-enter,
+  .atrip-motion-reveal,
+  .atrip-motion-reveal-delayed,
+  .atrip-loading-stage,
+  .atrip-choice-button[aria-pressed="true"] {
+    animation: none !important;
+  }
+
+  .atrip-page-enter,
+  .atrip-motion-reveal,
+  .atrip-motion-reveal-delayed {
+    transform: none;
+  }
+
+  .atrip-selection-check {
+    transition: none;
   }
 }

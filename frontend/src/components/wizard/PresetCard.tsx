@@ -40,9 +40,7 @@ export function PresetCard({
         </span>
         <span
           aria-hidden="true"
-          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-atrip-full bg-atrip-selection-foreground text-atrip-surface-card ${
-            selected ? "visible" : "invisible"
-          }`}
+          className="atrip-selection-check flex h-5 w-5 shrink-0 items-center justify-center rounded-atrip-full bg-atrip-selection-foreground text-atrip-surface-card"
         >
           <Check size={15} strokeWidth={3} />
         </span>
