@@ -12,6 +12,7 @@ import {
   CircleDot,
   LoaderCircle,
   MapPin,
+  Route,
   ShoppingBag,
   Sparkles,
   TrainFront,
@@ -230,6 +231,29 @@ export function WizardHeadlessForm() {
         className="pb-[calc(7rem+env(safe-area-inset-bottom))]"
       >
         <main className="px-atrip-gutter py-atrip-6 max-[359px]:px-atrip-gutter-narrow">
+          <nav className="atrip-motion-reveal mb-atrip-6" aria-label="建立旅程進度">
+            <ol className="flex items-center justify-between gap-atrip-1">
+              {[
+                ["1", "目的地"],
+                ["2", "旅行風格"],
+                ["3", "偏好微調"],
+                ["4", "開始規劃"],
+              ].map(([number, label], index) => (
+                <li key={number} className="flex min-w-0 flex-1 items-center gap-atrip-1 last:flex-none">
+                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-atrip-full text-atrip-caption font-semibold ${
+                    index < 2
+                      ? "bg-atrip-action-primary text-atrip-action-on-primary"
+                      : "border border-atrip-border-subtle bg-atrip-surface-card text-atrip-text-secondary"
+                  }`}>{number}</span>
+                  {index < 3 ? <span className="h-px min-w-2 flex-1 bg-atrip-border-subtle" aria-hidden="true" /> : null}
+                  <span className="sr-only">{label}</span>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-atrip-2 flex justify-between text-[11px] text-atrip-text-secondary" aria-hidden="true">
+              <span>目的地</span><span>風格</span><span>微調</span><span>出發</span>
+            </div>
+          </nav>
           <div className="atrip-motion-reveal">
             <h1 className="text-atrip-h1">開始規劃你的專屬自由行</h1>
             <p className="mt-atrip-1 text-atrip-body text-atrip-text-secondary">
@@ -552,17 +576,24 @@ export function WizardHeadlessForm() {
           </section>
 
           {!isFineTuneExpanded ? (
-            <div className="atrip-motion-reveal mt-atrip-5 flex gap-atrip-2 rounded-atrip-lg border border-atrip-selection-foreground bg-atrip-selection-background p-atrip-3 text-atrip-selection-foreground">
+            <div className="atrip-motion-reveal mt-atrip-5 rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-4 text-white">
+              <div className="flex items-start gap-atrip-3">
               <span
                 aria-hidden="true"
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-atrip-full bg-atrip-action-primary"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-atrip-full bg-atrip-action-primary text-atrip-action-on-primary"
               >
-                <Check size={16} strokeWidth={3} />
+                <Route size={20} />
               </span>
-              <p className="text-atrip-body">
-                <strong className="block font-semibold">預設組合已選好</strong>
-                <span>0 次點擊即可開始規劃</span>
-              </p>
+                <div>
+                  <p className="text-atrip-caption font-semibold text-atrip-action-primary">你的旅程個性</p>
+                  <p className="mt-atrip-1 text-atrip-h2">{bundleNames[activePreset]}</p>
+                  <p className="mt-atrip-1 text-atrip-caption text-white">{summaryLabels.slice(0, 4).join(" · ")}</p>
+                </div>
+              </div>
+              <div className="mt-atrip-3 flex items-center gap-atrip-2 border-t border-white/20 pt-atrip-3 text-atrip-caption text-white">
+                <Check size={15} className="text-atrip-action-primary" />
+                0 次額外設定也能直接開始規劃
+              </div>
             </div>
           ) : null}
 

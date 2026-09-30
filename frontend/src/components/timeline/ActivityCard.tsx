@@ -34,16 +34,16 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           {/* 景點/住宿主卡片 */}
           <div
             onClick={() => onSelect?.(activity.id)}
-            className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer min-w-0 max-w-full overflow-hidden ${
+            className={`min-w-0 max-w-full cursor-pointer overflow-hidden rounded-atrip-xl border p-atrip-4 transition-[background-color,border-color,box-shadow] duration-atrip ease-atrip motion-reduce:transition-none ${
               isActive
-                ? 'ring-2 ring-brand-primary ring-offset-2 bg-sky-50/40 border-brand-primary/60'
+                ? 'border-atrip-selection-foreground bg-atrip-selection-background shadow-atrip-soft'
                 : isHotelCheckin
-                ? 'bg-gradient-to-r from-indigo-50/70 via-white to-white border-indigo-200/80'
-                : 'bg-white border-slate-200 hover:border-slate-300'
+                ? 'border-atrip-brand-logo-ai bg-atrip-surface-card'
+                : 'border-atrip-border-subtle bg-atrip-surface-card'
             } ${
               snapshot.isDragging
-                ? 'shadow-xl ring-2 ring-brand-primary/40 border-brand-primary scale-[1.02] z-50'
-                : 'shadow-2xs hover:shadow-md'
+                ? 'z-50 border-atrip-selection-foreground shadow-atrip-popover'
+                : ''
             }`}
           >
             <div className="flex items-start justify-between gap-2.5">
@@ -66,11 +66,11 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                       {activity.time_slot}
                     </span>
                     {isHotelCheckin ? (
-                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex items-center gap-1">
+                      <span className="flex items-center gap-1 rounded-atrip-sm bg-atrip-category-photo-background px-atrip-2 py-atrip-1 text-[10px] font-semibold text-atrip-category-photo-foreground">
                         🏨 住宿基地
                       </span>
                     ) : (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                      <span className="rounded-atrip-sm bg-atrip-tag-background px-atrip-2 py-atrip-1 text-[10px] font-semibold text-atrip-tag-foreground">
                         Step {index + 1}
                       </span>
                     )}
@@ -88,7 +88,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                     ${activity.cost_estimate}
                   </span>
                 ) : isHotelCheckin ? (
-                  <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 whitespace-nowrap">
+                  <span className="whitespace-nowrap rounded-atrip-sm bg-atrip-selection-background px-atrip-2 py-atrip-1 text-[10px] font-semibold text-atrip-selection-foreground">
                     已預訂
                   </span>
                 ) : null}
@@ -105,7 +105,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
             {/* 小叮嚀與地圖捷徑 */}
             <div className="mt-2.5 sm:ml-7 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-100/80 min-w-0">
               {activity.tips ? (
-                <div className="text-[11px] sm:text-xs text-amber-800 bg-amber-50/80 rounded-lg px-2 py-1 flex items-start gap-1 border border-amber-200/50 min-w-0 flex-1 break-words">
+                <div className="flex min-w-0 flex-1 items-start gap-1 rounded-atrip-sm bg-atrip-category-coffee-background px-atrip-2 py-atrip-1 text-[11px] text-atrip-category-coffee-foreground sm:text-xs break-words">
                   <span className="shrink-0">💡</span>
                   <span className="break-words line-clamp-2 sm:line-clamp-none">{activity.tips}</span>
                 </div>
@@ -118,7 +118,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                     e.stopPropagation();
                     onSelect?.(activity.id);
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-primary hover:text-slate-900 px-2 py-1 rounded-md bg-brand-primary/10 hover:bg-brand-primary/20 transition-colors self-end sm:self-auto shrink-0"
+                  className="atrip-focus inline-flex min-h-11 shrink-0 items-center gap-atrip-1 self-end rounded-atrip-full border border-atrip-text-secondary bg-atrip-surface-card px-atrip-3 text-atrip-caption font-semibold text-atrip-text-primary sm:self-auto"
                 >
                   <MapPin size={12} />
                   <span>定位景點</span>

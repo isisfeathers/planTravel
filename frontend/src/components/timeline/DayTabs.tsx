@@ -9,7 +9,7 @@ interface DayTabsProps {
 
 export const DayTabs: React.FC<DayTabsProps> = ({ days, selectedDay, onSelectDay }) => {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full max-w-full select-none">
+    <div className="atrip-scrollbar-hidden flex w-full max-w-full select-none items-start gap-atrip-2 overflow-x-auto pb-atrip-2" aria-label="選擇行程日期">
       {days.map((day) => {
         const isSelected = day.day_number === selectedDay;
         return (
@@ -17,13 +17,15 @@ export const DayTabs: React.FC<DayTabsProps> = ({ days, selectedDay, onSelectDay
             key={day.day_number}
             type="button"
             onClick={() => onSelectDay(day.day_number)}
-            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all shrink-0 ${
+            aria-pressed={isSelected}
+            className={`atrip-focus relative min-h-14 min-w-[88px] shrink-0 rounded-atrip-lg border px-atrip-3 py-atrip-2 text-left transition-atrip duration-atrip ease-atrip motion-reduce:transition-none ${
               isSelected
-                ? 'bg-brand-primary text-white shadow-sm ring-2 ring-brand-primary/40'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                ? 'border-atrip-selection-foreground bg-atrip-selection-background text-atrip-selection-foreground shadow-atrip-soft'
+                : 'border-atrip-border-subtle bg-atrip-surface-card text-atrip-text-secondary'
             }`}
           >
-            Day {day.day_number}
+            <span className="block text-atrip-caption font-semibold">DAY {day.day_number}</span>
+            <span className="mt-atrip-1 block max-w-28 truncate text-[11px]">{day.date_label || `第 ${day.day_number} 天`}</span>
           </button>
         );
       })}

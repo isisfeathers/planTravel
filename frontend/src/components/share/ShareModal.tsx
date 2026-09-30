@@ -80,47 +80,48 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-slate-100 flex flex-col gap-4 relative">
+    <div className="atrip-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div className="atrip-modal-panel" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center"
+          className="atrip-icon-button absolute right-atrip-4 top-atrip-4 bg-atrip-surface-subtle text-atrip-text-secondary"
+          aria-label="關閉分享視窗"
         >
           <X size={16} />
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-brand-primary/15 flex items-center justify-center text-brand-primary shrink-0">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-atrip-lg bg-atrip-selection-background text-atrip-selection-foreground">
             <Share2 size={20} />
           </div>
           <div>
-            <h3 className="text-base font-black text-slate-900">分享專屬行程</h3>
-            <p className="text-xs text-slate-500">邀請旅伴瀏覽或複製行程</p>
+            <h3 id="share-modal-title" className="text-atrip-title font-bold text-atrip-text-primary">分享專屬行程</h3>
+            <p className="text-atrip-caption text-atrip-text-secondary">邀請旅伴瀏覽或複製行程</p>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-3 flex items-start gap-2.5">
-          <ShieldCheck size={18} className="text-emerald-600 shrink-0 mt-0.5" />
-          <div className="text-[11px] leading-relaxed text-emerald-800">
+        <div className="flex items-start gap-atrip-2 rounded-atrip-lg bg-atrip-selection-background p-atrip-3">
+          <ShieldCheck size={18} className="mt-0.5 shrink-0 text-atrip-selection-foreground" />
+          <div className="text-atrip-caption leading-relaxed text-atrip-selection-foreground">
             <span className="font-bold">去識別化安全保護：</span>
             已自動隱藏您的個資與預算，同行親友可查看每日景點動線並一鍵複製（Fork）。
           </div>
         </div>
 
-        <div className="rounded-2xl bg-slate-50 p-3 border border-slate-200/70">
-          <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wider">
+        <div className="rounded-atrip-lg border border-atrip-border-subtle bg-atrip-surface-subtle p-atrip-3">
+          <span className="text-atrip-micro font-bold uppercase tracking-wider text-atrip-brand-logo-ai">
             📍 {destination}
           </span>
-          <p className="text-xs font-bold text-slate-800 truncate mt-0.5">
+          <p className="mt-0.5 truncate text-atrip-caption font-bold text-atrip-text-primary">
             {tripTitle}
           </p>
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="share-url-input" className="text-xs font-bold text-slate-700 flex items-center justify-between">
+          <label htmlFor="share-url-input" className="flex items-center justify-between text-atrip-caption font-bold text-atrip-text-primary">
             <span>專屬分享連結</span>
-            {isPublishing && <span className="text-[10px] text-amber-600 font-normal animate-pulse">同步公開狀態中...</span>}
+            {isPublishing && <span className="animate-pulse text-atrip-micro font-normal text-atrip-text-secondary motion-reduce:animate-none">同步公開狀態中...</span>}
           </label>
           <div className="flex items-center gap-2">
             <input
@@ -128,13 +129,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               type="text"
               readOnly
               value={shareUrl}
-              className="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-100 border border-slate-200 text-slate-700 font-mono select-all"
+              className="atrip-focus min-h-atrip-input min-w-0 flex-1 select-all rounded-atrip-md border border-atrip-border-default bg-atrip-surface-subtle px-atrip-3 text-atrip-caption text-atrip-text-primary"
             />
             <button
               type="button"
               onClick={handleCopyLink}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 ${
-                copied ? 'bg-emerald-600 text-white' : 'bg-brand-primary text-slate-900'
+              className={`atrip-focus flex min-h-atrip-input shrink-0 items-center gap-atrip-1 rounded-atrip-md px-atrip-3 text-atrip-caption font-bold ${
+                copied ? 'bg-atrip-selection-background text-atrip-selection-foreground' : 'bg-atrip-action-primary text-atrip-action-on-primary'
               }`}
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -143,12 +144,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+        <div className="grid grid-cols-2 gap-atrip-2 border-t border-atrip-border-subtle pt-atrip-3">
           <a
             href={shareUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 py-2 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5"
+            className="atrip-compact-secondary min-h-atrip-control rounded-atrip-md"
           >
             <ExternalLink size={14} />
             <span>預覽分享頁</span>
@@ -156,7 +157,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           <button
             type="button"
             onClick={handleNativeShare}
-            className="flex-1 py-2 px-3 rounded-xl bg-brand-primary/15 hover:bg-brand-primary/25 text-brand-primary text-xs font-bold flex items-center justify-center gap-1.5"
+            className="atrip-compact-primary min-h-atrip-control rounded-atrip-md"
           >
             <Sparkles size={14} />
             <span>快速分享</span>

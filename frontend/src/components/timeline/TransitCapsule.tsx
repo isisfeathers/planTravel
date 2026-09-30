@@ -25,8 +25,8 @@ export const TransitCapsule: React.FC<TransitCapsuleProps> = ({ transit }) => {
   };
 
   return (
-    <div className="flex items-center gap-2 my-2 ml-2 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-dashed border-slate-300 py-1 max-w-full overflow-hidden min-w-0">
-      <div className="inline-flex max-w-full items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-slate-100/90 text-slate-700 text-[11px] sm:text-xs font-medium border border-slate-200 shadow-2xs min-w-0">
+    <div className="my-atrip-2 ml-atrip-4 flex min-w-0 max-w-full items-center gap-atrip-2 overflow-hidden border-l-2 border-dashed border-atrip-brand-logo-ai py-atrip-1 pl-atrip-3">
+      <div className="inline-flex min-w-0 max-w-full items-center gap-atrip-2 rounded-atrip-full bg-atrip-category-photo-background px-atrip-3 py-atrip-1 text-[11px] font-medium text-atrip-category-photo-foreground sm:text-xs">
         <span className="shrink-0">{getTransitIcon()}</span>
         <span className="truncate max-w-[160px] sm:max-w-none min-w-0">{transit.route_name || transit.instructions}</span>
         <span className="text-slate-400 shrink-0">·</span>

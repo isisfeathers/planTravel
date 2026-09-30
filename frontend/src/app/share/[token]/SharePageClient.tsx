@@ -10,6 +10,7 @@ import { PublicActivityCard } from '@/components/share/PublicActivityCard';
 import { supabase } from '@/lib/supabaseClient';
 import { toDeidentifiedItinerary, type DeidentifiedItinerary, type PublicItineraryRow } from '@/lib/deidentifiedShare';
 import mockItinerary from '@/mocks/mock_itinerary.json';
+import { getDestinationCoverImage } from '@/lib/destinationImages';
 
 export default function SharePage({ params }: { params?: { token?: string } }) {
   const searchParams = useSearchParams();
@@ -77,6 +78,7 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
   );
 
   const sharePageUrl = typeof window === 'undefined' ? '' : window.location.href;
+  const coverImage = getDestinationCoverImage(itinerary?.destination, token);
 
   const share = async () => {
     if (!sharePageUrl) return;
@@ -100,9 +102,9 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 text-sm font-bold text-slate-500">
+      <main className="flex min-h-screen items-center justify-center bg-atrip-surface-page text-atrip-body font-bold text-atrip-text-secondary">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-brand-primary border-t-transparent rounded-full animate-spin" />
+          <div className="h-8 w-8 animate-spin rounded-full border-3 border-atrip-action-primary border-t-transparent motion-reduce:animate-none" />
           <p>載入分享行程中…</p>
         </div>
       </main>
@@ -111,8 +113,8 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
 
   if (error || !itinerary) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-center">
-        <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl border border-slate-200 flex flex-col items-center gap-4">
+      <main className="flex min-h-screen items-center justify-center bg-atrip-surface-page px-atrip-gutter text-center">
+        <div className="flex w-full max-w-md flex-col items-center gap-atrip-4 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-6 shadow-atrip-elevated">
           <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
             <AlertCircle size={24} />
           </div>
@@ -123,7 +125,7 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
           <div className="flex gap-2 w-full pt-2">
             <Link
               href="/dashboard"
-              className="flex-1 py-2 px-3 rounded-xl bg-brand-primary text-slate-900 font-bold text-xs hover:brightness-95 transition-all text-center"
+              className="atrip-compact-primary min-h-atrip-control flex-1 rounded-atrip-md text-center"
             >
               返回我的儀表板
             </Link>
@@ -134,22 +136,24 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
-        <header className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
+    <main className="min-h-screen bg-atrip-surface-page px-atrip-gutter py-atrip-4 max-[359px]:px-atrip-gutter-narrow sm:py-atrip-6">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-atrip-5">
+        <header className="relative min-h-60 overflow-hidden rounded-atrip-xl bg-atrip-brand-logo-trp shadow-atrip-soft">
+          <img src={coverImage} alt={`${itinerary.destination}行程封面`} className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-atrip-brand-logo-trp via-atrip-brand-logo-trp/60 to-transparent" />
+          <div className="relative flex min-h-60 items-end justify-between gap-atrip-4 p-atrip-5 text-white sm:p-atrip-6">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-brand-primary">Atrip 公開行程分享</p>
-              <h1 className="mt-1 text-xl sm:text-2xl font-black text-slate-900">{itinerary.title}</h1>
-              <p className="mt-2 flex items-center gap-1 text-sm text-slate-600 font-bold">
-                <MapPinned size={16} className="text-brand-primary" />
+              <p className="text-atrip-caption font-bold uppercase tracking-wider text-atrip-action-primary">Atrip 公開行程分享</p>
+              <h1 className="mt-atrip-1 text-2xl font-bold text-white sm:text-3xl">{itinerary.title}</h1>
+              <p className="mt-atrip-2 flex items-center gap-1 text-atrip-body font-bold text-white">
+                <MapPinned size={18} className="text-atrip-action-primary" />
                 <span>{itinerary.destination}</span>
               </p>
             </div>
             <button
               type="button"
               onClick={() => void share()}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-2xs"
+              className="atrip-focus inline-flex min-h-atrip-icon-button shrink-0 items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 text-atrip-caption font-bold text-atrip-action-on-primary"
             >
               {copied ? <Check size={14} className="text-emerald-600" /> : <Share2 size={14} />}
               <span>{copied ? '已複製連結' : '分享'}</span>
@@ -157,7 +161,7 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
           </div>
         </header>
 
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <section className="overflow-hidden rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card shadow-atrip-soft">
           <InteractiveMap
             activities={activities.map((activity) => ({
               id: activity.id,
@@ -173,18 +177,18 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
 
         <section className="flex flex-col gap-4">
           {itinerary.itinerary_data?.daily_itinerary?.map((day) => (
-            <article key={day.day_number} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
-              <div className="border-b border-slate-100 pb-2">
-                <span className="text-[11px] font-bold text-brand-primary uppercase">Day {day.day_number}</span>
-                <h2 className="text-base font-bold text-slate-900 mt-0.5">{day.date_label}</h2>
-                <p className="mt-1 text-xs text-slate-500 leading-relaxed">{day.summary}</p>
+            <article key={day.day_number} className="space-y-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft sm:p-atrip-5">
+              <div className="border-b border-atrip-border-subtle pb-atrip-3">
+                <span className="rounded-atrip-full bg-atrip-selection-background px-atrip-2 py-atrip-1 text-atrip-micro font-bold uppercase text-atrip-selection-foreground">Day {day.day_number}</span>
+                <h2 className="mt-atrip-2 text-atrip-body font-bold text-atrip-text-primary">{day.date_label}</h2>
+                <p className="mt-atrip-1 text-atrip-caption leading-relaxed text-atrip-text-secondary">{day.summary}</p>
               </div>
               <div className="flex flex-col gap-2.5 pt-1">
                 {day.activities?.map((activity: any) => (
                   <div
                     key={activity.id}
                     data-activity-id={activity.id}
-                    className={activeActivityId === activity.id ? 'rounded-2xl ring-2 ring-brand-primary transition-all' : 'rounded-2xl transition-all'}
+                    className={activeActivityId === activity.id ? 'rounded-atrip-lg ring-2 ring-atrip-action-primary transition-atrip' : 'rounded-atrip-lg transition-atrip'}
                   >
                     <PublicActivityCard
                       activity={activity}
@@ -198,8 +202,8 @@ export default function SharePage({ params }: { params?: { token?: string } }) {
           ))}
         </section>
 
-        <footer className="sticky bottom-4 rounded-2xl border border-slate-200 bg-white/95 p-3.5 shadow-lg backdrop-blur flex items-center justify-center">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
+        <footer className="sticky bottom-atrip-4 flex items-center justify-center rounded-atrip-lg border border-atrip-border-subtle bg-atrip-surface-card/95 p-atrip-3 shadow-atrip-elevated backdrop-blur">
+          <div className="flex items-center gap-atrip-2 text-atrip-caption text-atrip-text-secondary">
             <Clipboard size={14} className="text-slate-400" />
             <span>公開分享內容已自動隱藏建立者個資與預算資訊</span>
           </div>

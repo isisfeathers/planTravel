@@ -45,7 +45,7 @@ function formatFlightDate(timeStr?: string) {
 }
 
 
-export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onBook }) => {
+export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook }) => {
   const outboundDepDate = formatFlightDate(flight.outbound?.departure_time);
   const outboundDepTime = formatFlightTime(flight.outbound?.departure_time);
   const outboundArrTime = formatFlightTime(flight.outbound?.arrival_time);
@@ -91,13 +91,13 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
   const effectiveDeepLink = buildEffectiveDeepLink();
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-brand-primary/40 transition-all flex flex-col gap-3">
-      <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+    <article className="flex flex-col gap-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft">
+      <div className="flex items-start justify-between gap-atrip-2 border-b border-atrip-border-subtle pb-atrip-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-800">
+          <span className="rounded-atrip-full bg-atrip-surface-subtle px-atrip-2 py-atrip-1 text-atrip-caption font-bold text-atrip-text-primary">
             {flight.outbound?.segments?.[0]?.airline_name || '推薦航班'}
           </span>
-          <span className="text-xs text-slate-400 font-medium">
+          <span className="text-atrip-caption font-medium text-atrip-text-secondary">
             {flight.outbound?.segments?.[0]?.flight_number}
           </span>
           {outboundAircraft && (
@@ -108,12 +108,12 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
         </div>
         <div className="flex items-center gap-1.5">
           {flight.tag && (
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
+            <span className="flex items-center gap-1 rounded-atrip-full bg-atrip-selection-background px-atrip-2 py-atrip-1 text-atrip-caption font-bold text-atrip-selection-foreground">
               <Sparkles size={12} />
               {flight.tag}
             </span>
           )}
-          <span className="text-[10px] font-semibold text-slate-400">
+          <span className="hidden text-atrip-micro font-semibold text-atrip-text-secondary sm:inline">
             {providerLabel}
           </span>
         </div>
@@ -131,9 +131,9 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
         <div className="flex-1 flex flex-col items-center px-2">
           <span className="text-[10px] text-slate-400">{flight.outbound?.duration}</span>
           <div className="w-full h-0.5 bg-slate-200 relative my-1 flex items-center justify-center">
-            <Plane size={13} className="text-brand-primary absolute rotate-90" />
+            <Plane size={14} className="absolute rotate-90 text-atrip-brand-logo-ai" />
           </div>
-          <span className="text-[10px] text-emerald-600 font-bold">
+          <span className="text-atrip-micro font-bold text-atrip-selection-foreground">
             {flight.outbound?.stops === 0 ? '直飛' : `轉機 ${flight.outbound?.stops} 次`}
           </span>
         </div>
@@ -157,9 +157,9 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
           <div className="flex-1 flex flex-col items-center px-2">
             <span className="text-[10px] text-slate-400">{flight.inbound?.duration}</span>
             <div className="w-full h-0.5 bg-slate-200 relative my-1 flex items-center justify-center">
-              <Plane size={13} className="text-brand-primary absolute -rotate-90" />
+              <Plane size={14} className="absolute -rotate-90 text-atrip-brand-logo-ai" />
             </div>
-            <span className="text-[10px] text-emerald-600 font-bold">
+            <span className="text-atrip-micro font-bold text-atrip-selection-foreground">
               {flight.inbound?.stops === 0 ? '直飛' : `轉機 ${flight.inbound?.stops} 次`}
             </span>
           </div>
@@ -173,13 +173,13 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
 
       {/* 門戶機場與在地轉乘指引 */}
       {flight.gateway_info && (
-        <div className="p-3 rounded-xl bg-emerald-50/90 border border-emerald-200/80 text-xs flex items-start gap-2 shadow-2xs">
-          <Compass className="text-emerald-700 shrink-0 mt-0.5" size={16} />
+        <div className="flex items-start gap-atrip-2 rounded-atrip-lg bg-atrip-selection-background p-atrip-3 text-atrip-caption">
+          <Compass className="mt-0.5 shrink-0 text-atrip-selection-foreground" size={16} />
           <div className="flex-1 min-w-0">
-            <span className="font-extrabold text-emerald-950 block">
+            <span className="block font-bold text-atrip-selection-foreground">
               💡 門戶樞紐轉乘：經由 {flight.gateway_info.gateway_airport_name}
             </span>
-            <p className="text-emerald-800 text-[11px] mt-0.5 leading-relaxed font-medium">
+            <p className="mt-0.5 text-atrip-caption font-medium leading-relaxed text-atrip-selection-foreground">
               {flight.gateway_info.transit_instruction}（預估時間：{flight.gateway_info.transit_estimated_time}）
             </p>
           </div>
@@ -187,7 +187,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
       )}
 
       {/* 底部 */}
-      <div className="pt-2 border-t border-slate-100 flex justify-between items-center">
+      <div className="flex flex-col gap-atrip-3 border-t border-atrip-border-subtle pt-atrip-3 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
         <div className="flex items-center gap-1 text-xs text-slate-500">
           <Luggage size={14} className="text-slate-400" />
           <span>{flight.baggage_included}</span>
@@ -195,7 +195,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
         <div className="flex items-center gap-3">
           <div className="text-right">
             <span className="text-[10px] text-slate-400 block">含稅來回總價</span>
-            <span className="text-base font-black text-rose-600">
+            <span className="text-atrip-body font-bold text-atrip-text-primary">
               NT$ {Number(flight.price_total_twd || 0).toLocaleString()}
             </span>
           </div>
@@ -204,13 +204,13 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, verifyingId, onB
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onBook(flight)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-primary text-slate-900 font-black text-xs shadow-sm hover:brightness-95 active:scale-98 transition-all"
+            className="atrip-compact-primary min-h-atrip-control rounded-atrip-md"
           >
             <span>前往訂票</span>
             <ExternalLink size={12} />
           </a>
         </div>
       </div>
-    </div>
+    </article>
   );
 };

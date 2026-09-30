@@ -42,36 +42,36 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
   const nights = Math.max(1, totalDays - 1);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-atrip-5">
       {/* 頂部 AI 定制行程提示橫幅 */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div className="flex flex-col items-start justify-between gap-atrip-4 rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-4 text-white sm:flex-row sm:items-center sm:p-atrip-5">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-primary text-slate-900">
+            <span className="rounded-atrip-full bg-atrip-action-primary px-atrip-2 py-atrip-1 text-[10px] font-semibold text-atrip-action-on-primary">
               AI 智能行前打包顧問
             </span>
-            <span className="text-xs text-indigo-200 font-bold">
+            <span className="text-atrip-caption font-semibold text-white">
               {destination} · {totalDays} 天 {nights} 夜 · {monthText}氣候
             </span>
           </div>
-          <h3 className="text-sm sm:text-base font-black text-white mt-1">
+          <h3 className="mt-atrip-2 text-atrip-h2 text-white">
             已依據「{destination}」之簽證法規、電壓插座、當地幣別與季節氣候生成專屬清單
           </h3>
-          <p className="text-xs text-slate-300 mt-0.5">
+          <p className="mt-atrip-1 text-atrip-caption text-white">
             換洗衣物已配合 {totalDays} 天 {nights} 夜計算，並精確提供當地交通與常備藥品防護建議。
           </p>
         </div>
         <button
           type="button"
           onClick={() => regenerateForDestination(destination, totalDays, startDate)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition-all shrink-0 cursor-pointer"
+          className="atrip-focus inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-atrip-2 rounded-atrip-full border border-white/50 px-atrip-3 text-atrip-caption font-semibold text-white sm:w-auto"
         >
           <span>✨ 重新依目的地生成</span>
         </button>
       </div>
 
       {/* 頂部進度條卡片 */}
-      <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col gap-3">
+      <div className="flex flex-col gap-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 sm:p-atrip-5">
         <div className="flex justify-between items-center">
           <div>
             <h3 className="text-base font-bold text-slate-900">行前打包進度</h3>
@@ -79,25 +79,25 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
               已完成 {checkedCount} / {totalCount} 項 ({progressPercent}%)
             </p>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+          <span className="rounded-atrip-sm bg-atrip-tag-background px-atrip-tag-x py-atrip-tag-y text-atrip-caption font-semibold text-atrip-tag-foreground">
             {isSaving ? '同步中...' : saveStatusText}
           </span>
         </div>
 
-        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+        <div className="h-2.5 w-full overflow-hidden rounded-atrip-full bg-atrip-surface-subtle" role="progressbar" aria-label="行李打包進度" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}>
           <div
-            className="bg-brand-primary h-full rounded-full transition-all duration-300 ease-out"
+            className="h-full rounded-atrip-full bg-atrip-action-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
       {/* 新增自訂物品區塊 */}
-      <form onSubmit={handleAddNewItem} className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-2">
+      <form onSubmit={handleAddNewItem} className="flex flex-col gap-atrip-2 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 sm:flex-row">
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value as PackingItem['category'])}
-          className="px-3 py-2 text-xs font-semibold rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:outline-none"
+          className="atrip-focus min-h-atrip-input rounded-atrip-md border border-atrip-border-subtle bg-atrip-surface-subtle px-atrip-3 text-atrip-body font-semibold text-atrip-text-primary"
         >
           {categories.map((cat) => (
             <option key={cat} value={cat}>
@@ -111,26 +111,26 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
           placeholder="＋ 新增個人自訂打包物品..."
           value={newItemName}
           onChange={(e) => setNewItemName(e.target.value)}
-          className="flex-1 px-4 py-2 text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-brand-primary"
+          className="atrip-input flex-1"
         />
 
         <button
           type="submit"
-          className="px-5 py-2 rounded-xl bg-brand-primary text-white text-xs font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all"
+          className="atrip-compact-primary px-atrip-5"
         >
           新增物品
         </button>
       </form>
 
       {/* 四大分類清單 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-atrip-4 md:grid-cols-2">
         {categories.map((cat) => {
           const categoryItems = items.filter((i) => i.category === cat);
           const meta = CATEGORY_MAP[cat];
 
           return (
-            <div key={cat} className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col gap-3">
-              <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+            <div key={cat} className="flex flex-col gap-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 sm:p-atrip-5">
+              <div className="flex items-center gap-atrip-2 border-b border-atrip-border-subtle pb-atrip-2">
                 <span className="text-xl">{meta.icon}</span>
                 <h4 className="text-sm font-bold text-slate-900">{meta.label}</h4>
                 <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">
@@ -145,14 +145,14 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
                   {categoryItems.map((item) => (
                     <li
                       key={item.id}
-                      className="group flex items-start justify-between gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors"
+                    className="group flex min-h-11 items-start justify-between gap-atrip-3 rounded-atrip-md p-atrip-2 transition-colors"
                     >
                       <label className="flex items-start gap-3 cursor-pointer flex-1">
                         <input
                           type="checkbox"
                           checked={item.is_checked}
                           onChange={() => toggleItem(item.id)}
-                          className="mt-0.5 w-4 h-4 rounded border-slate-300 text-brand-primary focus:ring-brand-primary"
+                          className="mt-0.5 h-5 w-5 rounded border-atrip-border-subtle text-atrip-selection-foreground focus:ring-atrip-focus-ring"
                         />
                         <div>
                           <p
@@ -174,8 +174,8 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
                       <button
                         type="button"
                         onClick={() => deleteItem(item.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 p-1 text-xs transition-opacity"
-                        aria-label="刪除"
+                        className="atrip-focus grid h-11 w-11 shrink-0 place-items-center rounded-atrip-full text-atrip-text-secondary sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100"
+                        aria-label={`刪除${item.item_name}`}
                       >
                         ✕
                       </button>

@@ -109,7 +109,7 @@ export function ForkButton({ shareToken, label = '複製到我的行程 (Fork)',
     <div className="flex flex-col items-end gap-1">
       <button
         type="button"
-        className={`inline-flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-xs font-black text-slate-900 transition hover:brightness-95 disabled:cursor-wait disabled:opacity-70 shadow-sm ${className}`}
+        className={`atrip-compact-primary min-h-atrip-control rounded-atrip-md disabled:cursor-wait disabled:opacity-70 ${className}`}
         disabled={isWorking}
         onClick={() => void forkItinerary()}
       >
@@ -126,4 +126,3 @@ export function ForkButton({ shareToken, label = '複製到我的行程 (Fork)',
     </div>
   );
 }
-

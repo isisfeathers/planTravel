@@ -10,7 +10,6 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
   const [flights, setFlights] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [origin, setOrigin] = useState('TPE');
-  const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const fetchFlights = async () => {
@@ -88,27 +87,27 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-atrip-4">
       {/* 搜尋設定 */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div className="flex flex-col items-start justify-between gap-atrip-4 rounded-atrip-xl bg-atrip-brand-logo-trp p-atrip-4 text-white shadow-atrip-soft sm:flex-row sm:items-center">
         <div>
-          <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-brand-primary/15 text-brand-primary">
+          <span className="rounded-atrip-full bg-atrip-action-primary px-atrip-2 py-atrip-1 text-atrip-micro font-bold text-atrip-action-on-primary">
             AI 即時機票調度引擎
           </span>
-          <h2 className="text-base font-extrabold text-slate-900 mt-1">
-            出發地 <span className="text-brand-primary">{origin === 'TPE' ? '台北桃園 (TPE)' : origin === 'TSA' ? '台北松山 (TSA)' : '高雄 (KHH)'}</span> ⇄ {destination}
+          <h2 className="mt-atrip-2 text-atrip-body font-bold text-white">
+            出發地 <span className="text-atrip-action-primary">{origin === 'TPE' ? '台北桃園 (TPE)' : origin === 'TSA' ? '台北松山 (TSA)' : '高雄 (KHH)'}</span> ⇄ {destination}
             {startDate && endDate && (
-              <span className="text-xs font-bold px-2 py-0.5 ml-2 rounded-md bg-slate-100 text-slate-600 inline-block">
+              <span className="ml-atrip-2 inline-block rounded-atrip-sm bg-white/10 px-atrip-2 py-atrip-1 text-atrip-caption font-semibold text-white">
                 📅 {startDate} ~ {endDate}
               </span>
             )}
           </h2>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-atrip-2 sm:w-auto">
           <select
             value={origin}
             onChange={(e) => setOrigin(e.target.value)}
-            className="text-xs font-semibold px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none"
+            className="atrip-focus min-h-atrip-input min-w-0 rounded-atrip-md border border-white/30 bg-white px-atrip-3 text-atrip-caption font-semibold text-atrip-text-primary"
           >
             <option value="TPE">台北桃園 (TPE)</option>
             <option value="TSA">台北松山 (TSA)</option>
@@ -118,33 +117,34 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
             type="button"
             onClick={fetchFlights}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 disabled:opacity-50"
+            className="atrip-compact-primary min-h-atrip-input rounded-atrip-md disabled:opacity-50"
           >
-            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
+            <RefreshCw size={16} className={loading ? 'animate-spin motion-reduce:animate-none' : ''} />
             <span>比價</span>
           </button>
         </div>
       </div>
 
       {toastMsg && (
-        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+        <div className="flex items-center gap-atrip-2 rounded-atrip-lg bg-atrip-selection-background p-atrip-3 text-atrip-caption font-bold text-atrip-selection-foreground" role="status">
           <CheckCircle2 size={16} />
           <span>{toastMsg}</span>
         </div>
       )}
 
       {loading ? (
-        <div className="py-12 flex flex-col items-center justify-center gap-2">
-          <div className="w-7 h-7 border-3 border-brand-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-slate-500 font-medium">正在調度最新航班報價與即時可用機位...</p>
-        </div>
+        <>
+          <div className="space-y-atrip-3 py-atrip-2" aria-hidden="true">
+            {[0, 1, 2].map((item) => <div key={item} className="h-44 animate-pulse rounded-atrip-xl bg-atrip-surface-subtle motion-reduce:animate-none" />)}
+          </div>
+          <p className="sr-only" role="status">正在調度最新航班報價與即時可用機位</p>
+        </>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-atrip-3">
           {flights.map((flight) => (
             <FlightCard
               key={flight.id}
               flight={flight}
-              verifyingId={verifyingId}
               onBook={handleBook}
             />
           ))}

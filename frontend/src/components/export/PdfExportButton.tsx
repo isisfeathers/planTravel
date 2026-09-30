@@ -34,20 +34,20 @@ export const PdfExportButton: React.FC<PdfExportButtonProps> = ({
         type="button"
         disabled={isLoading}
         onClick={() => handleExportClick(itineraryId, accessToken)}
-        className={`interactive-only no-print inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all 
-          bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+        className={`atrip-icon-button interactive-only no-print border border-atrip-border-subtle bg-atrip-surface-card text-atrip-text-primary disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-atrip-3 ${className}`}
+        aria-label={isLoading ? '正在準備 PDF' : '匯出或列印 PDF'}
       >
-        <Printer size={14} className="text-slate-600" />
-        {isLoading ? <span>處理中...</span> : <span>匯出 / 列印 PDF</span>}
+        <Printer size={18} aria-hidden="true" />
+        {isLoading ? <span className="hidden sm:inline">處理中...</span> : <span className="hidden sm:inline">匯出 PDF</span>}
       </button>
 
       {isConfirmDialogOpen && (
-        <div className="interactive-only no-print fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4">
-            <h3 className="text-base font-bold text-slate-900">
+        <div className="atrip-modal-backdrop interactive-only no-print">
+          <div className="atrip-modal-panel sm:max-w-sm" role="dialog" aria-modal="true" aria-labelledby="pdf-export-title">
+            <h3 id="pdf-export-title" className="text-atrip-title font-bold text-atrip-text-primary">
               選擇 PDF 匯出方式
             </h3>
-            <p className="text-xs leading-relaxed text-slate-600">
+            <p className="text-atrip-caption leading-relaxed text-atrip-text-secondary">
               您可以直接使用裝置的原生列印（儲存為完整手冊 PDF），或透過 LINE 官方帳號接收排版檔案。
             </p>
 
@@ -58,24 +58,24 @@ export const PdfExportButton: React.FC<PdfExportButtonProps> = ({
                   setConfirmDialogOpen(false);
                   setTimeout(() => window.print(), 100);
                 }}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center gap-2"
+                className="atrip-compact-secondary min-h-atrip-control w-full rounded-atrip-md"
               >
                 🖨️ 瀏覽器直接列印 / 儲存為 PDF
               </button>
               <button
                 type="button"
                 onClick={() => confirmLineExport(itineraryId, accessToken)}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-brand-primary text-slate-900 hover:brightness-95 flex items-center justify-center gap-2"
+                className="atrip-compact-primary min-h-atrip-control w-full rounded-atrip-md"
               >
                 📲 傳送 PDF 至 LINE 聊天室
               </button>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 flex justify-end">
+            <div className="flex justify-end border-t border-atrip-border-subtle pt-atrip-2">
               <button
                 type="button"
                 onClick={() => setConfirmDialogOpen(false)}
-                className="px-3 py-1.5 text-xs font-bold rounded-xl text-slate-500 hover:bg-slate-100"
+                className="atrip-focus min-h-atrip-icon-button rounded-atrip-md px-atrip-3 text-atrip-caption font-bold text-atrip-text-secondary"
               >
                 關閉
               </button>

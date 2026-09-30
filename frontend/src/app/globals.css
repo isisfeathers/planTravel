@@ -108,7 +108,7 @@
   }
 
   .atrip-page-enter {
-    animation: atrip-page-enter var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
+    animation: atrip-page-enter var(--atrip-motion-slow) var(--atrip-ease-emphasized) backwards;
   }
 
   .atrip-motion-reveal {
@@ -280,6 +280,37 @@
     border-radius: 50%;
     transform: translate(-50%, -12%);
     pointer-events: none;
+  }
+
+  .atrip-waiting-route {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .atrip-waiting-route::before {
+    position: absolute;
+    top: -4.5rem;
+    right: -2rem;
+    width: 14rem;
+    height: 14rem;
+    border: 2px dashed rgb(185 232 90 / 45%);
+    border-radius: 50%;
+    content: "";
+    transform: rotate(24deg);
+  }
+
+  .atrip-waiting-route::after {
+    position: absolute;
+    right: 4rem;
+    bottom: 2.5rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 3px solid theme("colors.atrip-action-primary");
+    border-radius: 9999px;
+    background: theme("colors.atrip-brand-logo-trp");
+    content: "";
   }
 
   .atrip-scrollbar-hidden {
@@ -461,6 +492,20 @@
 
   .atrip-menu-item:hover {
     @apply bg-atrip-selection-background;
+  }
+}
+
+@layer components {
+  .atrip-canvas-tab {
+    @apply atrip-focus inline-flex min-h-atrip-icon-button min-w-0 flex-1 items-center justify-center gap-atrip-1 rounded-atrip-md px-atrip-2 text-atrip-caption font-semibold transition-atrip duration-atrip ease-atrip motion-reduce:transition-none;
+  }
+
+  .atrip-modal-backdrop {
+    @apply fixed inset-0 z-50 flex items-end bg-atrip-brand-logo-trp/65 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-atrip-4;
+  }
+
+  .atrip-modal-panel {
+    @apply relative flex max-h-[92dvh] w-full flex-col gap-atrip-4 overflow-y-auto rounded-t-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-5 shadow-atrip-soft sm:max-w-md sm:rounded-atrip-xl;
   }
 }
 
