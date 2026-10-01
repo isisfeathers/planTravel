@@ -12,9 +12,10 @@ const N8N_WEBHOOK = process.env.N8N_WEBHOOK_URL || "https://n8n-210083939307.asi
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { userId, destination, total_days, preferenceSnapshot } = body;
-    const days = total_days || 3;
-    const dest = destination || "東京";
+    const preferenceSnapshot = body.preferenceSnapshot || body.preference_snapshot || {};
+    const userId = body.userId;
+    const days = body.total_days || body.days || preferenceSnapshot.total_days || 3;
+    const dest = body.destination || preferenceSnapshot.destination || "東京";
 
     let targetUserId = userId;
     if (!targetUserId) {
@@ -65,7 +66,13 @@ export async function POST(req: Request) {
           userId: targetUserId,
           destination: dest,
           days: days,
-          preference_snapshot: preferenceSnapshot || {}
+          total_days: days,
+          startDate: preferenceSnapshot.start_date,
+          endDate: preferenceSnapshot.end_date,
+          start_date: preferenceSnapshot.start_date,
+          end_date: preferenceSnapshot.end_date,
+          preferenceSnapshot,
+          preference_snapshot: preferenceSnapshot,
         })
       });
 
@@ -85,4 +92,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Internal Error", msg: error.message }, { status: 500 });
   }
 }
-

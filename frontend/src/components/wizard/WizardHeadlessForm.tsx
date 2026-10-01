@@ -177,6 +177,13 @@ export function WizardHeadlessForm() {
         process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
         "https://n8n-210083939307.asia-east1.run.app/webhook/generate-itinerary";
 
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          `atrip_pending_preferences:${createdId}`,
+          JSON.stringify(finalSnapshot),
+        );
+      }
+
       try {
         await fetch(n8nWebhookUrl, {
           method: "POST",
@@ -187,6 +194,12 @@ export function WizardHeadlessForm() {
             lineUserId,
             destination: dest,
             days,
+            total_days: days,
+            startDate: finalSnapshot.start_date,
+            endDate: finalSnapshot.end_date,
+            start_date: finalSnapshot.start_date,
+            end_date: finalSnapshot.end_date,
+            preferenceSnapshot: finalSnapshot,
             preference_snapshot: finalSnapshot,
           }),
         });

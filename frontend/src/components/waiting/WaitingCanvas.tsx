@@ -89,10 +89,37 @@ export function WaitingCanvas({ itineraryId }: WaitingCanvasProps) {
             <div className="atrip-waiting-flight-scene" aria-hidden="true">
               <span className="atrip-waiting-cloud atrip-waiting-cloud-one" />
               <span className="atrip-waiting-cloud atrip-waiting-cloud-two" />
-              <span className="atrip-waiting-flight-path" />
-              <span className="atrip-plane-flight">
-                <Plane size={23} strokeWidth={2.4} />
-              </span>
+              <svg
+                className="atrip-waiting-flight-route"
+                viewBox="0 0 320 88"
+                role="presentation"
+              >
+                <path
+                  className="atrip-waiting-flight-route-line"
+                  d="M 10 70 C 84 23 221 20 310 64"
+                  pathLength="100"
+                />
+                <g className="atrip-waiting-plane-moving">
+                  <animateMotion
+                    dur="4.2s"
+                    repeatCount="indefinite"
+                    rotate="auto"
+                    path="M 10 70 C 84 23 221 20 310 64"
+                  />
+                  <g transform="translate(-18 -18)">
+                    <circle className="atrip-waiting-plane-halo" cx="18" cy="18" r="17" />
+                    <g transform="translate(6 6) rotate(45 12 12)">
+                      <Plane className="atrip-waiting-plane-icon" size={24} strokeWidth={2.4} />
+                    </g>
+                  </g>
+                </g>
+                <g className="atrip-waiting-plane-static" transform="translate(160 35)">
+                  <circle className="atrip-waiting-plane-halo" cx="0" cy="0" r="17" />
+                  <g transform="translate(-12 -12) rotate(45 12 12)">
+                    <Plane className="atrip-waiting-plane-icon" size={24} strokeWidth={2.4} />
+                  </g>
+                </g>
+              </svg>
             </div>
           ) : (
             <div className="mt-atrip-4 grid h-20 place-items-center rounded-atrip-lg bg-white/5" aria-hidden="true">

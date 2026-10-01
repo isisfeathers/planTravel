@@ -191,15 +191,15 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook, entrance
       )}
 
       {/* 底部 */}
-      <div className="flex flex-col gap-atrip-3 border-t border-atrip-border-subtle pt-atrip-3 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
-        <div className="flex items-center gap-1 text-xs text-slate-500">
+      <div className="flex flex-col gap-atrip-3 border-t border-atrip-border-subtle pt-atrip-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-1 text-xs text-slate-500">
           <Luggage size={14} className="text-slate-400" />
           <span>{flight.baggage_included}</span>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="text-right">
+        <div className="flex w-full items-end justify-between gap-atrip-3 sm:w-auto sm:items-center sm:justify-end">
+          <div className="min-w-0 text-left sm:text-right">
             <span className="text-[10px] text-slate-400 block">含稅來回總價</span>
-            <span className="text-atrip-body font-bold text-atrip-text-primary">
+            <span className="whitespace-nowrap text-atrip-body font-bold text-atrip-text-primary">
               NT$ {Number(flight.price_total_twd || 0).toLocaleString()}
             </span>
           </div>
@@ -208,7 +208,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook, entrance
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onBook(flight)}
-            className="atrip-compact-primary min-h-atrip-control rounded-atrip-md"
+            className="atrip-compact-primary min-h-atrip-control shrink-0 whitespace-nowrap rounded-atrip-md px-atrip-4"
           >
             <span>前往訂票</span>
             <ExternalLink size={12} />

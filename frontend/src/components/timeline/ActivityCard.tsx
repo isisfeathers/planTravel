@@ -42,7 +42,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                 : 'border-atrip-border-subtle bg-atrip-surface-card'
             } ${
               snapshot.isDragging
-                ? 'z-50 border-atrip-selection-foreground shadow-atrip-popover'
+                ? 'atrip-activity-card-dragging z-50 border-atrip-selection-foreground shadow-atrip-popover'
                 : ''
             }`}
             style={{ animationDelay: `${Math.min(index, 6) * 65}ms` }}

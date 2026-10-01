@@ -18,6 +18,7 @@ import { ShareModal } from '@/components/share/ShareModal';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { generateDynamicPackingList } from '@/lib/packingListGenerator';
 import { getDestinationCoverImage } from '@/lib/destinationImages';
+import { applyAuthoritativePreferences } from '@/lib/itineraryPreferences';
 import { ArrowLeft, Backpack, Calendar, Compass, List, Map as MapIcon, Plane, Plus, Share2 } from 'lucide-react';
 import mockItinerary from '@/mocks/mock_itinerary.json';
 
@@ -30,6 +31,34 @@ function safeEscapeId(id: string): string {
     return CSS.escape(id);
   }
   return id.replace(/["\\]/g, '\\$&');
+}
+
+function BalancedTripTitle({ title }: { title: string }) {
+  const characters = Array.from(title);
+
+  if (characters.length <= 6) return <>{title}</>;
+
+  const tailLength = Math.min(4, characters.length - 1);
+  const leadingText = characters.slice(0, -tailLength).join('');
+  const protectedTail = characters.slice(-tailLength).join('');
+
+  return (
+    <>
+      {leadingText}
+      <span className="whitespace-nowrap">{protectedTail}</span>
+    </>
+  );
+}
+
+function getPendingPreferences(itineraryId: string): Record<string, any> {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    const saved = localStorage.getItem(`atrip_pending_preferences:${itineraryId}`);
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
 }
 
 function getResolvedPackingList(payload: any) {
@@ -80,6 +109,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
   useEffect(() => {
     async function loadItinerary() {
       let payload = (mockItinerary as any).itinerary_data || mockItinerary;
+      const pendingPreferences = getPendingPreferences(itineraryId);
       try {
         const supabase = getSupabaseBrowserClient();
         const { data, error } = await supabase
@@ -89,16 +119,31 @@ export function CanvasClient({ params }: CanvasClientProps) {
           .maybeSingle();
 
         if (!error && data?.itinerary_data && Object.keys(data.itinerary_data).length > 0) {
-          payload = data.itinerary_data;
+          const databasePreferences = (data.preference_snapshot as Record<string, any>) || {};
+          const authoritativePreferences = {
+            ...databasePreferences,
+            ...pendingPreferences,
+          };
+          const generatedStartDate = data.itinerary_data?.meta?.start_date;
+          payload = applyAuthoritativePreferences(data.itinerary_data, authoritativePreferences);
           if (data.share_token) setShareToken(data.share_token);
           initTimeline(itineraryId, payload, data.version || 1);
-          const packingList = getResolvedPackingList(payload);
+          const packingList = authoritativePreferences.start_date && authoritativePreferences.start_date !== generatedStartDate
+            ? generateDynamicPackingList(
+                payload.meta.destination,
+                payload.meta.total_days,
+                authoritativePreferences.start_date,
+              )
+            : getResolvedPackingList(payload);
           initPacking(itineraryId, packingList);
           return;
         }
 
         if (data?.destination || data?.title) {
-          const pref = (data.preference_snapshot as any) || {};
+          const pref = {
+            ...((data.preference_snapshot as any) || {}),
+            ...pendingPreferences,
+          };
           payload = {
             ...payload,
             meta: {
@@ -116,6 +161,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
         console.warn('載入行程異常，切換至備用行程:', err);
       }
 
+      payload = applyAuthoritativePreferences(payload, pendingPreferences);
       initTimeline(itineraryId, payload, 1);
       const packingList = getResolvedPackingList(payload);
       initPacking(itineraryId, packingList);
@@ -250,7 +296,12 @@ export function CanvasClient({ params }: CanvasClientProps) {
 
           <div>
             <p className="text-atrip-caption font-semibold text-atrip-action-primary">📍 {itineraryData.meta.destination}</p>
-            <h1 className="mt-atrip-1 text-2xl font-bold leading-9 sm:text-3xl" title={itineraryData.meta.trip_title}>{itineraryData.meta.trip_title}</h1>
+            <h1
+              className="mt-atrip-1 text-balance text-2xl font-bold leading-9 sm:text-3xl"
+              title={itineraryData.meta.trip_title}
+            >
+              <BalancedTripTitle title={itineraryData.meta.trip_title} />
+            </h1>
             <div className="mt-atrip-3 flex flex-wrap items-center gap-atrip-2">
               <span className="inline-flex items-center gap-atrip-1 rounded-atrip-sm bg-atrip-surface-card px-atrip-2 py-atrip-1 text-atrip-caption font-semibold text-atrip-text-primary">
                 <Calendar size={14} aria-hidden="true" />
@@ -434,7 +485,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
           {/* 核心雙欄佈局：平板 & 桌面端 (>= 768px) 左右並排；手機端 (< 768px) 依切換器展示 */}
           <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] gap-5 items-start min-w-0 max-w-full">
             {/* 左欄：時間軸活動卡片列表 */}
-            <div className={`flex flex-col gap-2 min-w-0 max-w-full overflow-hidden ${mobileView !== 'timeline' ? 'hidden md:flex' : 'flex'}`}>
+            <div className={`flex min-w-0 max-w-full flex-col gap-2 overflow-visible ${mobileView !== 'timeline' ? 'hidden md:flex' : 'flex'}`}>
               <div className="mb-atrip-1 flex items-center justify-between px-atrip-1 text-atrip-micro font-medium text-atrip-text-secondary">
                 <span>💡 可長按左側握把拖曳排序</span>
                 <span>點擊卡片定位地圖</span>
@@ -446,7 +497,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className="flex flex-col gap-2.5 min-h-[300px] min-w-0 max-w-full overflow-hidden"
+                      className="flex min-h-[300px] min-w-0 max-w-full flex-col gap-2.5 overflow-visible"
                     >
                       {currentDayPlan?.activities.map((activity: any, index: number) => (
                         <ActivityCard
