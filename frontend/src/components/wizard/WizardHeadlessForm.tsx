@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -8,6 +8,8 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   CircleDot,
   LoaderCircle,
@@ -102,6 +104,39 @@ export function WizardHeadlessForm() {
   const [isFineTuneExpanded, setIsFineTuneExpanded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const presetScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollPresetLeft, setCanScrollPresetLeft] = useState(false);
+  const [canScrollPresetRight, setCanScrollPresetRight] = useState(false);
+
+  const updatePresetScrollState = useCallback(() => {
+    const element = presetScrollRef.current;
+    if (!element) return;
+    setCanScrollPresetLeft(element.scrollLeft > 2);
+    setCanScrollPresetRight(
+      element.scrollLeft + element.clientWidth < element.scrollWidth - 2,
+    );
+  }, []);
+
+  useEffect(() => {
+    const element = presetScrollRef.current;
+    if (!element) return;
+
+    updatePresetScrollState();
+    element.addEventListener("scroll", updatePresetScrollState, { passive: true });
+    const observer = new ResizeObserver(updatePresetScrollState);
+    observer.observe(element);
+
+    return () => {
+      element.removeEventListener("scroll", updatePresetScrollState);
+      observer.disconnect();
+    };
+  }, [updatePresetScrollState]);
+
+  const scrollPresets = (direction: -1 | 1) => {
+    const element = presetScrollRef.current;
+    if (!element) return;
+    element.scrollBy({ left: direction * 260, behavior: "smooth" });
+  };
 
   const summaryLabels = getSummaryLabels(wizard);
   const sportsModeEnabled = wizard.interests.includes("sports");
@@ -406,19 +441,45 @@ export function WizardHeadlessForm() {
                 第一層｜懶人套版
               </h2>
               <span className="shrink-0 text-atrip-caption text-atrip-text-secondary">
-                左右滑動
+                <span className="md:hidden">左右滑動</span>
+                <span className="hidden md:inline">使用箭頭切換</span>
               </span>
             </div>
 
-            <div className="atrip-scrollbar-hidden -mx-atrip-gutter mt-atrip-3 flex snap-x snap-mandatory gap-atrip-3 overflow-x-auto px-atrip-gutter pb-atrip-2 max-[359px]:-mx-atrip-gutter-narrow max-[359px]:px-atrip-gutter-narrow">
-              {presetOptions.map((preset) => (
-                <PresetCard
-                  key={preset.id}
-                  {...preset}
-                  selected={activePreset === preset.id}
-                  onSelect={handlePresetSelect}
-                />
-              ))}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => scrollPresets(-1)}
+                disabled={!canScrollPresetLeft}
+                className="atrip-icon-button absolute left-0 top-1/2 z-10 hidden -translate-y-1/2 border border-atrip-border-subtle bg-atrip-surface-card shadow-atrip-soft disabled:cursor-not-allowed disabled:opacity-30 md:grid"
+                aria-label="查看前一個旅行套版"
+              >
+                <ChevronLeft size={20} aria-hidden="true" />
+              </button>
+
+              <div
+                ref={presetScrollRef}
+                className="atrip-scrollbar-hidden -mx-atrip-gutter mt-atrip-3 flex snap-x snap-mandatory gap-atrip-3 overflow-x-auto px-atrip-gutter pb-atrip-2 max-[359px]:-mx-atrip-gutter-narrow max-[359px]:px-atrip-gutter-narrow md:mx-12 md:px-0"
+              >
+                {presetOptions.map((preset) => (
+                  <PresetCard
+                    key={preset.id}
+                    {...preset}
+                    selected={activePreset === preset.id}
+                    onSelect={handlePresetSelect}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => scrollPresets(1)}
+                disabled={!canScrollPresetRight}
+                className="atrip-icon-button absolute right-0 top-1/2 z-10 hidden -translate-y-1/2 border border-atrip-border-subtle bg-atrip-surface-card shadow-atrip-soft disabled:cursor-not-allowed disabled:opacity-30 md:grid"
+                aria-label="查看下一個旅行套版"
+              >
+                <ChevronRight size={20} aria-hidden="true" />
+              </button>
             </div>
           </section>
 

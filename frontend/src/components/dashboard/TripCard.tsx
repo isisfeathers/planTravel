@@ -123,6 +123,64 @@ export function TripCard({
         className="atrip-focus absolute inset-0 z-10 cursor-pointer rounded-atrip-xl"
         aria-label={`開啟${title}`}
       />
+
+      <div className="absolute right-atrip-4 top-atrip-4 z-30 shrink-0" ref={menuRef}>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            setIsMenuOpen((value) => !value);
+          }}
+          className="atrip-focus grid h-11 w-11 place-items-center rounded-atrip-full border border-white/30 bg-atrip-brand-logo-trp/70 text-white backdrop-blur-sm"
+          aria-label={`管理${title}`}
+          aria-expanded={isMenuOpen}
+        >
+          <MoreHorizontal size={20} aria-hidden="true" />
+        </button>
+
+        {isMenuOpen ? (
+          <div
+            className="atrip-motion-reveal absolute right-0 top-full z-40 mt-atrip-2 w-52 rounded-atrip-md border border-atrip-border-subtle bg-atrip-surface-card p-atrip-1 shadow-atrip-popover"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {!isActive ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onSetActive(itinerary.id);
+                }}
+                className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-primary"
+              >
+                <Star size={18} aria-hidden="true" />
+                設為目前旅程
+              </button>
+            ) : null}
+            {!is_archived ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onArchive(itinerary.id);
+                }}
+                className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-primary"
+              >
+                <Archive size={18} aria-hidden="true" />
+                封存行程
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={handleDeleteClick}
+              className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-secondary"
+            >
+              <Trash2 size={18} aria-hidden="true" />
+              移至垃圾桶
+            </button>
+          </div>
+        ) : null}
+      </div>
+
       <div className={featured ? 'sm:grid sm:grid-cols-[1.35fr_1fr]' : ''}>
         <div className={`relative overflow-hidden bg-atrip-brand-logo-trp ${featured ? 'h-52 sm:h-64' : 'h-44'}`}>
           <img
@@ -135,7 +193,7 @@ export function TripCard({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-atrip-brand-logo-trp via-atrip-brand-logo-trp/30 to-transparent" />
 
-          <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-atrip-2 p-atrip-4">
+          <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-atrip-2 p-atrip-4 pr-20">
             <div className="flex flex-wrap gap-atrip-2">
               {isActive ? (
                 <span className="inline-flex items-center gap-atrip-1 rounded-atrip-full bg-atrip-action-primary px-atrip-3 py-atrip-1 text-atrip-caption font-semibold text-atrip-action-on-primary">
@@ -150,62 +208,6 @@ export function TripCard({
               ) : null}
             </div>
 
-            <div className="relative z-20 shrink-0" ref={menuRef}>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setIsMenuOpen((value) => !value);
-                }}
-                className="atrip-focus grid h-11 w-11 place-items-center rounded-atrip-full border border-white/30 bg-atrip-brand-logo-trp/70 text-white backdrop-blur-sm"
-                aria-label={`管理${title}`}
-                aria-expanded={isMenuOpen}
-              >
-                <MoreHorizontal size={20} aria-hidden="true" />
-              </button>
-
-              {isMenuOpen ? (
-                <div
-                  className="atrip-motion-reveal absolute right-0 z-30 mt-atrip-2 w-52 rounded-atrip-md border border-atrip-border-subtle bg-atrip-surface-card p-atrip-1 shadow-atrip-popover"
-                  onClick={(event) => event.stopPropagation()}
-                >
-                  {!isActive ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        onSetActive(itinerary.id);
-                      }}
-                      className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-primary"
-                    >
-                      <Star size={18} aria-hidden="true" />
-                      設為目前旅程
-                    </button>
-                  ) : null}
-                  {!is_archived ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        onArchive(itinerary.id);
-                      }}
-                      className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-primary"
-                    >
-                      <Archive size={18} aria-hidden="true" />
-                      封存行程
-                    </button>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={handleDeleteClick}
-                    className="atrip-focus atrip-menu-item flex min-h-11 w-full items-center gap-atrip-2 rounded-atrip-sm px-atrip-3 text-left text-atrip-body text-atrip-text-secondary"
-                  >
-                    <Trash2 size={18} aria-hidden="true" />
-                    移至垃圾桶
-                  </button>
-                </div>
-              ) : null}
-            </div>
           </div>
 
           <div className="absolute inset-x-0 bottom-0 p-atrip-4 text-white">

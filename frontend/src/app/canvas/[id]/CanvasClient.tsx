@@ -516,7 +516,7 @@ export function CanvasClient({ params }: CanvasClientProps) {
             </div>
 
             {/* 右欄：互動地圖或動線簡圖 (平板與桌面端黏性置頂；手機端視圖選中時展開) */}
-            <aside className={`md:sticky md:top-4 no-print ${
+            <aside className={`min-w-0 max-w-full md:sticky md:top-4 no-print ${
               mobileView === 'timeline' ? 'hidden md:block' : 'block'
             }`}>
               {/* 地圖模式 */}
@@ -564,34 +564,34 @@ export function CanvasClient({ params }: CanvasClientProps) {
 
               {/* 動線簡圖模式 */}
               {(desktopMapMode === 'route' || mobileView === 'route') && (
-                <div className={`${mobileView === 'map' && 'hidden md:block'} space-y-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft`}>
-                  <div className="flex items-center justify-between border-b border-atrip-border-subtle pb-atrip-2">
-                    <span className="text-atrip-caption font-bold text-atrip-text-primary">🧭 Day {selectedDay} 順序動線導航</span>
-                    <span className="text-atrip-micro text-atrip-text-secondary">{currentDayPlan?.activities.length || 0} 個行程點</span>
+                <div className={`${mobileView === 'map' && 'hidden md:block'} min-w-0 max-w-full space-y-atrip-3 overflow-hidden rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft`}>
+                  <div className="flex min-w-0 items-center justify-between gap-atrip-2 border-b border-atrip-border-subtle pb-atrip-2">
+                    <span className="min-w-0 text-atrip-caption font-bold text-atrip-text-primary">🧭 Day {selectedDay} 順序動線導航</span>
+                    <span className="shrink-0 text-atrip-micro text-atrip-text-secondary">{currentDayPlan?.activities.length || 0} 個行程點</span>
                   </div>
 
-                  <div className="relative ml-atrip-2 space-y-atrip-2 border-l-2 border-atrip-action-primary pl-atrip-3">
+                  <div className="relative ml-atrip-2 min-w-0 max-w-full space-y-atrip-2 border-l-2 border-atrip-action-primary pl-atrip-3">
                     {currentDayPlan?.activities.map((act: any, idx: number) => {
                       const isSelected = activeActivityId === act.id;
                       return (
                         <div
                           key={act.id}
                           onClick={() => selectActivity(act.id, false)}
-                          className={`p-2.5 rounded-xl cursor-pointer transition-all ${
+                          className={`min-w-0 max-w-full cursor-pointer overflow-hidden rounded-xl p-2.5 transition-all ${
                             isSelected
                               ? 'border border-atrip-selection-foreground bg-atrip-selection-background font-bold'
                               : 'border border-atrip-border-subtle bg-atrip-surface-subtle'
                           }`}
                         >
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="font-bold text-atrip-brand-logo-ai">{act.time_slot}</span>
-                            <span className="text-atrip-micro text-atrip-text-secondary">Step {idx + 1}</span>
+                          <div className="flex min-w-0 items-center justify-between gap-atrip-2 text-xs">
+                            <span className="min-w-0 font-bold text-atrip-brand-logo-ai">{act.time_slot}</span>
+                            <span className="shrink-0 text-atrip-micro text-atrip-text-secondary">Step {idx + 1}</span>
                           </div>
-                          <p className="mt-0.5 truncate text-atrip-caption font-bold text-atrip-text-primary">{act.location_name}</p>
+                          <p className="mt-0.5 line-clamp-2 break-words text-atrip-caption font-bold text-atrip-text-primary">{act.location_name}</p>
                           {act.transit_to_next?.instructions && (
-                            <p className="mt-atrip-1 flex items-center gap-atrip-1 truncate text-atrip-caption text-atrip-text-secondary">
+                            <p className="mt-atrip-1 flex min-w-0 items-start gap-atrip-1 text-atrip-caption text-atrip-text-secondary">
                               <span className="shrink-0">🚇</span>
-                              <span className="truncate">{act.transit_to_next.instructions}</span>
+                              <span className="min-w-0 flex-1 line-clamp-2 break-words">{act.transit_to_next.instructions}</span>
                             </p>
                           )}
                         </div>
