@@ -34,7 +34,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
           {/* 景點/住宿主卡片 */}
           <div
             onClick={() => onSelect?.(activity.id)}
-            className={`min-w-0 max-w-full cursor-pointer overflow-hidden rounded-atrip-xl border p-atrip-4 transition-[background-color,border-color,box-shadow] duration-atrip ease-atrip motion-reduce:transition-none ${
+            className={`atrip-stagger-card min-w-0 max-w-full cursor-pointer overflow-hidden rounded-atrip-xl border p-atrip-4 transition-[background-color,border-color,box-shadow] duration-atrip ease-atrip motion-reduce:transition-none ${
               isActive
                 ? 'border-atrip-selection-foreground bg-atrip-selection-background shadow-atrip-soft'
                 : isHotelCheckin
@@ -45,6 +45,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
                 ? 'z-50 border-atrip-selection-foreground shadow-atrip-popover'
                 : ''
             }`}
+            style={{ animationDelay: `${Math.min(index, 6) * 65}ms` }}
           >
             <div className="flex items-start justify-between gap-2.5">
               <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">

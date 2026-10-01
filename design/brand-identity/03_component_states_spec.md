@@ -142,7 +142,8 @@ IconButton 圖示 20px。每個按鈕提供明確名稱；切換型按鈕使用�
 - Focus 使用 focus.ring #277E99 的 3px 實線 outline，outline-offset 為 3px；與選取邊框保持分離。
 - 焦點狀態使用 :focus-visible。父容器需留出至少 6px 外框空間，不可裁切焦點外框；標籤間距沿用 8px，取得焦點時外框不覆蓋相鄰元件內容。
 - 觸控端不以 Hover 傳達必要資訊。Hover 僅在 hover:hover 且 pointer:fine 下啟用。
-- 背景、邊框與陰影過渡 120ms ease-out；不移動、縮放元件。尊重 prefers-reduced-motion，關閉非必要過渡與旋轉，Loading 保留靜態進度圖示及文字。
+- 動態採 Fast 140ms、Standard 280ms、Expressive 520ms、Hero 760ms 與 Ambient 4–8s 五層系統。操作元件可在按壓時縮放至 0.98；頁面、卡片、彈窗與旅程意象可使用有主次的位移、航線與錯落進場。完整規則見 `05_motion_spec.md`。
+- 尊重 prefers-reduced-motion；關閉循環飛行、繞行、掃光與景深，並改用短透明度轉場。Loading 保留靜態進度圖示及文字。
 - 不以動畫、顏色或陰影作為唯一提示；Selected 有勾選，Loading 有文字，Disabled 有原因，Focus 有外框。
 
 ## 7. Figma 元件屬性

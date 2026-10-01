@@ -178,8 +178,14 @@
     "clearance": "6px"
   },
   "motion": {
-    "duration": "120ms",
-    "easing": "ease-out"
+    "duration": "280ms",
+    "fast": "140ms",
+    "standard": "280ms",
+    "expressive": "520ms",
+    "hero": "760ms",
+    "ambient": "5500ms",
+    "easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "easingEmphasized": "cubic-bezier(0.16, 1, 0.3, 1)"
   },
   "layout": {
     "gutter": "1.25rem",

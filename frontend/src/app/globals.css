@@ -8,9 +8,11 @@
 
 @layer base {
   :root {
-    --atrip-motion-fast: 120ms;
-    --atrip-motion-normal: 220ms;
-    --atrip-motion-slow: 360ms;
+    --atrip-motion-fast: 140ms;
+    --atrip-motion-normal: 280ms;
+    --atrip-motion-slow: 520ms;
+    --atrip-motion-hero: 760ms;
+    --atrip-motion-ambient: 5500ms;
     --atrip-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
     --atrip-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -145,13 +147,20 @@
   }
 
   .atrip-choice-button {
-    transition-property: background-color, border-color, box-shadow, color;
+    transition-property: background-color, border-color, box-shadow, color, transform;
     transition-duration: var(--atrip-motion-fast);
     transition-timing-function: ease-out;
   }
 
   .atrip-choice-button[aria-pressed="true"] {
     animation: atrip-selection-glow var(--atrip-motion-normal) var(--atrip-ease-standard);
+  }
+
+  .atrip-primary-button:active,
+  .atrip-compact-primary:active,
+  .atrip-compact-secondary:active,
+  .atrip-choice-button:active {
+    transform: scale(0.98);
   }
 
   .atrip-selection-check {
@@ -284,6 +293,98 @@
     animation: atrip-view-enter var(--atrip-motion-slow) var(--atrip-ease-emphasized) both;
   }
 
+  .atrip-trip-cover {
+    transform-origin: 50% 54%;
+    animation: atrip-trip-cover-drift 8s ease-in-out infinite alternate;
+  }
+
+  .atrip-icon-bob {
+    animation: atrip-icon-bob 3.8s ease-in-out infinite;
+  }
+
+  .atrip-transit-flow {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .atrip-transit-flow::after {
+    position: absolute;
+    inset: 0 auto 0 -45%;
+    z-index: 0;
+    width: 38%;
+    content: "";
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 70%), transparent);
+    transform: skewX(-18deg);
+    animation: atrip-transit-shine 4.8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .atrip-transit-flow > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .atrip-packing-progress {
+    position: relative;
+    overflow: hidden;
+    transition: width var(--atrip-motion-slow) var(--atrip-ease-emphasized);
+  }
+
+  .atrip-packing-progress::after {
+    position: absolute;
+    inset: 0 auto 0 -2rem;
+    width: 2rem;
+    content: "";
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 62%), transparent);
+    animation: atrip-progress-shine 3.6s ease-in-out infinite;
+  }
+
+  .atrip-pack-item {
+    transition:
+      background-color var(--atrip-motion-normal) var(--atrip-ease-standard),
+      transform var(--atrip-motion-fast) var(--atrip-ease-standard);
+  }
+
+  .atrip-pack-item:has(input:checked) {
+    background: color-mix(in srgb, theme("colors.atrip-selection-background") 52%, transparent);
+  }
+
+  .atrip-pack-item input:checked {
+    animation: atrip-checkbox-pop var(--atrip-motion-normal) var(--atrip-ease-emphasized);
+  }
+
+  .atrip-flight-route-plane {
+    --atrip-plane-angle: 90deg;
+    animation: atrip-flight-route-plane 2.8s ease-in-out infinite;
+  }
+
+  .atrip-flight-route-plane-reverse {
+    --atrip-plane-angle: -90deg;
+    animation-direction: reverse;
+  }
+
+  .atrip-skeleton-shimmer {
+    background: linear-gradient(
+      105deg,
+      theme("colors.atrip-surface-subtle") 28%,
+      theme("colors.atrip-surface-card") 44%,
+      theme("colors.atrip-surface-subtle") 62%
+    );
+    background-size: 220% 100%;
+    animation: atrip-skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+
+  .atrip-wizard-step-node {
+    transition:
+      transform var(--atrip-motion-normal) var(--atrip-ease-emphasized),
+      box-shadow var(--atrip-motion-normal) ease-out;
+  }
+
+  .atrip-wizard-step-current {
+    animation: atrip-wizard-step-pulse 2.4s ease-in-out infinite;
+  }
+
   .atrip-icon-wiggle {
     transform-origin: 50% 70%;
     animation: atrip-icon-wiggle 4.8s ease-in-out infinite;
@@ -322,6 +423,50 @@
   @keyframes atrip-view-enter {
     from { opacity: 0; transform: translateY(7px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes atrip-trip-cover-drift {
+    from { transform: scale(1); }
+    to { transform: scale(1.035) translate3d(-0.35%, -0.25%, 0); }
+  }
+
+  @keyframes atrip-icon-bob {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    48% { transform: translateY(-4px) rotate(-3deg); }
+    58% { transform: translateY(-3px) rotate(2deg); }
+  }
+
+  @keyframes atrip-transit-shine {
+    0%, 64% { left: -45%; opacity: 0; }
+    72% { opacity: 0.75; }
+    90%, 100% { left: 110%; opacity: 0; }
+  }
+
+  @keyframes atrip-progress-shine {
+    0%, 55% { left: -2rem; opacity: 0; }
+    68% { opacity: 0.8; }
+    88%, 100% { left: calc(100% + 1rem); opacity: 0; }
+  }
+
+  @keyframes atrip-checkbox-pop {
+    0% { transform: scale(0.72); }
+    55% { transform: scale(1.18) rotate(-6deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  @keyframes atrip-flight-route-plane {
+    0%, 100% { transform: translateX(-6px) rotate(var(--atrip-plane-angle)); }
+    50% { transform: translateX(6px) rotate(var(--atrip-plane-angle)); }
+  }
+
+  @keyframes atrip-skeleton-shimmer {
+    from { background-position: 110% 0; }
+    to { background-position: -110% 0; }
+  }
+
+  @keyframes atrip-wizard-step-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgb(185 232 90 / 12%); }
+    50% { transform: scale(1.07); box-shadow: 0 0 0 7px rgb(185 232 90 / 18%); }
   }
 
   @keyframes atrip-icon-wiggle {
@@ -716,7 +861,15 @@
   .atrip-icon-wiggle,
   .atrip-hero-reveal img,
   .atrip-stagger-card,
-  .atrip-day-tab-indicator {
+  .atrip-day-tab-indicator,
+  .atrip-trip-cover,
+  .atrip-icon-bob,
+  .atrip-transit-flow::after,
+  .atrip-packing-progress::after,
+  .atrip-pack-item input:checked,
+  .atrip-flight-route-plane,
+  .atrip-skeleton-shimmer,
+  .atrip-wizard-step-current {
     animation: none !important;
   }
 
@@ -728,5 +881,12 @@
 
   .atrip-selection-check {
     transition: none;
+  }
+
+  .atrip-primary-button:active,
+  .atrip-compact-primary:active,
+  .atrip-compact-secondary:active,
+  .atrip-choice-button:active {
+    transform: none;
   }
 }

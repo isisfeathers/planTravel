@@ -135,17 +135,18 @@ export const FlightTab: React.FC<{ destination: string; startDate?: string; endD
       {loading ? (
         <>
           <div className="space-y-atrip-3 py-atrip-2" aria-hidden="true">
-            {[0, 1, 2].map((item) => <div key={item} className="h-44 animate-pulse rounded-atrip-xl bg-atrip-surface-subtle motion-reduce:animate-none" />)}
+            {[0, 1, 2].map((item) => <div key={item} className="atrip-skeleton-shimmer h-44 rounded-atrip-xl" />)}
           </div>
           <p className="sr-only" role="status">正在調度最新航班報價與即時可用機位</p>
         </>
       ) : (
         <div className="flex flex-col gap-atrip-3">
-          {flights.map((flight) => (
+          {flights.map((flight, index) => (
             <FlightCard
               key={flight.id}
               flight={flight}
               onBook={handleBook}
+              entranceDelay={index * 80}
             />
           ))}
         </div>

@@ -7,6 +7,7 @@ interface FlightCardProps {
   flight: any;
   verifyingId?: string | null;
   onBook: (flight: any) => void;
+  entranceDelay?: number;
 }
 function formatFlightTime(timeStr?: string) {
   if (!timeStr) return '--:--';
@@ -45,7 +46,7 @@ function formatFlightDate(timeStr?: string) {
 }
 
 
-export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook }) => {
+export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook, entranceDelay = 0 }) => {
   const outboundDepDate = formatFlightDate(flight.outbound?.departure_time);
   const outboundDepTime = formatFlightTime(flight.outbound?.departure_time);
   const outboundArrTime = formatFlightTime(flight.outbound?.arrival_time);
@@ -91,7 +92,10 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook }) => {
   const effectiveDeepLink = buildEffectiveDeepLink();
 
   return (
-    <article className="flex flex-col gap-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft">
+    <article
+      className="atrip-stagger-card flex flex-col gap-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 shadow-atrip-soft"
+      style={{ animationDelay: `${entranceDelay}ms` }}
+    >
       <div className="flex items-start justify-between gap-atrip-2 border-b border-atrip-border-subtle pb-atrip-2">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="rounded-atrip-full bg-atrip-surface-subtle px-atrip-2 py-atrip-1 text-atrip-caption font-bold text-atrip-text-primary">
@@ -131,7 +135,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook }) => {
         <div className="flex-1 flex flex-col items-center px-2">
           <span className="text-[10px] text-slate-400">{flight.outbound?.duration}</span>
           <div className="w-full h-0.5 bg-slate-200 relative my-1 flex items-center justify-center">
-            <Plane size={14} className="absolute rotate-90 text-atrip-brand-logo-ai" />
+            <Plane size={14} className="atrip-flight-route-plane absolute text-atrip-brand-logo-ai" />
           </div>
           <span className="text-atrip-micro font-bold text-atrip-selection-foreground">
             {flight.outbound?.stops === 0 ? '直飛' : `轉機 ${flight.outbound?.stops} 次`}
@@ -157,7 +161,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, onBook }) => {
           <div className="flex-1 flex flex-col items-center px-2">
             <span className="text-[10px] text-slate-400">{flight.inbound?.duration}</span>
             <div className="w-full h-0.5 bg-slate-200 relative my-1 flex items-center justify-center">
-              <Plane size={14} className="absolute -rotate-90 text-atrip-brand-logo-ai" />
+              <Plane size={14} className="atrip-flight-route-plane atrip-flight-route-plane-reverse absolute text-atrip-brand-logo-ai" />
             </div>
             <span className="text-atrip-micro font-bold text-atrip-selection-foreground">
               {flight.inbound?.stops === 0 ? '直飛' : `轉機 ${flight.inbound?.stops} 次`}

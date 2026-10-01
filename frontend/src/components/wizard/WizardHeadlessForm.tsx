@@ -240,11 +240,11 @@ export function WizardHeadlessForm() {
                 ["4", "開始規劃"],
               ].map(([number, label], index) => (
                 <li key={number} className="flex min-w-0 flex-1 items-center gap-atrip-1 last:flex-none">
-                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-atrip-full text-atrip-caption font-semibold ${
+                  <span className={`atrip-wizard-step-node grid h-7 w-7 shrink-0 place-items-center rounded-atrip-full text-atrip-caption font-semibold ${
                     index < 2
                       ? "bg-atrip-action-primary text-atrip-action-on-primary"
                       : "border border-atrip-border-subtle bg-atrip-surface-card text-atrip-text-secondary"
-                  }`}>{number}</span>
+                  } ${index === 1 ? "atrip-wizard-step-current" : ""}`}>{number}</span>
                   {index < 3 ? <span className="h-px min-w-2 flex-1 bg-atrip-border-subtle" aria-hidden="true" /> : null}
                   <span className="sr-only">{label}</span>
                 </li>
@@ -627,7 +627,7 @@ export function WizardHeadlessForm() {
         <div className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] border-t border-atrip-border-subtle bg-atrip-surface-card px-atrip-gutter pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-atrip-3 max-[359px]:px-atrip-gutter-narrow">
           <button
             type="submit"
-            className="atrip-primary-button"
+            className="atrip-cta-glint atrip-primary-button"
             disabled={isSubmitting}
             aria-busy={isSubmitting}
             aria-disabled={isSubmitting}

@@ -83,7 +83,8 @@ Tailwind 4 不自動偵測 JavaScript 設定檔；需使用 `@config` 明確載�
 | shadow.soft | shadow-atrip-soft |
 | focus.width／offset | outline-atrip-focus outline-offset-atrip-focus |
 | color.focus.ring | outline-atrip-focus-ring |
-| motion.duration／easing | duration-atrip ease-atrip |
+| motion.duration／easing | duration-atrip ease-atrip（Standard） |
+| motion.fast／expressive／hero／ambient | 微互動／元件進場／主視覺／環境循環；詳見 05_motion_spec.md |
 
 `bg-brand-primary` 僅為既有工單用名的相容別名，指向同一亮綠 #B9E85A。本包不定義用途未確認的 brand-secondary、brand-accent，請改用具體語意名稱。
 
@@ -101,7 +102,7 @@ component-states 中每個狀態包含 background、foreground、border、shadow
 - Focus 需同時設定 outline-style:solid、寬度、色彩與 offset；不要只設定 outline 顏色。Disabled 不顯示 Focus。
 - Hover CSS 放入 `@media (hover: hover) and (pointer: fine)`，並排除 Disabled／Loading。不能只用一般 hover 類別而忽略狀態優先序。
 - Loading 的 aria-disabled 不會自動阻止事件；必須另外阻止重複 click、鍵盤與表單送出，並提供處理中文字與結果通知。
-- 120ms 過渡僅用於 background-color、border-color、box-shadow；使用 motion-reduce:transition-none 等方式遵循降低動態設定。
+- 一般元件使用 Standard 280ms；按壓回饋使用 Fast 140ms，彈窗與區塊進場使用 Expressive 520ms。允許 transform 與 opacity 動畫，但不得造成版面重排；使用 motion-reduce 或媒體查詢提供靜態替代。
 
 靜態分類映射範例：
 

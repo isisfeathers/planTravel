@@ -46,7 +46,7 @@ export function TripSection({
       {itineraries.length === 0 ? (
         <div className="relative overflow-hidden rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-5 text-center">
           <div className="atrip-empty-route" aria-hidden="true" />
-          <span className="relative mx-auto grid h-14 w-14 place-items-center rounded-atrip-full bg-atrip-selection-background text-atrip-brand-logo-ai">
+          <span className="atrip-icon-bob relative mx-auto grid h-14 w-14 place-items-center rounded-atrip-full bg-atrip-selection-background text-atrip-brand-logo-ai">
             <MapPinned size={25} />
           </span>
           <p className="relative mt-atrip-3 text-atrip-body font-semibold text-atrip-text-primary">旅程地圖還是空白的</p>
@@ -71,6 +71,7 @@ export function TripSection({
               onArchive={onArchive}
               onDelete={onDelete}
               featured={featuredFirst && index === 0}
+              entranceDelay={index * 70}
             />
           ))}
         </div>

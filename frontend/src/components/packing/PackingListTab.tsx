@@ -79,7 +79,7 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
 
         <div className="h-2.5 w-full overflow-hidden rounded-atrip-full bg-atrip-surface-subtle" role="progressbar" aria-label="行李打包進度" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}>
           <div
-            className="h-full rounded-atrip-full bg-atrip-action-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
+            className="atrip-packing-progress h-full rounded-atrip-full bg-atrip-action-primary motion-reduce:transition-none"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -117,12 +117,16 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
 
       {/* 四大分類清單 */}
       <div className="grid grid-cols-1 gap-atrip-4 md:grid-cols-2">
-        {categories.map((cat) => {
+        {categories.map((cat, categoryIndex) => {
           const categoryItems = items.filter((i) => i.category === cat);
           const meta = CATEGORY_MAP[cat];
 
           return (
-            <div key={cat} className="flex flex-col gap-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 sm:p-atrip-5">
+            <div
+              key={cat}
+              className="atrip-stagger-card flex flex-col gap-atrip-3 rounded-atrip-xl border border-atrip-border-subtle bg-atrip-surface-card p-atrip-4 sm:p-atrip-5"
+              style={{ animationDelay: `${categoryIndex * 70}ms` }}
+            >
               <div className="flex items-center gap-atrip-2 border-b border-atrip-border-subtle pb-atrip-2">
                 <span className="text-xl">{meta.icon}</span>
                 <h4 className="text-sm font-bold text-slate-900">{meta.label}</h4>
@@ -138,7 +142,7 @@ export const PackingListTab: React.FC<PackingListTabProps> = ({
                   {categoryItems.map((item) => (
                     <li
                       key={item.id}
-                    className="group flex min-h-11 items-start justify-between gap-atrip-3 rounded-atrip-md p-atrip-2 transition-colors"
+                    className="atrip-pack-item group flex min-h-11 items-start justify-between gap-atrip-3 rounded-atrip-md p-atrip-2"
                     >
                       <label className="flex items-start gap-3 cursor-pointer flex-1">
                         <input

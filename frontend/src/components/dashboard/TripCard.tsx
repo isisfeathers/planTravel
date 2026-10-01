@@ -23,6 +23,7 @@ interface TripCardProps {
   onArchive: (id: string) => void;
   onDelete: (id: string) => void;
   featured?: boolean;
+  entranceDelay?: number;
 }
 
 function formatDateRange(startDate?: string, endDate?: string) {
@@ -55,6 +56,7 @@ export function TripCard({
   onArchive,
   onDelete,
   featured = false,
+  entranceDelay = 0,
 }: TripCardProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -81,7 +83,7 @@ export function TripCard({
     event.stopPropagation();
     setIsMenuOpen(false);
     setIsExiting(true);
-    window.setTimeout(() => onDelete(itinerary.id), 220);
+    window.setTimeout(() => onDelete(itinerary.id), 280);
   };
 
   const openItinerary = () => {
@@ -106,13 +108,14 @@ export function TripCard({
 
   return (
     <article
-      className={`atrip-trip-card group relative overflow-hidden rounded-atrip-xl border bg-atrip-surface-card transition-[border-color,box-shadow,opacity] duration-atrip ease-atrip motion-reduce:transition-none ${
+      className={`atrip-trip-card atrip-stagger-card group relative overflow-hidden rounded-atrip-xl border bg-atrip-surface-card transition-[border-color,box-shadow,opacity] duration-atrip ease-atrip motion-reduce:transition-none ${
         featured ? 'sm:col-span-2 lg:col-span-3' : ''
       } ${
         isActive
           ? 'border-atrip-selection-foreground shadow-atrip-soft'
           : 'border-atrip-border-subtle'
       } ${isExiting ? 'opacity-0' : 'opacity-100'}`}
+      style={{ animationDelay: `${entranceDelay}ms` }}
     >
       <button
         type="button"
@@ -126,7 +129,7 @@ export function TripCard({
             src={imgSrc}
             alt={`${destination || '目的地'}景色`}
             onError={() => setImgSrc(getDestinationCoverImage('default', `${itinerary.id}-fallback`))}
-            className="absolute inset-0 h-full w-full object-cover"
+            className={`absolute inset-0 h-full w-full object-cover ${featured ? 'atrip-trip-cover' : ''}`}
             loading="lazy"
             decoding="async"
           />
